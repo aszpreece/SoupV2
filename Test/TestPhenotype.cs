@@ -1,0 +1,223 @@
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SoupV2.NEAT;
+using SoupV2.NEAT.Genes;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Test
+{
+    [TestClass]
+    public class TestPhenotype
+    {
+        [TestMethod]
+        public void TestNamedNodes()
+        {
+            Genotype test = new Genotype();
+            test.AddNamedNode("bias", NodeType.BIAS, "relu");
+            test.AddNamedNode("input1", NodeType.INPUT, "relu");
+            test.AddNamedNode("input2", NodeType.INPUT, "relu");
+
+            Assert.IsTrue(test.NodeGenes.Count == 3);
+
+            Assert.IsTrue(test.NodeNameMap.ContainsKey("bias"));
+            Assert.IsTrue(test.NodeNameMap.ContainsKey("input1"));
+            Assert.IsTrue(test.NodeNameMap.ContainsKey("input2"));
+
+        }
+
+        [TestMethod]
+        public void TestAdder()
+        {
+            Genotype test = new Genotype();
+
+            test.AddNamedNode("input1", NodeType.INPUT, "relu");
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
+            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+
+            test.ConnectionGenes.Add(new ConnectionGene(1, 0, 1, 1));  // Input to hidden
+            test.ConnectionGenes.Add(new ConnectionGene(2, 1, 1, 1, true, true)); // Hidden to hidden (recurrent)
+            test.ConnectionGenes.Add(new ConnectionGene(3, 1, 2, 1)); //# Hidden to output
+
+            var input1 = new Dictionary<string, double>()
+            {
+                {"input1", 1.0d },
+            };
+
+            var input2 = new Dictionary<string, double>()
+            {
+                {"input1", 2.0d },
+            };
+
+            var input3 = new Dictionary<string, double>()
+            {
+                {"input1", 10.0d },
+            };
+
+            var network = new Phenotype(test);
+
+            network.Calculate(input1);
+            Assert.AreEqual(0, network.Get("output1"));
+            network.Calculate(input2);
+            Assert.AreEqual(1, network.Get("output1"));
+            network.Calculate(input3);
+            Assert.AreEqual(3, network.Get("output1"));
+            Assert.AreEqual(13, network.Get("hidden1"));
+            Assert.AreEqual(10, network.Get("input1"));
+
+
+        }
+
+        [TestMethod]
+        public void TestRecurrentFromOutput()
+        {
+            Genotype test = new Genotype();
+
+            test.AddNamedNode("input1", NodeType.INPUT, "sigmoid");
+            test.AddNamedNode("input2", NodeType.INPUT, "sigmoid");
+            test.AddNamedNode("input3", NodeType.INPUT, "sigmoid");
+
+            // Hidden genes
+            test.NodeGenes.Add(new NodeGene(3, NodeType.HIDDEN, "relu"));
+            test.NodeGenes.Add(new NodeGene(4, NodeType.HIDDEN, "relu"));
+
+            // Output genes
+            test.NodeGenes.Add(new NodeGene(5, NodeType.OUTPUT, "relu"));
+
+
+            // Input connections
+            test.ConnectionGenes.Add(new ConnectionGene(1, 0, 3, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(2, 1, 3, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(3, 1, 4, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(4, 2, 4, 1));
+            // Hidden connection
+            test.ConnectionGenes.Add(new ConnectionGene(5, 3, 4, 1));
+            // The recurrent connection from 4 to 3
+            test.ConnectionGenes.Add(new ConnectionGene(6, 4, 3, 1, true, true));
+            // Hidden to output
+            test.ConnectionGenes.Add(new ConnectionGene(7, 3, 5, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(8, 4, 5, 1));
+            // The recurrent connection from 5 to 3
+            test.ConnectionGenes.Add(new ConnectionGene(9, 5, 3, -1));
+
+            var network = new Phenotype(test);
+
+            var inputs = new Dictionary<string, double>()
+            {
+                {"input1", 1.0d },
+                {"input2", 2.0d },
+                {"input3", 3.0d },
+
+            };
+
+            network.Calculate(inputs);
+            Assert.AreEqual(0.0d, network.Get(5));
+            network.Calculate(inputs);
+            Assert.AreEqual(8.0d, network.Get(5));
+            network.Calculate(inputs);
+            Assert.AreEqual(16.0d, network.Get(5));
+
+        }
+
+        [TestMethod]
+        public void TestCreatesCycle()
+        {
+            // Test that a gene already in the genome can be tested fro recurrence
+            Genotype test = new Genotype();
+
+            test.AddNamedNode("input1", NodeType.INPUT, "relu");
+            test.AddNamedNode("input2", NodeType.INPUT, "relu");
+
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
+            test.AddNamedNode("hidden2", NodeType.HIDDEN, "relu");
+
+            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+
+            test.ConnectionGenes.Add(new ConnectionGene(1, 0, 2, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(3, 1, 3, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(4, 2, 4, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(5, 3, 4, 1));
+
+            var nonRecurrentGene = new ConnectionGene(2, 2, 3, 1);
+            Assert.IsFalse(test.CreatesCycle(nonRecurrentGene));
+            test.ConnectionGenes.Add(nonRecurrentGene);
+
+            var recurrentGene = new ConnectionGene(2, 3, 2, 1);
+            Assert.IsTrue(test.CreatesCycle(recurrentGene));
+        }
+
+        [TestMethod]
+        public void TestReEnableCreatesCycle()
+        {
+            // Test that a gene already in the genome can be tested fro recurrence
+            Genotype test = new Genotype();
+
+            test.AddNamedNode("input1", NodeType.INPUT, "relu");
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
+            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+
+            test.ConnectionGenes.Add(new ConnectionGene(1, 0, 1, 1)); 
+            var recurrentGene = new ConnectionGene(2, 1, 1, 1, false, true);
+            test.ConnectionGenes.Add(recurrentGene); 
+            test.ConnectionGenes.Add(new ConnectionGene(3, 1, 2, 1)); 
+
+            // This new gene should not create a cycle
+            Assert.IsTrue(test.CreatesCycle(recurrentGene));
+        }
+
+        [TestMethod]
+        public void TestCreatesCycleIgnoresDisabledConnections()
+        {
+            // Test that a gene already in the genome can be tested fro recurrence
+            Genotype test = new Genotype();
+
+            test.AddNamedNode("input1", NodeType.INPUT, "relu");
+            test.AddNamedNode("input2", NodeType.INPUT, "relu");
+
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
+            test.AddNamedNode("hidden2", NodeType.HIDDEN, "relu");
+
+            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+
+            test.ConnectionGenes.Add(new ConnectionGene(1, 0, 2, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(3, 1, 3, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(4, 2, 4, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(5, 3, 4, 1));
+
+            var nonRecurrentGene = new ConnectionGene(2, 2, 3, 1, false);
+            Assert.IsFalse(test.CreatesCycle(nonRecurrentGene));
+            test.ConnectionGenes.Add(nonRecurrentGene);
+
+            var recurrentGene = new ConnectionGene(2, 3, 2, 1);
+            Assert.IsFalse(test.CreatesCycle(recurrentGene));
+        }
+
+
+        [TestMethod]
+        public void TestCreatesCycleIgnoresRecurrentConnections()
+        {
+            // Test that a gene already in the genome can be tested fro recurrence
+            Genotype test = new Genotype();
+
+            test.AddNamedNode("input1", NodeType.INPUT, "relu");
+            test.AddNamedNode("input2", NodeType.INPUT, "relu");
+
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
+            test.AddNamedNode("hidden2", NodeType.HIDDEN, "relu");
+
+            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+
+            test.ConnectionGenes.Add(new ConnectionGene(1, 0, 2, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(3, 1, 3, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(4, 2, 4, 1));
+            test.ConnectionGenes.Add(new ConnectionGene(5, 3, 4, 1));
+
+            var nonRecurrentGene = new ConnectionGene(2, 2, 3, 1, true, true);
+            Assert.IsFalse(test.CreatesCycle(nonRecurrentGene));
+            test.ConnectionGenes.Add(nonRecurrentGene);
+
+            var recurrentGene = new ConnectionGene(2, 3, 2, 1);
+            Assert.IsFalse(test.CreatesCycle(recurrentGene));
+        }
+    }
+}

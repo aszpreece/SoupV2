@@ -1,0 +1,9 @@
+{
+  "ProbPerturbingWeight": 0.8,
+  "ProbResetWeight": 0.1,
+  "ProbEnableConn": 0.01,
+  "ProbDisableConn": 0.01,
+  "PewWeightPower": 4,
+  "ProbToSplitConnection": 0.03,
+  "ProbToConnectNodes": 0.05
+}
