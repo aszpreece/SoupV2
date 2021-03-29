@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -10,12 +10,16 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\bin\DesktopGL\circle.xnb" />
     <None Remove="Content\bin\DesktopGL\default_font.spritefont" />
     <None Remove="Content\bin\DesktopGL\pirateship.xnb" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bin\DesktopGL\circle.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bin\DesktopGL\default_font.spritefont">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -39,7 +43,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="EntityComponentSystem\" />
     <Folder Include="UI\" />
   </ItemGroup>
 </Project>

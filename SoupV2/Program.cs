@@ -7,7 +7,7 @@ namespace SoupV2
         [STAThread]
         static void Main()
         {
-            using (var game = new Game1())
+            using (var game = new Soup())
                 game.Run();
         }
     }

@@ -2,18 +2,14 @@
   <Project.ExportOptions Namespace="SoupV2.UI" Class="MainUI" OutputPath="C:\Users\Tom\Source\Repos\SoupV2\SoupV2\UI" />
   <Panel>
     <Label Text="Soup" TextColor="#FE3930FF" DisabledTextColor="#404040FF" HorizontalAlignment="Center" />
-    <VerticalMenu Background="#404040FF" >
+    <VerticalMenu Background="#404040FF">
       <MenuItem Text="Load Scenario" Id="_menuLoadScenario" />
       <MenuItem Text="New Scenario" Id="_newScenario" />
       <MenuItem Text="Quit" Id="_quit" />
     </VerticalMenu>
-    <Grid>
-      
-    </Grid>
-    <Panel HorizontalAlignment="Right" MinWidth="100" Border="#5BC6FAFF" >
-         <HorizontalSlider HorizontalAlignment="Right" MinWidth="200" />
-         <Label Text="Game Speed" TextColor="#FE3930FF" DisabledTextColor="#404040FF" HorizontalAlignment="Center" />
+    <Panel HorizontalAlignment="Right" Border="#5BC6FAFF" Id="_gameSpeedPanel" >
+      <HorizontalSlider Value="50" MinWidth="200" Id="_gameSpeedSlider" />
+      <Label Text="Game Speed" TextColor="#FE3930FF" DisabledTextColor="#404040FF" HorizontalAlignment="Center" Id="_gameSpeedLabel" />
     </Panel>
- 
   </Panel>
 </Project>

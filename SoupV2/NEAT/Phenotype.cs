@@ -1,4 +1,5 @@
 ﻿using SoupV2.NEAT.Genes;
+using SoupV2.Simulation.Brain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

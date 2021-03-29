@@ -5,47 +5,41 @@ using System.Text;
 
 namespace SoupV2.util
 {
-    public class Rotation
+    public struct Rotation
     {
-        private double _theta;
-        private bool _dirty = false;
+        public static readonly float FullRot = (float)(2.0 * Math.PI);
 
-        public static readonly double FullRot = 2 * Math.PI;
+        private float _theta;
 
-        public double Theta
+        public float Theta
         {
-            get
-            {
-                if (_dirty)
-                {
-                    _theta = _theta % FullRot;
-                }
-                return _theta;
-            }
+            get => _theta %= FullRot;
             set
             {
-                _dirty = true;
                 _theta = value;
             }
         }
 
-
-        public Rotation()
-        {
-            _theta = 0;
-            _dirty = false;
-        }
-
-        public Rotation(double theta)
+        public Rotation(float theta)
         {
             _theta = theta;
-            _dirty = true;
         }
 
-        public void Rotate(double delta)
+        public void Rotate(float delta)
         {
-            _dirty = true;
             _theta += delta;
         }
+
+        public static Rotation operator +(Rotation a, Rotation b)
+        {
+            return new Rotation(a.Theta + b.Theta);
+        }
+
+
+        public static Rotation operator +(Rotation a, float b)
+        {
+            return new Rotation(a.Theta + b);
+        }
+
     }
 }

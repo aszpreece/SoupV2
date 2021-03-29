@@ -39,7 +39,7 @@ namespace EntityComponentSystem
             Compatible = GetCompatibleInPool();
         }
 
-        private void OnPoolEntityChanged(EntityPool pool, Entity entity)
+        protected virtual void OnPoolEntityChanged(EntityPool pool, Entity entity)
         {
             Pool = pool;
             Compatible = GetCompatibleInPool();

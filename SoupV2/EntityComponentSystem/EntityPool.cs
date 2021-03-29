@@ -21,6 +21,11 @@ namespace EntityComponentSystem
         public event EntityChanged EntityComponentAdded;
         public event EntityChanged EntityComponentRemoved;
 
+        public delegate void EntityRelationshipChanged(Entity parent, Entity child);
+
+        public event EntityRelationshipChanged MadeChild;
+        public event EntityRelationshipChanged DetachedFromParent;
+
         private List<Entity> _activeEntities;
         private Stack<Entity> _cachedEntities;
 
@@ -41,19 +46,7 @@ namespace EntityComponentSystem
         // How many Entites the cache can store at a time.
         private readonly int MAX_CACHED_ENTITIES = 25;
 
-        /// <summary>
-        /// Creates and returns a new instance of EntityPool
-        /// (it looks prettier than "var pool = new EntityPool("Id");"
-        /// also less code) :3
-        /// </summary>
-        /// <param Id="Id"></param>
-        /// <returns></returns>
-        public static EntityPool New(string Id)
-        {
-            return new EntityPool(Id);
-        }
-
-        private EntityPool(string Id)
+        public EntityPool(string Id)
         {
             _activeEntities = new List<Entity>();
             _cachedEntities = new Stack<Entity>();
@@ -199,46 +192,14 @@ namespace EntityComponentSystem
             EntityComponentRemoved?.Invoke(this, entity);
         }
 
-        /// <summary>
-        /// Operator overload to let you do "pool += entity" to add an Entity to the pool.
-        /// </summary>
-        /// <param Id="pool"></param>
-        /// <param Id="entity"></param>
-        /// <returns></returns>
-        public static EntityPool operator + (EntityPool pool, string id)
+        public void EntityMadeChild(Entity parent, Entity child)
         {
-            pool.CreateEntity(id);
-
-            return pool;
+            MadeChild?.Invoke(parent, child);
         }
 
-        /// <summary>
-        /// Operator overload to let you do "pool -= entity" to remove an Entity from the pool.
-        /// </summary>
-        /// <param Id="pool"></param>
-        /// <param Id="entity"></param>
-        /// <returns></returns>
-        public static EntityPool operator - (EntityPool pool, Entity entity)
+        public void EntityDetachedFromParent(Entity parent, Entity child)
         {
-            if (entity == null || !pool.DoesEntityExist(entity.Id))
-            {
-                throw new EntityNotFoundException(pool);
-            }
-
-            pool.DestroyEntity(ref entity);
-            return pool;
-        }
-
-        public static EntityPool operator - (EntityPool pool, string id)
-        {
-            if (string.IsNullOrEmpty(id) || !pool.DoesEntityExist(id))
-            {
-                throw new EntityNotFoundException(pool);
-            }
-
-            var toDestroy = pool.GetEntity(id);
-            pool.DestroyEntity(ref toDestroy);
-            return pool;
+           DetachedFromParent?.Invoke(parent, child);
         }
     }
 }

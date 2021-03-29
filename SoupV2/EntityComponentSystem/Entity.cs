@@ -22,11 +22,16 @@ namespace EntityComponentSystem
         /// <param name="component"></param>
         public delegate void EntityComponentChanged(Entity entity, IComponent component);
 
+        public delegate void EntityRelationshipChanged(Entity parent, Entity child);
+
         /// <summary>
         /// Events
         /// </summary>
         public event EntityComponentChanged ComponentAdded;
         public event EntityComponentChanged ComponentRemoved;
+
+        public event EntityRelationshipChanged MadeChild;
+        public event EntityRelationshipChanged DetachedFromParent;
 
         public string Id { get; set; }
 
@@ -116,18 +121,6 @@ namespace EntityComponentSystem
 
             State = EntityState.Inactive;
         }
-
-        /// <summary>
-        /// Toggles this Entity on or off
-        /// </summary>
-        public void Switch()
-        {
-            if (!IsAvailable())
-                return;
-
-            State = (State == EntityState.Active ? EntityState.Inactive : EntityState.Active);
-        }
-
         public bool IsActive()
         {
             if (!IsAvailable())
@@ -391,42 +384,19 @@ namespace EntityComponentSystem
         }
 
         /// <summary>
-        /// Moves this Entity to another EntityPool (if it isn't null)
-        /// </summary>
-        /// <param name="pool"></param>
-        public void MoveTo(EntityPool pool)
-        {
-            if (this == null)
-                return;
-
-            if (pool == null)
-                throw new NullEntityPoolException(pool);
-
-            pool.AddEntity(this);
-            var me = this;
-            OwnerPool.DestroyEntity(ref me);
-            OwnerPool = pool;
-        }
-
-        /// <summary>
         /// Creates and returns a new Entity as a child under this Entity
         /// </summary>
         /// <param name="childId"></param>
         /// <param name="inheritComponents"></param>
         /// <returns></returns>
-        public Entity CreateChild(string childId, bool inheritComponents=false)
+        public Entity CreateChild(string childId)
         {
             if (!IsAvailable())
                 return null;
 
             var child = OwnerPool.CreateEntity(childId);
 
-            child.Parent = this;
-            if (inheritComponents) { child.AddComponents(Components); }
-
-            Children.Add(child);
-
-            return child;
+            return AddChild(child);
         }
 
         /// <summary>
@@ -441,6 +411,9 @@ namespace EntityComponentSystem
 
             entity.Parent = this;
             Children.Add(entity);
+
+            MadeChild?.Invoke(this, entity);
+            OwnerPool.EntityMadeChild(this, entity);
 
             return entity;
         }
@@ -464,7 +437,6 @@ namespace EntityComponentSystem
         /// <returns></returns>
         public IEnumerable<Entity> FamilyTree()
         {
-            // Thanks @deccer
             var childSelector = new Func<Entity, IEnumerable<Entity>>(ent => ent.Children);
 
             var stack = new Stack<Entity>(Children);
@@ -477,30 +449,18 @@ namespace EntityComponentSystem
             }
         }
 
-        /// <summary>
-        /// Lets you add "component" to "entity" with a +=
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="component"></param>
-        /// <returns></returns>
-        public static Entity operator + (Entity entity, IComponent component)
-        {
-            if (!entity.IsAvailable())
-                return null;
-
-            if (entity != null && component != null)
-            {
-                entity.AddComponent(component);
-                return entity;
-            } else
-            {
-                throw new NullReferenceException();
-            }
-        }
-
         public bool IsAvailable()
         {
             return State != EntityState.Cached;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Entity))
+            {
+                return false;
+            }
+            return Id == ((Entity)obj).Id;
         }
     }
 }
