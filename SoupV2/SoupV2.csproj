@@ -12,7 +12,11 @@
   <ItemGroup>
     <None Remove="Content\bin\DesktopGL\circle.xnb" />
     <None Remove="Content\bin\DesktopGL\default_font.spritefont" />
+    <None Remove="Content\bin\DesktopGL\Energy.xnb" />
+    <None Remove="Content\bin\DesktopGL\eye.xnb" />
+    <None Remove="Content\bin\DesktopGL\mouth.xnb" />
     <None Remove="Content\bin\DesktopGL\pirateship.xnb" />
+    <None Remove="Content\bin\DesktopGL\soup.xnb" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
@@ -23,7 +27,19 @@
     <Content Include="Content\bin\DesktopGL\default_font.spritefont">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\bin\DesktopGL\Energy.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\bin\DesktopGL\eye.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\bin\DesktopGL\mouth.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bin\DesktopGL\pirateship.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\bin\DesktopGL\soup.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

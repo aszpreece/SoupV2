@@ -11,7 +11,8 @@ namespace SoupV2.Simulation.Systems
     class DragSystem : EntitySystem
     {
         private float _massDensity;
-        public DragSystem(EntityPool pool, float massDensity) : base(pool, typeof(RigidBodyComponent), typeof(DragComponent), typeof(VelocityComponent))
+        public DragSystem(EntityPool pool, float massDensity) : base(pool, 
+            (e) => e.HasComponents(typeof(RigidBodyComponent), typeof(DragComponent), typeof(VelocityComponent)))
         {
             _massDensity = massDensity;
         }
@@ -32,9 +33,14 @@ namespace SoupV2.Simulation.Systems
                 }
                 dir.Normalize();
 
+                //vel squared version
+                //var dragForce = 0.5f * dragComponent.DragCoefficient * dir * velocity.Velocity.LengthSquared() * _massDensity;
+                var dragForce = 0.5f * dragComponent.DragCoefficient *  velocity.Velocity * _massDensity;
 
-                var dragForce = 0.5f * dragComponent.DragCoefficient * dir * velocity.Velocity.LengthSquared() * _massDensity;
                 rigidBody.ApplyForce(-dragForce);
+
+                var rotationalDrag = 0.5f * dragComponent.DragCoefficient * velocity.RotationalVelocity * _massDensity;
+                rigidBody.ApplyTorque(-rotationalDrag);
             }
         }
     }

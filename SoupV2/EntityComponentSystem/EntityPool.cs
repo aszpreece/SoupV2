@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using EntityComponentSystem.Exceptions;
+using SoupV2.EntityComponentSystem;
 
 namespace EntityComponentSystem
 {
@@ -26,52 +27,61 @@ namespace EntityComponentSystem
         public event EntityRelationshipChanged MadeChild;
         public event EntityRelationshipChanged DetachedFromParent;
 
-        private List<Entity> _activeEntities;
-        private Stack<Entity> _cachedEntities;
+        public List<Entity> Entities { get; private set; }
 
-        public List<Entity> Entities
-        {
-            get { return _activeEntities; }
-            private set { _activeEntities = value; }
-        }
-
-        public Stack<Entity> CachedEntities
-        {
-            get { return _cachedEntities; }
-            private set { _cachedEntities = value; }
-        }
+        public Stack<Entity> CachedEntities { get; private set; }
 
         public string Id { get; set; }
 
         // How many Entites the cache can store at a time.
         private readonly int MAX_CACHED_ENTITIES = 25;
 
+
+        private int _nextEntityId = 0;
+
+        public int GetNextId { get => _nextEntityId++; }
+        public int PeekNextId { get => _nextEntityId+1; }
+
+        public Dictionary<string, EntityDefinition> _definitionDict = new Dictionary<string, EntityDefinition>();
+
         public EntityPool(string Id)
         {
-            _activeEntities = new List<Entity>();
-            _cachedEntities = new Stack<Entity>();
+            Entities = new List<Entity>();
+            CachedEntities = new Stack<Entity>();
 
-            if (Id != null) this.Id = Id;
+            if (Id != null)
+            {
+                this.Id = Id;
+            }
         }
 
+        public HashSet<int> Ids { get; } = new HashSet<int>();
+
+        //internal void AssertValidEntityId(int entityId)
+        //{
+        //    if (Ids.Contains(entityId))
+        //        throw new DuplicateEntityException(this);
+
+        //    if (string.IsNullOrEmpty(entityId))
+        //        throw new Exception("The string you entered was blank or null.");
+
+        //}
         /// <summary>
         /// Creates a new Entity with "entityId", adds it to active Entities and returns it.
         /// </summary>
         /// <param Id="entityId"></param>
         /// <returns>Final Entity</returns>
-        public Entity CreateEntity(string entityId)
+        public Entity CreateEntity(string tag)
         {
-            if (Entities.Any(ent => ent.Id == entityId))
-                throw new DuplicateEntityException(this);
 
-            if (string.IsNullOrEmpty(entityId))
-                throw new Exception("The string you entered was blank or null.");
-                
+            int entityId = GetNextId;
+            Ids.Add(entityId);
+
             Entity newEntity;
 
-            if (_cachedEntities.Any())
+            if (CachedEntities.Any())
             {
-                newEntity = _cachedEntities.Pop();
+                newEntity = CachedEntities.Pop();
 
                 if (newEntity == null)
                     throw new EntityNotFoundException(this);
@@ -80,57 +90,94 @@ namespace EntityComponentSystem
                 newEntity.OwnerPool = this;
                 newEntity.State = EntityState.Active;
 
-                _activeEntities.Add(newEntity);
+                Entities.Add(newEntity);
 
                 #if DEBUG
                     Console.WriteLine($"Retrieved {newEntity.Id} from cache.");
                 #endif
             } else
             {
-                newEntity = new Entity(entityId, this);
-                _activeEntities.Add(newEntity);
+                newEntity = new Entity(tag)
+                {
+                    Id = entityId,
+                    OwnerPool = this
+                };
+
+                Entities.Add(newEntity);
 
                 #if DEBUG
                     Console.WriteLine($"Created new instance for {newEntity.Id} because the cache was empty.");
                 #endif
             }
+            newEntity.Tag = tag;
 
             EntityAdded?.Invoke(this, newEntity);
 
             return newEntity;
         }
 
-        internal void AddEntity(Entity entity)
+        /// <summary>
+        /// Add an entity using an entity definition.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <param name="id"></param>
+        /// <param name="parent"></param>
+        internal Entity AddEntityFromDefinition(string definitionId, Entity parent=null)
         {
-            if (entity.IsAvailable())
-                _activeEntities.Add(entity);
+            // Try get new entity
+            int id = GetNextId;
+            Ids.Add(id);
 
-            else if (!entity.IsAvailable())
-                _cachedEntities.Push(entity);
+            var entity = Entity.FromDefinition(_definitionDict[definitionId]);
+
+            AddDeserializedEntity(entity, parent);
+
+            return entity;
+        }
+
+        /// <summary>
+        /// Add an entity that has just been deserialized and does not have its parent values etc set.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="id"></param>
+        /// <param name="parent"></param>
+        private void AddDeserializedEntity(Entity entity, Entity parent = null)
+        {
+
+            entity.Id = GetNextId;
+
+            entity.Parent = parent;
+            entity.OwnerPool = this;
+            entity.State = EntityState.Active;
+
+            foreach (var component in entity.Components)
+            {
+                component.Owner = entity;
+            }
+            if (entity.Children.Count > 0)
+            {
+                foreach (Entity e in entity.Children.Values)
+                {
+                    // Todo handle child ids
+                    AddDeserializedEntity(e, entity);
+                }
+            }
+            Entities.Add(entity);
 
             EntityAdded?.Invoke(this, entity);
         }
 
-        public bool DoesEntityExist(string Id)
+        public bool DoesEntityExist(int Id)
         {
-            if (string.IsNullOrEmpty(Id))
-                return false;
-
-            return Entities.Any(ent => ent.Id == Id && GetEntity(Id).IsAvailable());
+            return Ids.Contains(Id);
         }
 
         public bool DoesEntityExist(Entity entity)
         {
-            if (entity == null || entity == default(Entity))
-                return false;
-
-            if (string.IsNullOrEmpty(entity.Id))
-                return false;
-
-            return Entities.Any(ent => ent == entity && entity.IsAvailable());
+            return DoesEntityExist(entity.Id);
         }
 
-        public Entity GetEntity(string entityId)
+        public Entity GetEntity(int entityId)
         {
             var match = Entities.FirstOrDefault(ent => ent.Id == entityId);
 
@@ -144,26 +191,23 @@ namespace EntityComponentSystem
         /// If the cache is full, just remove completely.
         /// </summary>
         /// <param Id="entity"></param>
-        public void DestroyEntity(ref Entity entity)
+        public void DestroyEntity(Entity entity)
         {
             if (!entity.IsAvailable())
                 return;
 
-            if (!_activeEntities.Contains(entity))
+            if (!Entities.Contains(entity))
                 throw new EntityNotFoundException(this);
 
-            if (_cachedEntities.Count < MAX_CACHED_ENTITIES)
+            if (CachedEntities.Count < MAX_CACHED_ENTITIES)
             {
                 // Reset the Entity.
                 entity.Reset();
-                _cachedEntities.Push(entity);
+                CachedEntities.Push(entity);
             }
 
-            _activeEntities.Remove(entity);
+            Entities.Remove(entity);
             EntityRemoved?.Invoke(this, entity);
-
-            // Set the entity that was passed in to null
-            entity = null;
         }
 
         /// <summary>
@@ -171,7 +215,7 @@ namespace EntityComponentSystem
         /// </summary>
         public void WipeCache()
         {
-            _cachedEntities.Clear();
+            CachedEntities.Clear();
         }
 
         /// <summary>
@@ -179,7 +223,12 @@ namespace EntityComponentSystem
         /// </summary>
         public void WipeEntities()
         {
-            _activeEntities.Clear();
+            Entities.Clear();
+        }
+
+        public void AddDefinition(string definitionId, EntityDefinition definition)
+        {
+            _definitionDict[definitionId] = definition;
         }
 
         internal void ComponentAdded(Entity entity)

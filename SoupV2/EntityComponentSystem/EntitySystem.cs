@@ -9,15 +9,12 @@ namespace EntityComponentSystem
         public EntityPool Pool { get; set; }
         public List<Entity> Compatible { get; set; }
 
-        protected List<Type> CompatibleTypes { get; private set; }
+        public Func<Entity, bool> CompatiblePredicate { get; }
 
-        public EntitySystem(EntityPool pool, params Type[] compatibleTypes)
+        public EntitySystem(EntityPool pool, Func<Entity, bool> compatiblePredicate)
         {
-            if (compatibleTypes.Any(t => !t.IsComponent()))
-                throw new Exception("Type passed into EntitySystem is not an IComponent!");
 
-            CompatibleTypes = new List<Type>();
-            CompatibleTypes.AddRange(compatibleTypes);
+            CompatiblePredicate = compatiblePredicate;
 
             Pool = pool;
 
@@ -30,24 +27,18 @@ namespace EntityComponentSystem
             Pool.EntityRemoved += OnPoolEntityChanged;
         }
 
-        public void AddCompatibleType(Type type)
-        {
-            if (!type.IsComponent())
-                throw new Exception("Type passed into AddCompatibleType is not an IComponent!");
-
-            CompatibleTypes.Add(type);
-            Compatible = GetCompatibleInPool();
-        }
-
         protected virtual void OnPoolEntityChanged(EntityPool pool, Entity entity)
         {
             Pool = pool;
+
             Compatible = GetCompatibleInPool();
         }
 
+  
+
         protected virtual List<Entity> GetCompatibleInPool()
         {
-            return Pool.Entities.Where(ent => ent.HasComponents(CompatibleTypes)).ToList();
+            return Pool.Entities.Where(CompatiblePredicate).ToList();
         }
     }
 }

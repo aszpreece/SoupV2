@@ -17,5 +17,11 @@ namespace SoupV2.Simulation
             }
             return null;
         }
+
+
+        public Scenario()
+        {
+
+        }
     }
 }

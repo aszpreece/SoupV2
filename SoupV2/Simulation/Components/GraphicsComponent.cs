@@ -1,6 +1,7 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,10 +9,18 @@ using System.Text;
 namespace SoupV2.Simulation.Components
 {
     internal class GraphicsComponent
-        : IComponent
+        : AbstractComponent
     {
+        public GraphicsComponent(Entity owner): base(owner) { }
         public Texture2D Texture { get; set; }
-        public Color Color { get; internal set; } = Color.White;
+        public Color Color { get; set; } = Color.White;
+
+        public float Multiplier { get; set; } = 1.0f;
+
+        public void ApplyMultiplier(float amount)
+        {
+            Multiplier *= amount;
+        } 
 
         public Point? Dimensions { get; set; } = null;
 

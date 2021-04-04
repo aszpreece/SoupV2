@@ -3,13 +3,14 @@ using Microsoft.Xna.Framework;
 using SoupV2.Simulation.Components;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace SoupV2.Simulation.Systems
 {
     public class MovementControlSystem : EntitySystem 
     {
-        public MovementControlSystem(EntityPool pool) : base(pool, typeof(MovementControlComponent), typeof(RigidBodyComponent))
+        public MovementControlSystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(MovementControlComponent), typeof(RigidBodyComponent)))
         {
 
         }
@@ -24,6 +25,7 @@ namespace SoupV2.Simulation.Systems
                 var transform = entity.GetComponent<TransformComponent>();
 
                 rigidBody.ApplyForce(transform.WorldForward * movement.ForwardForce);
+                rigidBody.ApplyTorque(movement.RotationForce * 10);
             }
         }
     }

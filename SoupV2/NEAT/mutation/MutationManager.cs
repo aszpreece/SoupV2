@@ -9,7 +9,7 @@ namespace SoupV2.NEAT.Genes
     {
         private readonly Random Random = new Random();
 
-        public AbstractMutator[] Mutators { get; set; }
+        public List<AbstractMutator> Mutators { get; set; }
 
         public MutationManager(MutationConfig config)
         {

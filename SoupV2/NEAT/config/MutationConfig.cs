@@ -1,9 +1,10 @@
 ﻿
 using SoupV2.NEAT.mutation;
+using System.Collections.Generic;
 
 public class MutationConfig
 {
-    public AbstractMutator[] Mutators { get; set; }
+    public List<AbstractMutator> Mutators { get; set; }
 
 
 }

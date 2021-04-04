@@ -2,11 +2,12 @@
 using SoupV2.Simulation.Brain;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SoupV2.NEAT
 {
-    public class Phenotype
+    public class Phenotype : AbstractBrain
     {
         // Dict of node activation values indexed by node id
         // (activation values are the node inputs values with the activation function applied)
@@ -23,10 +24,13 @@ namespace SoupV2.NEAT
 
         public Dictionary<string, int> NodeNameMap { get; }
 
+        private Dictionary<int, double> tempActivations = new Dictionary<int, double>();
 
+        public Genotype Genotype {get; set;}
 
         public Phenotype(Genotype genotype)
         {
+            Genotype = genotype;
 
             // Array of the input/bias nodes
             InputNodes = genotype.NodeGenes.Where(gene => gene.NodeType == NodeType.INPUT || gene.NodeType == NodeType.BIAS).Select(gene => gene.InnovationId).ToArray();
@@ -64,18 +68,15 @@ namespace SoupV2.NEAT
 
             this.NodeNameMap = genotype.NodeNameMap;
         }
+         
 
-        private Dictionary<int, double> tempActivations = new Dictionary<int, double>();
-
-        public void Calculate(Dictionary<string, double> inputs)
+        public override void Calculate()
         {
             tempActivations.Clear();
-
-            foreach (var (key, value) in inputs)
+            //Copy over all the inputs that have been set
+            foreach(int nodeId in InputNodes)
             {
-                var inputInnovId = NodeNameMap[key];
-                tempActivations[inputInnovId] = value;
-                NodeActivations[inputInnovId] = value;
+                tempActivations[nodeId] = NodeActivations.GetValueOrDefault(nodeId);
             }
 
             foreach (var (nodeId, function) in NonInputNodes)
@@ -86,8 +87,15 @@ namespace SoupV2.NEAT
                     foreach (var (source, weight, _) in fromList)
                     {
                         total += NodeActivations.TryGetValue(source, out double activation) ? activation * weight : 0;
+#if DEBUG
+                        //if (total > 0)
+                        //    Debug.WriteLine($"{total}");
+#endif
                     }
                     tempActivations[nodeId] = function(total);
+                } else
+                {
+                    tempActivations[nodeId] = 0;
                 }
             }
 
@@ -103,7 +111,31 @@ namespace SoupV2.NEAT
 
         public double Get(int nodeInnovId)
         {
-            return NodeActivations[nodeInnovId];
+            if (NodeActivations.ContainsKey(nodeInnovId)) {
+                return NodeActivations[nodeInnovId];
+            }
+            throw new NodeNotActivatedException(nodeInnovId);
+        }
+
+        public override void SetInput(string name, float value)
+        {
+            var inputInnovId = NodeNameMap[name];
+            NodeActivations[inputInnovId] = value;
+        }
+
+        public override void SetInput(string name, float[] value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override float GetInput(string name)
+        {
+            return (float)Get(name);
+        }
+
+        internal override float GetOutput(string name)
+        {
+            return (float)Get(name);
         }
     }
 

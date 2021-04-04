@@ -6,6 +6,6 @@ namespace EntityComponentSystem
 {
     public static class Extensions
     {
-        public static bool IsComponent(this Type classType) => typeof(IComponent).IsAssignableFrom(classType);
+        public static bool IsComponent(this Type classType) => typeof(AbstractComponent).IsAssignableFrom(classType);
     }
 }

@@ -12,7 +12,7 @@ namespace SoupV2.Systems
 {
     internal class RenderSystem : EntitySystem
     {
-        public RenderSystem(EntityPool pool) : base(pool, typeof(TransformComponent) )
+        public RenderSystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(GraphicsComponent)))
         {
             
         }
@@ -20,7 +20,7 @@ namespace SoupV2.Systems
         public void Draw(SpriteBatch spriteBatch, Camera _camera)
         {
 
-            spriteBatch.Begin(SpriteSortMode.BackToFront, null, null, null, null, null, _camera.GetViewTransformationMatrix());
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, null, null, null, null, null, _camera.GetViewTransformationMatrix());
 
             for (int i = 0; i < Compatible.Count; i++)
             {
@@ -36,7 +36,7 @@ namespace SoupV2.Systems
                             graphics.Texture,
                             dest,
                             null,
-                            graphics.Color,
+                            graphics.Color * graphics.Multiplier,
                             (float)transform.WorldRotation.Theta,
                             graphics.Texture.Bounds.Center.ToVector2(),
                             SpriteEffects.None,
@@ -47,7 +47,7 @@ namespace SoupV2.Systems
                             graphics.Texture,
                             transform.WorldPosition,
                             null, 
-                            graphics.Color,
+                            graphics.Color * graphics.Multiplier,
                             (float)transform.WorldRotation.Theta,
                             graphics.Texture.Bounds.Center.ToVector2(),
                             transform.Scale,

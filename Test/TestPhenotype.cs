@@ -39,28 +39,17 @@ namespace Test
             test.ConnectionGenes.Add(new ConnectionGene(2, 1, 1, 1, true, true)); // Hidden to hidden (recurrent)
             test.ConnectionGenes.Add(new ConnectionGene(3, 1, 2, 1)); //# Hidden to output
 
-            var input1 = new Dictionary<string, double>()
-            {
-                {"input1", 1.0d },
-            };
-
-            var input2 = new Dictionary<string, double>()
-            {
-                {"input1", 2.0d },
-            };
-
-            var input3 = new Dictionary<string, double>()
-            {
-                {"input1", 10.0d },
-            };
-
             var network = new Phenotype(test);
 
-            network.Calculate(input1);
+            network.SetInput("input1", 1.0f);
+            Assert.AreEqual(1.0f, network.Get("input1"));
+            network.Calculate();
             Assert.AreEqual(0, network.Get("output1"));
-            network.Calculate(input2);
+            network.SetInput("input1", 2.0f);
+            network.Calculate();
             Assert.AreEqual(1, network.Get("output1"));
-            network.Calculate(input3);
+            network.SetInput("input1", 10.0f);
+            network.Calculate();
             Assert.AreEqual(3, network.Get("output1"));
             Assert.AreEqual(13, network.Get("hidden1"));
             Assert.AreEqual(10, network.Get("input1"));
@@ -82,6 +71,8 @@ namespace Test
             test.NodeGenes.Add(new NodeGene(4, NodeType.HIDDEN, "relu"));
 
             // Output genes
+            test.AddNamedNode("output", NodeType.OUTPUT, "relu");
+
             test.NodeGenes.Add(new NodeGene(5, NodeType.OUTPUT, "relu"));
 
 
@@ -102,19 +93,20 @@ namespace Test
 
             var network = new Phenotype(test);
 
-            var inputs = new Dictionary<string, double>()
-            {
-                {"input1", 1.0d },
-                {"input2", 2.0d },
-                {"input3", 3.0d },
-
-            };
-
-            network.Calculate(inputs);
+            network.SetInput("input1", 1.0f);
+            network.SetInput("input2", 2.0f);
+            network.SetInput("input3", 3.0f);
+            network.Calculate();
             Assert.AreEqual(0.0d, network.Get(5));
-            network.Calculate(inputs);
+            network.SetInput("input1", 1.0f);
+            network.SetInput("input2", 2.0f);
+            network.SetInput("input3", 3.0f);
+            network.Calculate();
             Assert.AreEqual(8.0d, network.Get(5));
-            network.Calculate(inputs);
+            network.SetInput("input1", 1.0f);
+            network.SetInput("input2", 2.0f);
+            network.SetInput("input3", 3.0f);
+            network.Calculate();
             Assert.AreEqual(16.0d, network.Get(5));
 
         }

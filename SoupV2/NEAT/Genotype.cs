@@ -177,7 +177,7 @@ namespace SoupV2.NEAT
                     // If the otherGene (bottom genome) has a larger innovation number
                     // progress thisGene counter
                     thisIndex += 1;
-                    totalDisjointGenes += 1;
+                    totalDisjointGenes += 1; 
                     continue;
                 }
             }
@@ -189,8 +189,6 @@ namespace SoupV2.NEAT
             return (totalDisjointGenes, totalExcessGenes, totalWeightDiff / Math.Max(1, totalSharedConnections));
         }
         
-      
-
         public object Clone()
         {
             return new Genotype(this);

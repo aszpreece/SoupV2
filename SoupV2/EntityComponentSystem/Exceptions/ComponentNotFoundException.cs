@@ -8,8 +8,14 @@ namespace EntityComponentSystem.Exceptions
 {
     class ComponentNotFoundException : Exception
     {
-        public ComponentNotFoundException(Entity occuredIn)
-            : base($"Component not found in Entity \"{occuredIn.Id}\".")
+        public ComponentNotFoundException(Entity occuredIn, Type t)
+            : base($"Component {t.Name} not found in Entity \"{occuredIn.Id}\".")
+        {
+
+        }
+
+        public ComponentNotFoundException(Entity occuredIn, string t)
+    : base($"Component {t} not found in Entity \"{occuredIn.Id}\".")
         {
 
         }

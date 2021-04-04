@@ -1,6 +1,7 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
 using SoupV2.Simulation.Components;
+using SoupV2.Simulation.Grid;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,15 @@ namespace SoupV2.Simulation.Systems
 {
     class TransformHierarchySystem : EntitySystem
     {
-        private List<TransformComponent> _modifiedTransforms;
-        public TransformHierarchySystem(EntityPool pool) : base(pool, typeof(TransformComponent))
+        private readonly AdjacencyGrid _grid;
+
+        public TransformHierarchySystem(EntityPool pool, AdjacencyGrid grid) : base(pool, 
+            ent => ent.HasComponents(typeof(TransformComponent)) 
+            && ent.Parent is null
+        )
         {
-            _modifiedTransforms = new List<TransformComponent>();
+            _grid = grid;
+            
         }
 
         public void Update()
@@ -36,26 +42,24 @@ namespace SoupV2.Simulation.Systems
         public void EntityTreeRecalculateTransform(Entity entity, Vector2 parentWorldPos, float parentWorldRot, float parentDepth, bool foundDirty)
         {
             var transform = entity.GetComponent<TransformComponent>();
-
             if (foundDirty || transform.Dirty)
             {
-                transform.WorldPosition = transform.LocalPosition + parentWorldPos;
+                var rot = Matrix.CreateRotationZ(parentWorldRot);
+
+                transform.WorldPosition = Vector2.Transform(transform.LocalPosition, rot) + parentWorldPos;
                 transform.WorldRotation = transform.LocalRotation + parentWorldRot;
                 transform.WorldDepth = transform.LocalDepth + parentDepth;
                 transform.Dirty = false;
-                transform.NotifyChanged();
+                foundDirty = true;
+
+                _grid.PlaceIntoGrid(entity);
             }
 
-            foreach (Entity child in entity.Children)
+            foreach (Entity child in entity.Children.Values)
             {
                 EntityTreeRecalculateTransform(child, transform.WorldPosition, transform.WorldRotation.Theta, transform.WorldDepth, foundDirty || transform.Dirty);
             }
 
-        }
-
-        protected override List<Entity> GetCompatibleInPool()
-        {
-            return Pool.Entities.Where(ent => ent.HasComponents(CompatibleTypes) && ent.Parent is null).ToList();
         }
     }
 }

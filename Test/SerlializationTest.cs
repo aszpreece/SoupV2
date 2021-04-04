@@ -14,7 +14,7 @@ namespace Test
         public void TestSerialization()
         {
 
-            AbstractMutator[] mutators = new AbstractMutator[] {
+            var mutators = new List<AbstractMutator> {
                 new ConnectionWeightMutator() {
                     ProbabiltiyOfMutation = 1f,
                     ProbPerturbWeight = 1.0f, 

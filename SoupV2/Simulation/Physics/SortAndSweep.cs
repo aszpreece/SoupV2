@@ -10,14 +10,14 @@ namespace SoupV2.Simulation.Physics
 {
     internal class SortAndSweep : EntitySystem
     {
-        // sorted list of physics objects by their min value on x axis
-        private List<Entity> _physicsEntities;
-        private List<Entity> _toRemove;
+        private List<Entity> _toRemove = new List<Entity>();
+        private Func<Entity, Entity, bool> _shouldDetectCollision;
 
-        public SortAndSweep(EntityPool pool): base(pool, typeof(CircleColliderComponent), typeof(RigidBodyComponent))
+        public List<Collision> Collisions { get; set; } = new List<Collision>();
+
+        public SortAndSweep(EntityPool pool, Func<Entity, bool> compatible, Func<Entity, Entity, bool> shouldResolveCollision) : base(pool, compatible)
         {
-            _physicsEntities = new List<Entity>();
-            _toRemove = new List<Entity>();
+            _shouldDetectCollision = shouldResolveCollision;
         }
 
         /// <summary>
@@ -30,17 +30,17 @@ namespace SoupV2.Simulation.Physics
 
         private void RemoveDeletedEntities()
         {
-            for (int i = 0; i < _physicsEntities.Count; i++)
+            for (int i = 0; i < Compatible.Count; i++)
             {
                 bool removed = false;
                 do
                 {
                     for (int j = 0; j < _toRemove.Count; j++)
                     {
-                        if (_physicsEntities[i].Id == _toRemove[j].Id)
+                        if (Compatible[i].Id == _toRemove[j].Id)
                         {
                             // Swap removed 
-                            SwapRemove.SwapRemoveList(_physicsEntities, i);
+                            SwapRemove.SwapRemoveList(Compatible, i);
                             SwapRemove.SwapRemoveList(_toRemove, j);
                             removed = true;
                             break;
@@ -63,11 +63,10 @@ namespace SoupV2.Simulation.Physics
         }
         public void GetCollisions()
         {
-            _physicsEntities = Compatible;
             RemoveDeletedEntities();
 
             // Sort all entities by their minimum X extent
-            _physicsEntities.Sort((e1, e2) => 
+            Compatible.Sort((e1, e2) => 
                 e1.GetComponent<CircleColliderComponent>().MinX()
                 .CompareTo(
                     e2.GetComponent<CircleColliderComponent>().MinX()
@@ -75,19 +74,24 @@ namespace SoupV2.Simulation.Physics
             );
 
             // Reset collision info
-            for (int i = 0; i < _physicsEntities.Count; i++)
+            for (int i = 0; i < Compatible.Count; i++)
             {
-                CircleColliderComponent collider = _physicsEntities[i].GetComponent<CircleColliderComponent>();
+                CircleColliderComponent collider = Compatible[i].GetComponent<CircleColliderComponent>();
+                TransformComponent transform = Compatible[i].GetComponent<TransformComponent>();
+
+                collider.UpdatePosition(transform);
                 collider.ClearCollisions();
             }
 
-            for (int i = 0; i < _physicsEntities.Count; i++)
+            Collisions.Clear();
+
+            for (int i = 0; i < Compatible.Count; i++)
             {
-                CircleColliderComponent collider = _physicsEntities[i].GetComponent<CircleColliderComponent>();
+                CircleColliderComponent collider = Compatible[i].GetComponent<CircleColliderComponent>();
                 float maxX = collider.MaxX();
-                for (int j = i + 1; j < _physicsEntities.Count; j++)
+                for (int j = i + 1; j < Compatible.Count; j++)
                 {
-                    CircleColliderComponent otherCollider =_physicsEntities[j].GetComponent<CircleColliderComponent>();
+                    CircleColliderComponent otherCollider = Compatible[j].GetComponent<CircleColliderComponent>();
    
                     // If the other collider has a minimum x span that is greater than our max x,
                     // Then we no longer need to keep checking. This collider and all other colliders after it cannot be intersecting this collider.
@@ -97,54 +101,36 @@ namespace SoupV2.Simulation.Physics
                         break;
                     }
 
+
+
                     if (collider.Intersects(otherCollider)) {
-                        //collider.AddCollision(otherCollider);
-                        //otherCollider.AddCollision(collider);
-                        ResolveCollision(_physicsEntities[i], collider, _physicsEntities[j], otherCollider);
+
+                        if (!_shouldDetectCollision(Compatible[i], Compatible[j]))
+                        {
+                            continue;
+                        }
+                        //Calculatye the collison normal
+
+                        var collNormal = otherCollider.Position - collider.Position;
+
+                        if (collNormal != Vector2.Zero)
+                        {
+                            collNormal.Normalize();
+                        }
+                        else
+                        {
+                            collNormal = Vector2.One;
+                        }
+
+                        Collisions.Add(new Collision() {
+                            Normal = collNormal,
+                            E1 = Compatible[i],
+                            E2 =Compatible[j]
+                        });
                     }
 
                 }
             }
-        }
-
-        private void ResolveCollision(Entity e1, CircleColliderComponent e1Collider, Entity e2, CircleColliderComponent e2Collider)
-        {
-            var vel1 = e1.GetComponent<VelocityComponent>();
-            var vel2 = e2.GetComponent<VelocityComponent>();
-            var rb1 = e1.GetComponent<RigidBodyComponent>();
-            var rb2 = e2.GetComponent<RigidBodyComponent>();
-
-            var collNormal = e2Collider.Position - e1Collider.Position;
-           
-            if (collNormal != Vector2.Zero)
-            {
-                collNormal.Normalize();
-            } else
-            {
-                return;
-            }
-
-            var relativeVelocity = vel2.Velocity - vel1.Velocity;
-
-            // Project the relative velocity of both of the objects onto the collision normal
-           
-            float velAlongNormal = Vector2.Dot(relativeVelocity, collNormal);
-            
-            // If the vectors are moving away from each other in term of the normal of the collission, do not collide
-            // This prevents multiple detected collisions sending the object rocketing away
-            if (velAlongNormal > 0)
-            {
-                return;
-            }
-
-            // Calculate impluse needed to seperate
-
-            float restitution = Math.Min(rb1.Restitution, rb2.Restitution);
-            float impulseScalar = -(1 + restitution) * velAlongNormal;
-            impulseScalar /= rb1.InvMass + rb2.InvMass;
-            var impluse = collNormal * impulseScalar;
-            rb1.ApplyImpulse(-impluse);
-            rb2.ApplyImpulse(impluse);
         }
     }
 }

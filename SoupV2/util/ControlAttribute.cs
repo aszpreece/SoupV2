@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SoupV2.util
 {
-    class ControlAttribute : Attribute
+    public class ControlAttribute : Attribute
     {
     }
 }

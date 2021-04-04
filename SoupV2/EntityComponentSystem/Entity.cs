@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using EntityComponentSystem.Exceptions;
+using Newtonsoft.Json;
+using SoupV2.EntityComponentSystem;
 
 namespace EntityComponentSystem
 {
@@ -20,7 +22,7 @@ namespace EntityComponentSystem
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="component"></param>
-        public delegate void EntityComponentChanged(Entity entity, IComponent component);
+        public delegate void EntityComponentChanged(Entity entity, AbstractComponent component);
 
         public delegate void EntityRelationshipChanged(Entity parent, Entity child);
 
@@ -33,33 +35,40 @@ namespace EntityComponentSystem
         public event EntityRelationshipChanged MadeChild;
         public event EntityRelationshipChanged DetachedFromParent;
 
-        public string Id { get; set; }
+        [JsonIgnore]
+        public int Id { get; set; }
+        public string Tag { get; set; }
+
 
         /// <summary>
         /// The pool which this Entity resides in.
         /// </summary>
+        [JsonIgnore]
         public EntityPool OwnerPool { get; set; }
-        
-        /// <summary>
-        /// A list of this Entity's components.
-        /// </summary>
-        public List<IComponent> Components { get; set; }
 
         /// <summary>
-        /// A list of this Entitys children Entities.
+        /// The set of this entitities' components
         /// </summary>
-        public List<Entity> Children { get; set; }
+        //public List<AbstractComponent> Components { get; set; } = new List<AbstractComponent>();
+        public HashSet<AbstractComponent> Components { get; set; } = new HashSet<AbstractComponent>();
+
+        /// <summary>
+        /// The map of this entity's children indexed by entity tag.
+        /// </summary>
+        public Dictionary<string, Entity> Children { get; set; } = new Dictionary<string, Entity>();
 
         /// <summary>
         /// The Entity which this Entity is a child of
         /// Is null if this Entity is root
         /// </summary>
+        [JsonIgnore]
         public Entity Parent { get; set; }
 
         /// <summary>
         /// Walks up all the parents of this Entity and returns the top one
         /// This Entity is called "root"
         /// </summary>
+        [JsonIgnore]
         public Entity RootEntity 
         {
             get 
@@ -84,20 +93,24 @@ namespace EntityComponentSystem
         /// <summary>
         /// Holds the current state of this Entity
         /// </summary>
-        public EntityState State { get; internal set; }
-        
-        internal Entity(string id, EntityPool pool)
-        {   
-            Id = id;
+        [JsonIgnore]
+        public EntityState State { get; internal set; } = EntityState.Active;
 
-            if (pool == null) throw new IndependentEntityException(this);
+        public Entity()
+        {
 
-            OwnerPool = pool;
+        }
 
-            Components = new List<IComponent>();
-            Children = new List<Entity>();
+        public static Entity FromDefinition(EntityDefinition definition)
+        {
+            Entity e = JsonConvert.DeserializeObject<Entity>(definition.Json, SerializerSettings.DefaultSettings);
 
-            State = EntityState.Active;
+            return e;
+        }
+
+        internal Entity(string tag)
+        {
+            Tag = tag;
         }
         
         /// <summary>
@@ -145,7 +158,7 @@ namespace EntityComponentSystem
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
-        private IComponent AddComponent(IComponent component)
+        private AbstractComponent AddComponent(AbstractComponent component)
         {
             if (!IsAvailable())
                 return null;
@@ -156,7 +169,11 @@ namespace EntityComponentSystem
 
             Components.Add(component);
             ComponentAdded?.Invoke(this, component);
-            OwnerPool.ComponentAdded(this);
+
+            if (!(OwnerPool is null))
+            {
+                OwnerPool.ComponentAdded(this);
+            }
 
             return component;
         }
@@ -166,15 +183,15 @@ namespace EntityComponentSystem
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public void RemoveComponent<T>() 
-            where T : IComponent
+            where T : AbstractComponent
         {
             if (!IsAvailable())
                 return;
 
             if (!this.HasComponent<T>())
-                throw new ComponentNotFoundException(this);
+                throw new ComponentNotFoundException(this, typeof(T));
 
-            IComponent componentToRemove = GetComponent<T>();
+            AbstractComponent componentToRemove = GetComponent<T>();
 
             Components.Remove(componentToRemove);
             ComponentRemoved?.Invoke(this, componentToRemove);
@@ -194,9 +211,9 @@ namespace EntityComponentSystem
             if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
-            if (!HasComponent(componentType)) throw new ComponentNotFoundException(this);
+            if (!HasComponent(componentType)) throw new ComponentNotFoundException(this, componentType);
 
-            IComponent componentToRemove = GetComponent(componentType);
+            AbstractComponent componentToRemove = GetComponent(componentType);
 
             Components.Remove(componentToRemove);
             ComponentRemoved?.Invoke(this, componentToRemove);
@@ -211,14 +228,14 @@ namespace EntityComponentSystem
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public T GetComponent<T>()
-            where T : IComponent
+            where T : AbstractComponent
         {
             if (!IsAvailable())
                 return default(T);
 
             var match = Components.OfType<T>().FirstOrDefault();
 
-            if (match == null) throw new ComponentNotFoundException(this);
+            if (match == null) throw new ComponentNotFoundException(this, typeof(T));
 
             return match;
         }
@@ -231,7 +248,7 @@ namespace EntityComponentSystem
         /// </summary>
         /// <param name="componentType"></param>
         /// <returns></returns>
-        public IComponent GetComponent(Type componentType)
+        public AbstractComponent GetComponent(Type componentType)
         {
             if (!IsAvailable())
                 return null;
@@ -242,7 +259,18 @@ namespace EntityComponentSystem
             var match = Components.FirstOrDefault(c => c.GetType() == componentType);
             if (match != null) return match;
 
-            throw new ComponentNotFoundException(this);
+            throw new ComponentNotFoundException(this, componentType);
+        }
+
+        public AbstractComponent GetComponent(string componentType)
+        {
+            if (!IsAvailable())
+                return null;
+
+            var match = Components.FirstOrDefault(c => c.GetType().Name == componentType);
+            if (match != null) return match;
+
+            throw new ComponentNotFoundException(this, componentType);
         }
 
         /// <summary>
@@ -252,14 +280,14 @@ namespace EntityComponentSystem
         /// </summary>
         /// <param name="component"></param>
         /// <param name="destination"></param>
-        public void MoveComponent(IComponent component, Entity destination)
+        public void MoveComponent(AbstractComponent component, Entity destination)
         {
             if (!IsAvailable())
                 return;
 
             // If the component itself isn't null and its actually on "this".
             if (component == null && !HasComponent(component.GetType()))
-                throw new ComponentNotFoundException(this);
+                throw new ComponentNotFoundException(this, component.GetType());
 
             destination.AddComponent(component);
             Components.Remove(component);
@@ -272,7 +300,7 @@ namespace EntityComponentSystem
         /// <typeparam name="TComponent"></typeparam>
         /// <returns></returns>
         public bool HasComponent<TComponent>() 
-            where TComponent : IComponent
+            where TComponent : AbstractComponent
         {
             if (!IsAvailable())
                 return false;
@@ -321,6 +349,17 @@ namespace EntityComponentSystem
             return true;
         }
 
+        public bool HasComponents(params Type[] types)
+        {
+            if (!IsAvailable())
+                return false;
+
+            foreach (var t in types)
+                if (!HasComponent(t)) return false;
+
+            return true;
+        }
+
         /// <summary>
         /// Remove all components.
         /// </summary>
@@ -329,9 +368,10 @@ namespace EntityComponentSystem
             if (!IsAvailable())
                 return;
 
-            for (int i = Components.Count - 1; i >= 0; i--)
-                RemoveComponent(Components[i].GetType());
-
+            while(Components.Count > 0)
+            {
+                RemoveComponent(Components.First().GetType());
+            }
             Components.Clear();
         }
 
@@ -345,15 +385,15 @@ namespace EntityComponentSystem
 
             RemoveAllComponents();
 
-            for (int i = 0; i < Children.Count; i++)
+            foreach(var key in Children.Keys)
             {
-                var child = Children[i];
-                OwnerPool.DestroyEntity(ref child);
+                var child = Children[key];
+                OwnerPool.DestroyEntity(child);
             }
 
             Children.Clear();
 
-            this.Id = string.Empty;
+            this.Id = -1;
             this.OwnerPool = null;
             this.State = EntityState.Cached;
         }
@@ -362,7 +402,7 @@ namespace EntityComponentSystem
         /// Add all the components in a collection to this Entity
         /// </summary>
         /// <param name="components"></param>
-        public void AddComponents(IEnumerable<IComponent> components)
+        public void AddComponents(IEnumerable<AbstractComponent> components)
         {
             if (!IsAvailable())
 
@@ -374,29 +414,13 @@ namespace EntityComponentSystem
         /// Allows an infinite(?) number of components as parameters and adds them all at once to "this".
         /// </summary>
         /// <param name="components"></param>
-        public void AddComponents(params IComponent[] components)
+        public void AddComponents(params AbstractComponent[] components)
         {
             if (!IsAvailable())
                 return;
 
             foreach (var c in components) 
                 AddComponent(c);
-        }
-
-        /// <summary>
-        /// Creates and returns a new Entity as a child under this Entity
-        /// </summary>
-        /// <param name="childId"></param>
-        /// <param name="inheritComponents"></param>
-        /// <returns></returns>
-        public Entity CreateChild(string childId)
-        {
-            if (!IsAvailable())
-                return null;
-
-            var child = OwnerPool.CreateEntity(childId);
-
-            return AddChild(child);
         }
 
         /// <summary>
@@ -410,26 +434,28 @@ namespace EntityComponentSystem
                 return null;
 
             entity.Parent = this;
-            Children.Add(entity);
+            Children[entity.Tag] = entity;
 
             MadeChild?.Invoke(this, entity);
-            OwnerPool.EntityMadeChild(this, entity);
+            
+            OwnerPool?.EntityMadeChild(this, entity);
 
             return entity;
         }
 
         /// <summary>
-        /// Get a child by ID
+        /// Get a child by Tag
         /// </summary>
         /// <param name="childId"></param>
         /// <returns></returns>
-        public Entity GetChild(string childId)
+        public Entity GetChildByTag(string childTag)
         {
             if (!IsAvailable())
                 return null;
 
-            return Children.FirstOrDefault(c => c.Id == childId);
+            return Children[childTag];
         }
+
 
         /// <summary>
         /// Returns the whole "family tree" of this Entity (all children, "grandchildren", etc.)
@@ -437,9 +463,9 @@ namespace EntityComponentSystem
         /// <returns></returns>
         public IEnumerable<Entity> FamilyTree()
         {
-            var childSelector = new Func<Entity, IEnumerable<Entity>>(ent => ent.Children);
+            var childSelector = new Func<Entity, IEnumerable<Entity>>(ent => ent.Children.Values);
 
-            var stack = new Stack<Entity>(Children);
+            var stack = new Stack<Entity>(Children.Values);
             while (stack.Any())
             {
                 var next = stack.Pop();
@@ -461,6 +487,12 @@ namespace EntityComponentSystem
                 return false;
             }
             return Id == ((Entity)obj).Id;
+        }
+
+        public EntityDefinition ToDefinition()
+        {
+            string output = JsonConvert.SerializeObject(this, SerializerSettings.DefaultSettings);
+            return new EntityDefinition(output);
         }
     }
 }

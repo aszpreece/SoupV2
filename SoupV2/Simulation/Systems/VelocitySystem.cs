@@ -11,7 +11,7 @@ namespace SoupV2.Simulation.Systems
 {
     class VelocitySystem : EntitySystem
     {
-        public VelocitySystem(EntityPool pool) : base(pool, typeof(TransformComponent), typeof(VelocityComponent))
+        public VelocitySystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(VelocityComponent)))
         {
 
         }
@@ -24,7 +24,7 @@ namespace SoupV2.Simulation.Systems
                 var velocity = Compatible[i].GetComponent<VelocityComponent>();
 
                 transform.LocalPosition += velocity.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds * gameSpeed;
-                transform.LocalRotation += velocity.RoationalVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds * gameSpeed;
+                transform.LocalRotation += velocity.RotationalVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds * gameSpeed;
 
             }
 

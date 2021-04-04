@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using SoupV2.Simulation.Components;
 using System;
 using System.Collections.Generic;
@@ -7,14 +8,18 @@ using System.Text;
 
 namespace SoupV2.Simulation.Physics
 {
-    class CircleColliderComponent : IComponent
+    class CircleColliderComponent : AbstractComponent
     {
 
+        [JsonIgnore]
         public TransformComponent Transform { get; set; }
 
         public float Radius { get; set; } = 1.0f;
+
+        [JsonIgnore]
         public Vector2 Position { get; set; } = Vector2.Zero;
 
+        [JsonIgnore]
         public bool Colliding
         {
             get
@@ -23,15 +28,15 @@ namespace SoupV2.Simulation.Physics
             }
         }
 
+        [JsonIgnore]
         public List<CircleColliderComponent> Collisions { get; internal set; } = new List<CircleColliderComponent>();
 
-        public CircleColliderComponent(TransformComponent transform)
+        public CircleColliderComponent(Entity owner) : base(owner)
         {
-            Transform = transform;
-            transform.OnWorldChange += UpdatePosition;
+
         }
 
-        private void UpdatePosition(TransformComponent transform)
+        public void UpdatePosition(TransformComponent transform)
         {
             Position = transform.WorldPosition;
         }
