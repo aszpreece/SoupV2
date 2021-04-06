@@ -11,6 +11,8 @@ namespace SoupV2.Simulation.Components
         {
 
         }
-        public float DragCoefficient { get; set; } = 1.0f;
+        public float MovementDragCoefficient { get; set; } = 1.0f;
+        public float RotationDragCoefficient { get; set; } = 1.0f;
+
     }
 }

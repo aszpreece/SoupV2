@@ -95,35 +95,34 @@ namespace SoupV2.Simulation.Grid
             // If the entity has just been placed in the grid it will have no _cell property in its transform.
             // If not we need to remove the entity from its old cell
             // If the entity has moved outside the bounds of the cell it should be in we need to remove it from the grid
-            if (!transform.Cell.HasValue)
+            if (!entity.Cell.HasValue)
             {
                 // This entity is new, we must place into grid
-                transform.Cell = coordTuple;
+                entity.Cell = coordTuple;
                 _cells[x, y].Entities.Add(entity);
 
             }
-            else if (transform.Cell != coordTuple) {
+            else if (entity.Cell != coordTuple) {
 
                 RemoveFromGrid(entity);
                 // Once any removing has been done set the entities cell etc
-                transform.Cell = _cells[x, y].Pos;
+                entity.Cell = _cells[x, y].Pos;
                 _cells[x, y].Entities.Add(entity);
             }
         }
         public void RemoveFromGrid(Entity entity)
         {
-            TransformComponent transform = entity.GetComponent<TransformComponent>();
-            if (!transform.Cell.HasValue)
+            if (!entity.Cell.HasValue)
             {
                 return;
             }
-            (int x, int y) = ((int, int))transform.Cell;
+            (int x, int y) = ((int, int))entity.Cell;
             Cell current = _cells[x, y];
             int index = current.Entities.IndexOf(entity);
 
             // Avoids having to shunt list (We don't care about the order of entities within the list)
             SwapRemove.SwapRemoveList(current.Entities, index);
-            transform.Cell = null;
+            entity.Cell = null;
         }
 
         public static Func<Entity, bool> AlwaysTrue = t => true;
@@ -165,6 +164,7 @@ namespace SoupV2.Simulation.Grid
                         predicate = AlwaysTrue;
                     }
                     var inRange =_cells[x, y].Entities
+                        .Where(e => e.IsActive())
                         .Where(predicate)
                         .Select((entity) => ((pos - entity.GetComponent<TransformComponent>().WorldPosition)
                         .LengthSquared(), entity))

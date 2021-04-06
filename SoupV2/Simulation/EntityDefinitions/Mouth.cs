@@ -38,7 +38,6 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             };
 
-
             var collider = new CircleColliderComponent(mouthEntity)
             {
                 Radius = radius,

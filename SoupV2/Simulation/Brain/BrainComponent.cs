@@ -12,7 +12,7 @@ namespace SoupV2.Simulation.Brain
     /// <summary>
     /// Component for controlling an entity.
     /// </summary>
-    class BrainComponent : AbstractComponent
+    public class BrainComponent : AbstractComponent
     {
         private readonly List<(Func<AbstractComponent, float>, AbstractComponent, string)> _brainInputs;
         private readonly List<(Action<AbstractComponent, float>, AbstractComponent, string)> _brainOutputs;

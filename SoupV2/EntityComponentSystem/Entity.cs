@@ -5,6 +5,7 @@ using System.Linq;
 using EntityComponentSystem.Exceptions;
 using Newtonsoft.Json;
 using SoupV2.EntityComponentSystem;
+using SoupV2.EntityComponentSystem.Exceptions;
 
 namespace EntityComponentSystem
 {
@@ -35,6 +36,8 @@ namespace EntityComponentSystem
         public event EntityRelationshipChanged MadeChild;
         public event EntityRelationshipChanged DetachedFromParent;
 
+        public (int, int)? Cell { get; set; }
+
         [JsonIgnore]
         public int Id { get; set; }
         public string Tag { get; set; }
@@ -50,7 +53,7 @@ namespace EntityComponentSystem
         /// The set of this entitities' components
         /// </summary>
         //public List<AbstractComponent> Components { get; set; } = new List<AbstractComponent>();
-        public HashSet<AbstractComponent> Components { get; set; } = new HashSet<AbstractComponent>();
+        public Dictionary<int, AbstractComponent> Components { get; set; } = new Dictionary<int, AbstractComponent>();
 
         /// <summary>
         /// The map of this entity's children indexed by entity tag.
@@ -113,30 +116,9 @@ namespace EntityComponentSystem
             Tag = tag;
         }
         
-        /// <summary>
-        /// Set this Entity's state to active, providing it isn't in the cache
-        /// </summary>
-        public void Activate()
-        {
-            if (!IsAvailable())
-                return;
-
-            State = EntityState.Active;
-        }
-
-        /// <summary>
-        /// Set this Entity's state to inactive, providing it isn't in the cache
-        /// </summary>
-        public void Deactivate()
-        {
-            if (!IsAvailable())
-                return;
-
-            State = EntityState.Inactive;
-        }
         public bool IsActive()
         {
-            if (!IsAvailable())
+            if (IsCached())
                 return false;
 
             return (State == EntityState.Active);
@@ -144,30 +126,30 @@ namespace EntityComponentSystem
 
         public bool IsInactive()
         {
-            if (!IsAvailable())
+            if (IsCached())
                 return false;
 
             return (State == EntityState.Inactive);
         }
 
         /// <summary>
-        /// Checks if this already has "component"
-        /// If it does, ComponentAlreadyExistsException.
-        /// Otherwise, add the component to "Components".
-        /// And fire the ComponentAdded event (if it's also not null)
+        /// Checks if an entity already has a component and adds it if not.
+        /// If it does, throws ComponentAlreadyExistsException.
+        /// If entity is cached throws EntityCachedException.
+        /// 
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
         private AbstractComponent AddComponent(AbstractComponent component)
         {
-            if (!IsAvailable())
-                return null;
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried accessing {component.GetType().Name}");
 
             // If it has a component of the same type as "component".
             if (HasComponent(component.GetType()))
                 throw new ComponentAlreadyExistsException(this);
 
-            Components.Add(component);
+            Components.Add(component.GetHashCode(), component);
             ComponentAdded?.Invoke(this, component);
 
             if (!(OwnerPool is null))
@@ -185,15 +167,16 @@ namespace EntityComponentSystem
         public void RemoveComponent<T>() 
             where T : AbstractComponent
         {
-            if (!IsAvailable())
-                return;
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried removing {typeof(T).Name}");
+
 
             if (!this.HasComponent<T>())
                 throw new ComponentNotFoundException(this, typeof(T));
 
             AbstractComponent componentToRemove = GetComponent<T>();
 
-            Components.Remove(componentToRemove);
+            Components.Remove(componentToRemove.GetHashCode());
             ComponentRemoved?.Invoke(this, componentToRemove);
             OwnerPool.ComponentRemoved(this);
         }
@@ -205,8 +188,8 @@ namespace EntityComponentSystem
         /// <param name="componentType"></param>
         public void RemoveComponent(Type componentType)
         {
-            if (!IsAvailable())
-                return;
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried removing {componentType.Name}");
 
             if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not IComponent children.");
@@ -215,7 +198,7 @@ namespace EntityComponentSystem
 
             AbstractComponent componentToRemove = GetComponent(componentType);
 
-            Components.Remove(componentToRemove);
+            Components.Remove(componentToRemove.GetHashCode());
             ComponentRemoved?.Invoke(this, componentToRemove);
             OwnerPool.ComponentRemoved(this);
         }
@@ -230,14 +213,38 @@ namespace EntityComponentSystem
         public T GetComponent<T>()
             where T : AbstractComponent
         {
-            if (!IsAvailable())
-                return default(T);
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried accessing {typeof(T).Name}");
 
-            var match = Components.OfType<T>().FirstOrDefault();
 
-            if (match == null) throw new ComponentNotFoundException(this, typeof(T));
+            if (!Components.TryGetValue(typeof(T).GetHashCode(), out AbstractComponent match))
+            {
+                throw new ComponentNotFoundException(this, typeof(T));
+            }
 
-            return match;
+            return (T)match;
+        }
+
+        /// <summary>
+        /// Tries to get component of type T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public bool TryGetComponent<T>(out T component)
+            where T : AbstractComponent
+        {
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried accessing {typeof(T).Name}");
+
+            if (Components.TryGetValue(typeof(T).GetHashCode(), out AbstractComponent match))
+            {
+                component = (T)match;
+                return true;
+            } else
+            {
+                component = null;
+                return false;
+            }
         }
 
         /// <summary>
@@ -250,24 +257,30 @@ namespace EntityComponentSystem
         /// <returns></returns>
         public AbstractComponent GetComponent(Type componentType)
         {
-            if (!IsAvailable())
-                return null;
+            if (IsCached())
+            {
+                throw new EntityCachedException(this.Id, $"Tried accessing {componentType.Name}");
+            }
 
             if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
-            var match = Components.FirstOrDefault(c => c.GetType() == componentType);
-            if (match != null) return match;
+            Components.TryGetValue(componentType.GetHashCode(), out AbstractComponent match);
+
+            if (match != null)
+            {
+                return match;
+            }
 
             throw new ComponentNotFoundException(this, componentType);
         }
 
         public AbstractComponent GetComponent(string componentType)
         {
-            if (!IsAvailable())
-                return null;
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried accessing {componentType}");
 
-            var match = Components.FirstOrDefault(c => c.GetType().Name == componentType);
+            var match = Components.Values.FirstOrDefault(c => c.GetType().Name == componentType);
             if (match != null) return match;
 
             throw new ComponentNotFoundException(this, componentType);
@@ -282,15 +295,15 @@ namespace EntityComponentSystem
         /// <param name="destination"></param>
         public void MoveComponent(AbstractComponent component, Entity destination)
         {
-            if (!IsAvailable())
-                return;
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried moving {component.GetType().Name}");
 
             // If the component itself isn't null and its actually on "this".
             if (component == null && !HasComponent(component.GetType()))
                 throw new ComponentNotFoundException(this, component.GetType());
 
             destination.AddComponent(component);
-            Components.Remove(component);
+            Components.Remove(component.GetHashCode());
         }
 
         /// <summary>
@@ -302,13 +315,10 @@ namespace EntityComponentSystem
         public bool HasComponent<TComponent>() 
             where TComponent : AbstractComponent
         {
-            if (!IsAvailable())
+            if (IsCached())
                 return false;
 
-            var match = Components.Any(c => c.GetType() == typeof(TComponent));
-
-            if (match) return true;
-            else return false;
+            return Components.ContainsKey(typeof(TComponent).GetHashCode());
         }
 
         /// <summary>
@@ -320,16 +330,13 @@ namespace EntityComponentSystem
         /// <returns></returns>
         public bool HasComponent(Type componentType)
         {
-            if (!IsAvailable())
+            if (IsCached())
                 return false;
 
             if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
-            var cMatch = Components.Any(c => c.GetType() == componentType);
-            if (cMatch) return true;
-
-            return false;
+            return Components.ContainsKey(componentType.GetHashCode());
         }
 
         /// <summary>
@@ -340,7 +347,7 @@ namespace EntityComponentSystem
         /// <returns></returns>
         public bool HasComponents(IEnumerable<Type> types)
         {
-            if (!IsAvailable())
+            if (IsCached())
                 return false;
 
             foreach (var t in types)
@@ -351,7 +358,7 @@ namespace EntityComponentSystem
 
         public bool HasComponents(params Type[] types)
         {
-            if (!IsAvailable())
+            if (IsCached())
                 return false;
 
             foreach (var t in types)
@@ -365,12 +372,12 @@ namespace EntityComponentSystem
         /// </summary>
         public void RemoveAllComponents()
         {
-            if (!IsAvailable())
+            if (IsCached())
                 return;
 
-            while(Components.Count > 0)
+            while (Components.Count > 0)
             {
-                RemoveComponent(Components.First().GetType());
+                RemoveComponent(Components.First().Value.GetType());
             }
             Components.Clear();
         }
@@ -380,9 +387,6 @@ namespace EntityComponentSystem
         /// </summary>
         public void Reset()
         {
-            if (!IsAvailable())
-                return;
-
             RemoveAllComponents();
 
             foreach(var key in Children.Keys)
@@ -394,7 +398,6 @@ namespace EntityComponentSystem
             Children.Clear();
 
             this.Id = -1;
-            this.OwnerPool = null;
             this.State = EntityState.Cached;
         }
 
@@ -404,20 +407,23 @@ namespace EntityComponentSystem
         /// <param name="components"></param>
         public void AddComponents(IEnumerable<AbstractComponent> components)
         {
-            if (!IsAvailable())
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried adding components.");
+
 
             foreach (var c in components) 
                 AddComponent(c);
         }
 
         /// <summary>
-        /// Allows an infinite(?) number of components as parameters and adds them all at once to "this".
+        /// Add a list of components to this entity
         /// </summary>
         /// <param name="components"></param>
         public void AddComponents(params AbstractComponent[] components)
         {
-            if (!IsAvailable())
-                return;
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried adding components.");
+
 
             foreach (var c in components) 
                 AddComponent(c);
@@ -430,8 +436,8 @@ namespace EntityComponentSystem
         /// <returns></returns>
         public Entity AddChild(Entity entity)
         {
-            if (!IsAvailable())
-                return null;
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried adding a child.");
 
             entity.Parent = this;
             Children[entity.Tag] = entity;
@@ -450,8 +456,8 @@ namespace EntityComponentSystem
         /// <returns></returns>
         public Entity GetChildByTag(string childTag)
         {
-            if (!IsAvailable())
-                return null;
+            if (IsCached())
+                throw new EntityCachedException(this.Id, $"Tried getting a child.");
 
             return Children[childTag];
         }
@@ -475,9 +481,14 @@ namespace EntityComponentSystem
             }
         }
 
-        public bool IsAvailable()
+        public bool IsNotCached()
         {
             return State != EntityState.Cached;
+        }
+
+        public bool IsCached()
+        {
+            return State == EntityState.Cached;
         }
 
         public override bool Equals(object obj)

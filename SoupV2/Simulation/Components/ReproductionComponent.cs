@@ -23,6 +23,12 @@ namespace SoupV2.Simulation.Components
         // The entity that this entity gives birth to.
         // Could be an egg?
         public string ChildDefinitionId { get; set; }
+
+        // The amount of energy that it takes to give birth
+        public float ReproductionEnergyCost { get; set; }
+        public float RequiredRemaining { get; set; }
+        public float Efficency { get; set; }
+
         public ReproductionComponent(Entity owner) : base(owner)
         {
             

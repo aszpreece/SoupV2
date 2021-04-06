@@ -27,20 +27,18 @@ namespace SoupV2.Simulation.Systems
                 var velocity = entity.GetComponent<VelocityComponent>();
 
                 var dir = velocity.Velocity;
-                if (dir == Vector2.Zero)
+                if (dir != Vector2.Zero)
                 {
-                    continue;
+                    dir.Normalize();
+
+                    //vel squared version
+                    //var dragForce = 0.5f * dragComponent.DragCoefficient * dir * velocity.Velocity.LengthSquared() * _massDensity;
+                    var dragForce = 0.5f * dragComponent.MovementDragCoefficient *  velocity.Velocity * _massDensity;
+
+                    rigidBody.ApplyForce(-dragForce);
                 }
-                dir.Normalize();
-
-                //vel squared version
-                //var dragForce = 0.5f * dragComponent.DragCoefficient * dir * velocity.Velocity.LengthSquared() * _massDensity;
-                var dragForce = 0.5f * dragComponent.DragCoefficient *  velocity.Velocity * _massDensity;
-
-                rigidBody.ApplyForce(-dragForce);
-
-                var rotationalDrag = 0.5f * dragComponent.DragCoefficient * velocity.RotationalVelocity * _massDensity;
-                rigidBody.ApplyTorque(-rotationalDrag);
+                var rotationalDrag = dragComponent.RotationDragCoefficient * velocity.RotationalVelocity * _massDensity;
+                rigidBody.ApplyTorque((float)-rotationalDrag);
             }
         }
     }

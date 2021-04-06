@@ -13,7 +13,7 @@ namespace Test
         [TestMethod]
         public void TestNamedNodes()
         {
-            Genotype test = new Genotype();
+            NeatGenotype test = new NeatGenotype();
             test.AddNamedNode("bias", NodeType.BIAS, "relu");
             test.AddNamedNode("input1", NodeType.INPUT, "relu");
             test.AddNamedNode("input2", NodeType.INPUT, "relu");
@@ -29,7 +29,7 @@ namespace Test
         [TestMethod]
         public void TestAdder()
         {
-            Genotype test = new Genotype();
+            NeatGenotype test = new NeatGenotype();
 
             test.AddNamedNode("input1", NodeType.INPUT, "relu");
             test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
@@ -39,7 +39,7 @@ namespace Test
             test.ConnectionGenes.Add(new ConnectionGene(2, 1, 1, 1, true, true)); // Hidden to hidden (recurrent)
             test.ConnectionGenes.Add(new ConnectionGene(3, 1, 2, 1)); //# Hidden to output
 
-            var network = new Phenotype(test);
+            var network = new NeatPhenotype(test);
 
             network.SetInput("input1", 1.0f);
             Assert.AreEqual(1.0f, network.Get("input1"));
@@ -60,7 +60,7 @@ namespace Test
         [TestMethod]
         public void TestRecurrentFromOutput()
         {
-            Genotype test = new Genotype();
+            NeatGenotype test = new NeatGenotype();
 
             test.AddNamedNode("input1", NodeType.INPUT, "sigmoid");
             test.AddNamedNode("input2", NodeType.INPUT, "sigmoid");
@@ -91,7 +91,7 @@ namespace Test
             // The recurrent connection from 5 to 3
             test.ConnectionGenes.Add(new ConnectionGene(9, 5, 3, -1));
 
-            var network = new Phenotype(test);
+            var network = new NeatPhenotype(test);
 
             network.SetInput("input1", 1.0f);
             network.SetInput("input2", 2.0f);
@@ -115,7 +115,7 @@ namespace Test
         public void TestCreatesCycle()
         {
             // Test that a gene already in the genome can be tested fro recurrence
-            Genotype test = new Genotype();
+            NeatGenotype test = new NeatGenotype();
 
             test.AddNamedNode("input1", NodeType.INPUT, "relu");
             test.AddNamedNode("input2", NodeType.INPUT, "relu");
@@ -142,7 +142,7 @@ namespace Test
         public void TestReEnableCreatesCycle()
         {
             // Test that a gene already in the genome can be tested fro recurrence
-            Genotype test = new Genotype();
+            NeatGenotype test = new NeatGenotype();
 
             test.AddNamedNode("input1", NodeType.INPUT, "relu");
             test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
@@ -161,7 +161,7 @@ namespace Test
         public void TestCreatesCycleIgnoresDisabledConnections()
         {
             // Test that a gene already in the genome can be tested fro recurrence
-            Genotype test = new Genotype();
+            NeatGenotype test = new NeatGenotype();
 
             test.AddNamedNode("input1", NodeType.INPUT, "relu");
             test.AddNamedNode("input2", NodeType.INPUT, "relu");
@@ -189,7 +189,7 @@ namespace Test
         public void TestCreatesCycleIgnoresRecurrentConnections()
         {
             // Test that a gene already in the genome can be tested fro recurrence
-            Genotype test = new Genotype();
+            NeatGenotype test = new NeatGenotype();
 
             test.AddNamedNode("input1", NodeType.INPUT, "relu");
             test.AddNamedNode("input2", NodeType.INPUT, "relu");

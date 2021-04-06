@@ -28,14 +28,17 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var graphics = new GraphicsComponent(foodEntity)
             {
-                Texture = TextureAtlas.Circle,
+                Texture = TextureAtlas.Soup,
                 Dimensions = new Point((int)(radius * 2), (int)(radius * 2)),
                 Color = color
             };
 
             var colourComp = new ColourComponent(foodEntity)
             {
-
+                RealR = 1f,
+                RealB = 1f,
+                RealG = 1f,
+            
             };
 
             var energy = new EnergyComponent(foodEntity)

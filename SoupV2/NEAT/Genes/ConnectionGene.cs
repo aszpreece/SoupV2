@@ -8,22 +8,22 @@ namespace SoupV2.NEAT.Genes
     {
         public ConnectionGene(ConnectionGene other)
         {
-            this.InnovationId = other.InnovationId;
-            this.Source = other.Source;
-            this.To = other.To;
-            this.Weight = other.Weight;
-            this.Enabled = other.Enabled;
-            this.Recurrent = other.Recurrent;
+            InnovationId = other.InnovationId;
+            Source = other.Source;
+            To = other.To;
+            Weight = other.Weight;
+            Enabled = other.Enabled;
+            Recurrent = other.Recurrent;
         }
 
         public ConnectionGene(int innovationId, int source, int to, double weight, bool enabled=true, bool recurrent= false)
         {
-            this.InnovationId = innovationId;
-            this.Source = source;
-            this.To = to;
-            this.Weight = weight;
-            this.Enabled = enabled;
-            this.Recurrent = recurrent;
+            InnovationId = innovationId;
+            Source = source;
+            To = to;
+            Weight = weight;
+            Enabled = enabled;
+            Recurrent = recurrent;
         }
 
         public int InnovationId { get; set; }

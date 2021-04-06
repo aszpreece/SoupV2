@@ -19,12 +19,12 @@ namespace SoupV2.Simulation.Systems
 
             for (int i = 0; i < Compatible.Count; i++)
             {
-                var food = Compatible[i];
-                var energy = food.GetComponent<EnergyComponent>();
-                var transform = food.GetComponent<TransformComponent>();
+                var entity = Compatible[i];
+                var energy = entity.GetComponent<EnergyComponent>();
+
                 if (energy.Energy <= 0)
                 {
-                    toDestroy.Add(food);
+                    toDestroy.Add(entity);
                 }
             }
             foreach(var e in toDestroy)

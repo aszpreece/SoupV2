@@ -150,7 +150,7 @@ namespace EntityComponentSystem
             entity.OwnerPool = this;
             entity.State = EntityState.Active;
 
-            foreach (var component in entity.Components)
+            foreach (var (_, component) in entity.Components)
             {
                 component.Owner = entity;
             }
@@ -193,7 +193,7 @@ namespace EntityComponentSystem
         /// <param Id="entity"></param>
         public void DestroyEntity(Entity entity)
         {
-            if (!entity.IsAvailable())
+            if (!entity.IsNotCached())
                 return;
 
             if (!Entities.Contains(entity))
@@ -202,10 +202,10 @@ namespace EntityComponentSystem
             if (CachedEntities.Count < MAX_CACHED_ENTITIES)
             {
                 // Reset the Entity.
-                entity.Reset();
                 CachedEntities.Push(entity);
             }
 
+            entity.Reset();
             Entities.Remove(entity);
             EntityRemoved?.Invoke(this, entity);
         }

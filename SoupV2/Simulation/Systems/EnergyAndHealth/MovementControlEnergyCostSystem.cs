@@ -12,10 +12,11 @@ namespace SoupV2.Simulation.Systems.Energy
     /// </summary>
     class MovementControlEnergyCostSystem : EntitySystem
     {
-        public float CostPerNewtonPerSecond { get; set; } = 0.1f;
-        public MovementControlEnergyCostSystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(EnergyComponent), typeof(MovementControlComponent)))
+        public float CostPerNewtonPerSecond { get; set; } = 0.0025f;
+        private EnergyManager _energyManager;
+        public MovementControlEnergyCostSystem(EntityPool pool, EnergyManager energyManager) : base(pool, (e) => e.HasComponents(typeof(EnergyComponent), typeof(MovementControlComponent)))
         {
-
+            _energyManager = energyManager;
         }
 
         public void Update(GameTime gameTime, float gameSpeed)
@@ -26,25 +27,27 @@ namespace SoupV2.Simulation.Systems.Energy
                 var energy = movementEntity.GetComponent<EnergyComponent>();
                 var movement = movementEntity.GetComponent<MovementControlComponent>();
 
-                float extertedMove = (float)(Math.Abs(movement.ForwardForce) * CostPerNewtonPerSecond * gameTime.ElapsedGameTime.TotalSeconds);
-
+                float extertedMove = (float)(Math.Abs(movement.ForwardForce) * CostPerNewtonPerSecond * gameTime.ElapsedGameTime.TotalSeconds * gameSpeed);
+                
+                //Figure out if we can afford the energy for both movement and rotation
                 if (!energy.CanAfford(extertedMove))
                 {
                     movement.WishForceForward = 0;
-                } else
-                {
-                    energy.ChargeEnergy(extertedMove);
+
                 }
 
-                float extertedRotate = (float)(Math.Abs(movement.RotationForce) * CostPerNewtonPerSecond * gameTime.ElapsedGameTime.TotalSeconds);
+                // Deposit any used energy into the energy manager
+                _energyManager.DepositEnergy(energy.ChargeEnergy(extertedMove));
+                
+
+                float extertedRotate = (float)(Math.Abs(movement.RotationForce) * CostPerNewtonPerSecond * gameTime.ElapsedGameTime.TotalSeconds * gameSpeed);
 
                 if (!energy.CanAfford(extertedRotate))
                 {
                     movement.WishRotForce = 0;
-                } else
-                {
-                    energy.ChargeEnergy(extertedRotate);
                 }
+                _energyManager.DepositEnergy(energy.ChargeEnergy(extertedRotate));
+               
 
 
             }

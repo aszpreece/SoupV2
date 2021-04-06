@@ -94,7 +94,5 @@ namespace SoupV2.Simulation.Components
                 return new Vector2((float)Math.Cos(WorldRotation.Theta + Math.PI / 2), (float)Math.Sin(WorldRotation.Theta + Math.PI / 2));
             }
         }
-
-        public (int, int)? Cell { get; set; }
     }
 }

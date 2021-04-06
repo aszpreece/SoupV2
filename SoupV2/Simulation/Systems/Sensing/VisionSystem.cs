@@ -25,7 +25,11 @@ namespace SoupV2.Simulation.Systems
                 var transform = Compatible[i].GetComponent<TransformComponent>();
                 var eye = Compatible[i].GetComponent<EyeComponent>();
                 var nearby =_grid.GetNearbyEntities(transform.WorldPosition, eye.EyeRange, (e) => e.HasComponent<ColourComponent>());
-                eye.Activation = 0;
+
+                eye.ActivationR = 0;
+                eye.ActivationG = 0;
+                eye.ActivationB = 0;
+
                 foreach (var(distSqr, entity) in nearby)
                 {
                     if (distSqr <= 0)
@@ -46,7 +50,6 @@ namespace SoupV2.Simulation.Systems
 
                     float diffAngle = Angles.CalculateAngleDiff(angleBetween, transform.WorldRotation.Theta);
 
-                    float diff = Angles.CalculateAngleDiff(-MathHelper.TwoPi, 0);
                     //eyeRot: {MathHelper.ToDegrees(transform.WorldRotation.Theta)}, diffAngle: {MathHelper.ToDegrees(diffAngle)}, 
 #if DEBUG
                    // Debug.WriteLine($"Diff {diffAngle}");
@@ -63,21 +66,34 @@ namespace SoupV2.Simulation.Systems
                         continue;
                     }
 
-                    eye.Activation += (eye.EyeRangeSquared / distSqr);
+                    var targetColour= entity.GetComponent<ColourComponent>();
+
+                    var distMult = (eye.EyeRangeSquared / distSqr);
+                    eye.ActivationR += distMult * targetColour.R;
+                    eye.ActivationG += distMult * targetColour.G;
+                    eye.ActivationB += distMult * targetColour.B;
 
 #if DEBUG
-                   // Debug.WriteLine($"Activated");
+                    // Debug.WriteLine($"Activated");
 #endif
 
 
                 }
-                eye.Activation = (float)Math.Tanh(eye.Activation);
-                if (Compatible[i].HasComponent<GraphicsComponent>())
-                {
-                    var graphics = Compatible[i].GetComponent<GraphicsComponent>();
-                    graphics.Multiplier = 1 + eye.Activation;
-                }
+                eye.ActivationR = (float)Math.Tanh(eye.ActivationR);
+                eye.ActivationG = (float)Math.Tanh(eye.ActivationG);
+                eye.ActivationB = (float)Math.Tanh(eye.ActivationB);
 
+
+                if (Compatible[i].TryGetComponent<GraphicsComponent>(out GraphicsComponent graphics))
+                {
+                    var newCol = new Color(
+                        (float)Math.Max(eye.ActivationR, 0.1),
+                        (float)Math.Max(eye.ActivationG, 0.1),
+                        (float)Math.Max(eye.ActivationB, 0.1));
+
+                    graphics.Color = Color.Lerp(graphics.Color, newCol, 0.1f);
+
+                }
             }
         }
 

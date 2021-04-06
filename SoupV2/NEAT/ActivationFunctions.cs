@@ -19,6 +19,19 @@ namespace SoupV2.NEAT
             }
         }
 
+        // Just sigmoid but centred around 0
+        public static double Softsign(double x)
+        {
+            if (x < 0)
+            {
+                return 2 * (Math.Exp(x) / (1 + Math.Exp(x))) - 1;
+            }
+            else
+            {
+                return 2 / (1 + Math.Exp(-x)) - 1;
+            }
+        }
+
         public static double Sign(double x)
         {
             if (x > 0)
@@ -42,6 +55,7 @@ namespace SoupV2.NEAT
             {"tanh", Math.Tanh },
             {"sign", Sign },
             {"relu", Relu },
+            {"softsign", Softsign }
         };
     }
 }

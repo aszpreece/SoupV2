@@ -10,6 +10,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\bin\DesktopGL\BoxingGloveExtended.xnb" />
+    <None Remove="Content\bin\DesktopGL\BoxingGloveRetracted.xnb" />
     <None Remove="Content\bin\DesktopGL\circle.xnb" />
     <None Remove="Content\bin\DesktopGL\default_font.spritefont" />
     <None Remove="Content\bin\DesktopGL\Energy.xnb" />
@@ -17,10 +19,17 @@
     <None Remove="Content\bin\DesktopGL\mouth.xnb" />
     <None Remove="Content\bin\DesktopGL\pirateship.xnb" />
     <None Remove="Content\bin\DesktopGL\soup.xnb" />
+    <None Remove="Content\bin\DesktopGL\SoupNose.xnb" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bin\DesktopGL\BoxingGloveExtended.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\bin\DesktopGL\BoxingGloveRetracted.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bin\DesktopGL\circle.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -40,6 +49,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\bin\DesktopGL\soup.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\bin\DesktopGL\SoupNose.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

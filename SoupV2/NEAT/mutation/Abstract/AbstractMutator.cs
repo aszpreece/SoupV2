@@ -17,6 +17,6 @@ namespace SoupV2.NEAT.mutation
         /// Mutates a given genotype
         /// </summary>
         /// <param name="genotype">Genotype to mutate</param>
-        public abstract void Mutate(Genotype genotype, Random random, InnovationIdManager innovationIdManager);
+        public abstract void Mutate(NeatGenotype genotype, Random random, InnovationIdManager innovationIdManager);
     }
 }

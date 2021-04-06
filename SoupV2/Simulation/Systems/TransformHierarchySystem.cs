@@ -61,5 +61,29 @@ namespace SoupV2.Simulation.Systems
             }
 
         }
+
+        protected override void OnPoolEntityChanged(EntityPool pool, Entity entity)
+        {
+            var index = Compatible.IndexOf(entity);
+            // If we already have the entity, check if we are still compatible
+            if (index >= 0)
+            {
+                if (!CompatiblePredicate(entity))
+                {
+                    SwapRemove.SwapRemoveList(Compatible, index);
+                    // Clean up grid
+                    _grid.RemoveFromGrid(entity);
+                }
+            }
+            else
+            // If we do not have it but we are compatible, add it
+            {
+                if (CompatiblePredicate(entity))
+                {
+                    Compatible.Add(entity);
+                }
+            }
+        }
+
     }
 }

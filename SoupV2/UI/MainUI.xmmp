@@ -9,7 +9,6 @@
     </VerticalMenu>
     <Panel HorizontalAlignment="Right" Border="#5BC6FAFF" Id="_gameSpeedPanel" >
       <HorizontalSlider Value="50" MinWidth="200" Id="_gameSpeedSlider" />
-      <Label Text="Game Speed" TextColor="#FE3930FF" DisabledTextColor="#404040FF" HorizontalAlignment="Center" Id="_gameSpeedLabel" />
     </Panel>
   </Panel>
 </Project>

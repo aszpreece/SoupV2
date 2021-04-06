@@ -40,7 +40,7 @@ namespace SoupV2.Simulation.Components
 
         }
 
-        public float Restitution { get; internal set; } = 0.9f;
+        public float Restitution { get; set; } = 0.9f;
 
 
 

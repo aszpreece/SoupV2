@@ -1,4 +1,6 @@
 ﻿using SoupV2.NEAT.Genes;
+using SoupV2.Simulation.Brain;
+using SoupV2.util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +8,7 @@ using System.Text;
 
 namespace SoupV2.NEAT
 {
-    public class Genotype: ICloneable
+    public class NeatGenotype: AbstractGenotype, ICloneable
     {
         public List<ConnectionGene> ConnectionGenes { get; }
         public List<NodeGene> NodeGenes { get; }
@@ -20,9 +22,9 @@ namespace SoupV2.NEAT
 
         public int ConnectionIdStart { get; private set; } = 0;
         public int NodeIdStart { get; private set; } = 0;
-        public Phenotype Phenotype { get; internal set; }
+        public NeatPhenotype Phenotype { get; internal set; }
 
-        public Genotype(Genotype other)
+        public NeatGenotype(NeatGenotype other)
         {
             // Node name map does not need copying as it should remain the same between different genomes
             this.NodeNameMap = other.NodeNameMap;
@@ -36,7 +38,7 @@ namespace SoupV2.NEAT
         }
 
 
-        public Genotype(List<NodeGene> nodeGenes, List<ConnectionGene> connectionGenes, Species species=null)
+        public NeatGenotype(List<NodeGene> nodeGenes, List<ConnectionGene> connectionGenes, Species species=null)
         {
             this.NodeNameMap = new Dictionary<string, int>();
             this.Species = species;
@@ -45,7 +47,7 @@ namespace SoupV2.NEAT
             this.NodeGenes = nodeGenes;
         }
 
-        public Genotype()
+        public NeatGenotype()
         {
             this.NodeNameMap = new Dictionary<string, int>();
 
@@ -87,7 +89,7 @@ namespace SoupV2.NEAT
                             return true;
                         }
 
-                        if (visited.Contains(targetNode))
+                        if (visited.Contains(source))
                         {
                             // Avoid already visited nodes
                             continue;
@@ -134,8 +136,13 @@ namespace SoupV2.NEAT
             NodeIdStart += 1;
         }
 
-
-        public (int, int, double) CompareConnectionGenes(Genotype other)
+        /// <summary>
+        /// Compare the connection genes of this genotype to those of another.
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>(Disjoint, excess, average weight difference)</returns>
+        public (int, int, double) CompareConnectionGenes(NeatGenotype other)
         {
             // Calculate number of similar genes
 
@@ -191,7 +198,53 @@ namespace SoupV2.NEAT
         
         public object Clone()
         {
-            return new Genotype(this);
+            return new NeatGenotype(this);
+        }
+
+        public override void CreateBrain(BrainComponent brainComp)
+        {
+            foreach ((string namedInput, string _) in brainComp.InputMap)
+            {
+                this.AddNamedNode(namedInput, NodeType.INPUT, "softsign");
+            }
+            foreach ((string namedOutput, string _) in brainComp.OutputMap)
+            {
+                this.AddNamedNode(namedOutput, NodeType.OUTPUT, "softsign");
+            }
+
+            this.AddNamedNode("bias", NodeType.BIAS, "softsign");
+
+            // Increase connection innovation id as we loop
+            int connInnovationId = 0;
+            Random r = new Random();
+
+            double chanceToMakeConnection = 0.7d;
+
+            foreach(var input in NodeGenes.FindAll((g) => g.NodeType == NodeType.INPUT || g.NodeType == NodeType.BIAS))
+            {
+
+                foreach (var output in NodeGenes.FindAll((g) => g.NodeType == NodeType.OUTPUT))
+                {
+                    if (r.NextDouble() < chanceToMakeConnection)
+                    {
+                        // Add new connection gene
+                        ConnectionGenes.Add(new ConnectionGene(connInnovationId, input.InnovationId, output.InnovationId, r.Normal(0, 1)));
+                        connInnovationId++;
+                    }
+                }
+            }
+
+        }
+
+        public override float CompareSimilarity(AbstractGenotype other)
+        {
+            if (!(other is NeatGenotype))
+            {
+                throw new Exception("Cannot compare two different types of genome.");
+            }
+            var (disjoint, excess, weightDiff) = CompareConnectionGenes((NeatGenotype)other);
+
+            return (float)(1.0 * disjoint + 1.0 * excess + 0.5 * weightDiff);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace SoupV2.NEAT.mutation
         /// <param name="genotype">Genotype to mutate.</param>
         /// <param name="random">Random for number generation.</param>
         /// <param name="innovationIdManager"></param>
-        public override void Mutate(Genotype genotype, Random random, InnovationIdManager innovationIdManager)
+        public override void Mutate(NeatGenotype genotype, Random random, InnovationIdManager innovationIdManager)
         {
 
             foreach (ConnectionGene gene in genotype.ConnectionGenes)

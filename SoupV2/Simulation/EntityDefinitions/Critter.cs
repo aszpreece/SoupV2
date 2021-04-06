@@ -18,12 +18,12 @@ namespace SoupV2.Simulation.EntityDefinitions
         {
             float radius = 10f;
 
-            var testEntity = new Entity();
+            var critter = new Entity();
 
             var vel = new Vector2(-100, 0);
             var pos = new Vector2(0, 0);
 
-            var transform = new TransformComponent(testEntity)
+            var transform = new TransformComponent(critter)
             {
                 LocalPosition = pos,
                 LocalRotation = new Rotation(MathHelper.PiOver4),
@@ -31,7 +31,7 @@ namespace SoupV2.Simulation.EntityDefinitions
                 Scale = new Vector2(1, 1)
             };
 
-            var graphics = new GraphicsComponent(testEntity)
+            var graphics = new GraphicsComponent(critter)
             {
                 Texture = texture,
                 Dimensions = new Point((int)(radius * 2), (int)(radius * 2)),
@@ -39,84 +39,122 @@ namespace SoupV2.Simulation.EntityDefinitions
             };
 
 
-            var velocity = new VelocityComponent(testEntity)
+            var velocity = new VelocityComponent(critter)
             {
                 RotationalVelocity = 0,
                 Velocity = Vector2.Zero
             };
 
-            var circleCollider = new CircleColliderComponent(testEntity)
+            var circleCollider = new CircleColliderComponent(critter)
             {
                 Radius = radius
             };
 
 
-            var rigidbody = new RigidBodyComponent(testEntity)
+            var rigidbody = new RigidBodyComponent(critter)
             {
-                Mass = 0.1f,
+                Mass = 0.05f,
                 Restitution = 0.1f
             };
 
-            var drag = new DragComponent(testEntity)
+            var drag = new DragComponent(critter)
             {
-                DragCoefficient = 0.1f
+                MovementDragCoefficient = 0.5f,
+                RotationDragCoefficient = 10f
+
             };
 
-            var movementControl = new MovementControlComponent(testEntity)
+            var movementControl = new MovementControlComponent(critter)
             {
-                MaxMovementForceNewtons = 1.0f,
+                MaxMovementForceNewtons = 10.0f,
                 WishForceForward = 0.0f,
-                MaxRotationForceNewtons = 0.5f,
+                MaxRotationForceNewtons = 6.0f,
             };
 
-            var colour = new ColourComponent(testEntity)
+            var colour = new ColourComponent(critter)
             {
 
             };
 
-            var energy = new EnergyComponent(testEntity)
+            var energy = new EnergyComponent(critter)
             {
-                Energy = 3
+                Energy = 4f
             };
 
-            var reproduction = new ReproductionComponent(testEntity)
+            var reproduction = new ReproductionComponent(critter)
             {
+                Efficency = 0.7f,
+                ReproductionEnergyCost = 8f,
                 Reproduce = 0,
-                ReproductionThreshold = 1,
+                ReproductionThreshold = 0.5f,
+                RequiredRemaining = 1f,
                 ChildDefinitionId = "Critterling"
             };
 
-            var brain = new BrainComponent(testEntity)
+            var health = new HealthComponent(critter)
+            {
+                Health = 100,
+                MaxHealth = 100,
+
+            };
+
+            var brain = new BrainComponent(critter)
             {
                 InputMap = new Dictionary<string, string>
                     {
-                        {"eye1", "eye1.EyeComponent.Activation" },
-                        {"eye2", "eye2.EyeComponent.Activation" }
+                        {"eye1R", "eye1.EyeComponent.ActivationR" },
+                        {"eye1G", "eye2.EyeComponent.ActivationG" },
+                        {"eye1B", "eye1.EyeComponent.ActivationB" },
+                        {"eye2R", "eye2.EyeComponent.ActivationR" },
+                        {"eye2G", "eye1.EyeComponent.ActivationG" },
+                        {"eye2B", "eye2.EyeComponent.ActivationB" },
+                        {"mouth", "mouth.MouthComponent.Eating" },
+                        {"nose", "nose.NoseComponent.Activation" },
+                        {"health", "HealthComponent.HealthPercent" },
+                        {"myRed", "ColourComponent.RealR" },
+                        {"myGreen", "ColourComponent.RealG" },
+                        {"myBlue", "ColourComponent.RealB" },
                     },
                 OutputMap = new Dictionary<string, string>
                     {
                         {"forwardback", "MovementControlComponent.WishForceForward" },
-                        {"rotation", "MovementControlComponent.WishRotForce" }
+                        {"rotation", "MovementControlComponent.WishRotForce" },
+                        {"reproduce", "ReproductionComponent.Reproduce" },
+                        {"red", "ColourComponent.R" },
+                        {"green", "ColourComponent.G" },
+                        {"blue", "ColourComponent.B" },
+                        {"attack", "weapon.WeaponComponent.Activation" }
                     }
             };
 
-            testEntity.AddComponents(transform, graphics, velocity, circleCollider, rigidbody, drag, movementControl, reproduction, colour, energy, brain);
+            critter.AddComponents(transform, graphics, velocity, circleCollider, rigidbody, drag, movementControl, reproduction, colour, energy, health, brain);
 
             var eye = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(30)));
             eye.Tag = "eye1";
-            testEntity.AddChild(eye);
+            critter.AddChild(eye);
 
             eye = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(-30)));
             eye.Tag = "eye2";
-            testEntity.AddChild(eye);
+            critter.AddChild(eye);
 
 
             var mouth = Entity.FromDefinition(Mouth.GetMouth(Color.White));
-            testEntity.AddChild(mouth);
+            critter.AddChild(mouth);
             mouth.GetComponent<TransformComponent>().LocalPosition = new Vector2(15, 0);
 
+            var nose = Entity.FromDefinition(Nose.GetNose(Color.White, 0, 10));
+            nose.Tag = "nose";
+            critter.AddChild(nose);
 
-            return testEntity.ToDefinition();
+            
+
+            var weapon = Entity.FromDefinition(Weapon.GetWeapon(Color.White));
+            weapon.Tag = "weapon";
+            critter.AddChild(weapon);
+            weapon.GetComponent<TransformComponent>().LocalPosition = new Vector2(30, 0);
+
+
+            return critter.ToDefinition();
         }
 
         public static EntityDefinition GetGrabber(Texture2D texture, Color color)

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace SoupV2.NEAT
 {
-    public class Phenotype : AbstractBrain
+    public class NeatPhenotype : AbstractBrain
     {
         // Dict of node activation values indexed by node id
         // (activation values are the node inputs values with the activation function applied)
@@ -26,9 +26,9 @@ namespace SoupV2.NEAT
 
         private Dictionary<int, double> tempActivations = new Dictionary<int, double>();
 
-        public Genotype Genotype {get; set;}
+        public NeatGenotype Genotype {get; set;}
 
-        public Phenotype(Genotype genotype)
+        public NeatPhenotype(NeatGenotype genotype)
         {
             Genotype = genotype;
 
@@ -73,12 +73,12 @@ namespace SoupV2.NEAT
         public override void Calculate()
         {
             tempActivations.Clear();
+            SetInput("bias", 1);
             //Copy over all the inputs that have been set
             foreach(int nodeId in InputNodes)
             {
                 tempActivations[nodeId] = NodeActivations.GetValueOrDefault(nodeId);
             }
-
             foreach (var (nodeId, function) in NonInputNodes)
             {
                 if (Connections.TryGetValue(nodeId, out List<(int, double, int)> fromList))

@@ -26,7 +26,16 @@ namespace SoupV2.Systems
             {
                 var transform = Compatible[i].GetComponent<TransformComponent>();
                 var graphics = Compatible[i].GetComponent<GraphicsComponent>();
-                
+
+                Color filter = Color.White;
+                ColourComponent col;
+                if (Compatible[i].TryGetComponent<ColourComponent>(out col))
+                {
+                    filter = col.colour * graphics.Multiplier;
+                } else
+                {
+                    filter = graphics.Color * graphics.Multiplier;
+                }
                 if (Compatible[i].State == EntityState.Active)
                 {
 
@@ -36,7 +45,7 @@ namespace SoupV2.Systems
                             graphics.Texture,
                             dest,
                             null,
-                            graphics.Color * graphics.Multiplier,
+                            filter,
                             (float)transform.WorldRotation.Theta,
                             graphics.Texture.Bounds.Center.ToVector2(),
                             SpriteEffects.None,
@@ -46,8 +55,8 @@ namespace SoupV2.Systems
                         spriteBatch.Draw(
                             graphics.Texture,
                             transform.WorldPosition,
-                            null, 
-                            graphics.Color * graphics.Multiplier,
+                            null,
+                            filter,
                             (float)transform.WorldRotation.Theta,
                             graphics.Texture.Bounds.Center.ToVector2(),
                             transform.Scale,
