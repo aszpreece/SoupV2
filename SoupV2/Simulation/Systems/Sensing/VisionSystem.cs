@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
+using SoupV2.NEAT;
 using SoupV2.Simulation.Components;
 using SoupV2.Simulation.Grid;
 using SoupV2.util.Maths;
@@ -79,9 +80,9 @@ namespace SoupV2.Simulation.Systems
 
 
                 }
-                eye.ActivationR = (float)Math.Tanh(eye.ActivationR);
-                eye.ActivationG = (float)Math.Tanh(eye.ActivationG);
-                eye.ActivationB = (float)Math.Tanh(eye.ActivationB);
+                eye.ActivationR = (float)ActivationFunctions.Softsign(eye.ActivationR);
+                eye.ActivationG = (float)ActivationFunctions.Softsign(eye.ActivationG);
+                eye.ActivationB = (float)ActivationFunctions.Softsign(eye.ActivationB);
 
 
                 if (Compatible[i].TryGetComponent<GraphicsComponent>(out GraphicsComponent graphics))

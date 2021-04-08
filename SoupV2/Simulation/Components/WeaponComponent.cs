@@ -13,7 +13,7 @@ namespace SoupV2.Simulation.Components
         /// <summary>
         /// The health damage this wepaon does on contact per second
         /// </summary>
-        public float DamagePerSecond { get; set; }
+        public float Damage { get; set; }
 
         /// <summary>
         /// Signals if the wepaon is active. 0 = off 1 = on.

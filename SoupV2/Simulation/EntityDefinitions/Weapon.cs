@@ -40,11 +40,11 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var weaponComp = new WeaponComponent(weaponEntity)
             {
-                ActivateThreshold = 0.9f,
-                AttackCost = 0.2f,
-                AttackTimeSeconds = 0.5f,
-                CooldownTimeSeconds = 1,
-                DamagePerSecond = 30f
+                ActivateThreshold = 0.75f,
+                AttackCost = 0.1f,
+                AttackTimeSeconds = 0.1f,
+                CooldownTimeSeconds = 1.2f,
+                Damage = 34f
 
             };
 

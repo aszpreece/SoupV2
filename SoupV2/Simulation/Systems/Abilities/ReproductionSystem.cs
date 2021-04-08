@@ -4,8 +4,10 @@ using SoupV2.NEAT.Genes;
 using SoupV2.NEAT.mutation;
 using SoupV2.Simulation.Brain;
 using SoupV2.Simulation.Components;
+using SoupV2.Simulation.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace SoupV2.Simulation.Systems
@@ -17,12 +19,19 @@ namespace SoupV2.Simulation.Systems
         private InnovationIdManager _innovationIdManager;
         private EnergyManager _energyManager;
         private int _nextSpeciesIdCounter;
-        public ReproductionSystem(EntityPool pool, MutationConfig config, InnovationIdManager innovationIdManager, EnergyManager energyManager, int currentMaxSpeciesId) : base(pool, (e) => e.HasComponents(typeof(ReproductionComponent), typeof(EnergyComponent)))
+        private float _similarityThreshold;
+        private List<Species> _species = new List<Species>();
+
+        public delegate void ChildBorn(BirthEventInfo e);
+        public event ChildBorn BirthEvent;
+
+        public ReproductionSystem(EntityPool pool, MutationConfig config, InnovationIdManager innovationIdManager, EnergyManager energyManager, int currentMaxSpeciesId, float similarityThreshold) : base(pool, (e) => e.HasComponents(typeof(ReproductionComponent), typeof(EnergyComponent)))
         {
             _muationManager = new MutationManager(config);
             _innovationIdManager = innovationIdManager;
             _energyManager = energyManager;
             _nextSpeciesIdCounter = currentMaxSpeciesId + 1;
+            _similarityThreshold = similarityThreshold;
         }
 
         public void Update()
@@ -31,12 +40,12 @@ namespace SoupV2.Simulation.Systems
 
             for (int i = 0; i < Compatible.Count; i++)
             {
-                var entity = Compatible[i];
-                var reproduction = entity.GetComponent<ReproductionComponent>();
+                var parentEntity = Compatible[i];
+                var reproduction = parentEntity.GetComponent<ReproductionComponent>();
 
                 if (reproduction.Reproduce > reproduction.ReproductionThreshold)
                 {
-                    var energy = entity.GetComponent<EnergyComponent>();
+                    var energy = parentEntity.GetComponent<EnergyComponent>();
                     
                     // check if we have the energy
                     if (!energy.CanAfford(reproduction.ReproductionEnergyCost))
@@ -58,23 +67,57 @@ namespace SoupV2.Simulation.Systems
                     _energyManager.DepositEnergy(wasted);
 
                     // Some set up for the new child, setting positions/giving energy.
-                    var added = Pool.AddEntityFromDefinition(reproduction.ChildDefinitionId);
+                    var babyEntity = Pool.AddEntityFromDefinition(reproduction.ChildDefinitionId);
 
-                    added.GetComponent<EnergyComponent>().Energy = charged;
-                    added.GetComponent<TransformComponent>().LocalPosition = entity.GetComponent<TransformComponent>().LocalPosition;
+                    babyEntity.GetComponent<EnergyComponent>().Energy = charged;
+                    var parentPosition = parentEntity.GetComponent<TransformComponent>().LocalPosition;
+                    babyEntity.GetComponent<TransformComponent>().LocalPosition = parentPosition;
 
                     // The new child will need a mutated brain
-                    var originalBrain = entity.GetComponent<BrainComponent>().Brain;
-           
-                    // Messy!! But casting is necessary.
-                    NeatGenotype copy = (NeatGenotype)((NeatPhenotype)originalBrain).Genotype.Clone();
-                    _muationManager.Mutate((NeatGenotype)copy, _innovationIdManager);
-                    var newBrain = added.GetComponent<BrainComponent>();
-                    newBrain.SetBrain(new NeatPhenotype(copy));
+                    var originalBrain = parentEntity.GetComponent<BrainComponent>().Brain;
+
+        
+                    AbstractGenotype parentGenotype = ((NeatPhenotype)originalBrain).Genotype;
+                    NeatGenotype childGenotype = (NeatGenotype)parentGenotype.Clone();
+                   
+                    
+                    _muationManager.Mutate((NeatGenotype)childGenotype, _innovationIdManager);
+                    var newBrain = babyEntity.GetComponent<BrainComponent>();
+                    newBrain.SetBrain(new NeatPhenotype(childGenotype));
                     newBrain.SetUpLinks();
 
-                    if (copy.Species.)
+                    // Check what species the child should go in.
+                    // If compatible with the parent species then place it in that species.
+                    // Else, create a new species.
+                    if (parentGenotype.Species.Representative.CompareSimilarity(childGenotype) <= _similarityThreshold)
+                    {
+                        Debug.WriteLine("Old species");
+                        childGenotype.Species = parentGenotype.Species;
+                    } else
+                    {
+                        int newId = _nextSpeciesIdCounter;
+                        _nextSpeciesIdCounter++;
+                        var newSpecies = new Species()
+                        {
+                            Id = newId,
+                            Representative = childGenotype,
+                            TimeCreated = 0,
+                        };
+                        // Create new species.
+                        _species.Add(newSpecies);
+                        childGenotype.Species = newSpecies;
+                        Debug.WriteLine("New species");
+                    }
+                    BirthEventInfo e = new BirthEventInfo()
+                    {
+                        ChildGenotype = childGenotype,
+                        ChildId = babyEntity.Id,
+                        Location = parentPosition,
+                        ParentId = parentEntity.Id,
+                        TimeStamp = 0,
+                    };
 
+                    BirthEvent?.Invoke(e);
                 }
             }
         }

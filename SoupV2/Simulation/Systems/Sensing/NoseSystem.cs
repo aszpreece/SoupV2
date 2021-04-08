@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
+using SoupV2.NEAT;
 using SoupV2.Simulation.Components;
 using SoupV2.Simulation.Grid;
 using SoupV2.util.Maths;
@@ -57,7 +58,7 @@ namespace SoupV2.Simulation.Systems
                     // Debug.WriteLine($"Activated");
 #endif
                 }
-                nose.Activation = (float)Math.Tanh(nose.Activation);
+                nose.Activation = (float)ActivationFunctions.Softsign(nose.Activation);
 
 
                 if (Compatible[i].TryGetComponent<GraphicsComponent> (out GraphicsComponent graphics))

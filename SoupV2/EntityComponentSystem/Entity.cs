@@ -42,6 +42,10 @@ namespace EntityComponentSystem
         public int Id { get; set; }
         public string Tag { get; set; }
 
+        /// <summary>
+        /// The Id of this individual. This is seperate from the entity Id, which is recycled.
+        /// </summary>
+        public uint IndividualId { get; set; }
 
         /// <summary>
         /// The pool which this Entity resides in.

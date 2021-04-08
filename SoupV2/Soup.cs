@@ -218,7 +218,7 @@ namespace SoupV2
             MutationConfig mutationConfig = new MutationConfig() { Mutators = mutators };
             InnovationIdManager innovationIdManager= new InnovationIdManager(100, 100);
             //TODO remember max species ID
-            _reproductionSystem = new ReproductionSystem(_main, mutationConfig, innovationIdManager, _energyManager, 0);
+            _reproductionSystem = new ReproductionSystem(_main, mutationConfig, innovationIdManager, _energyManager, 0, 0.3f);
 
 
 
@@ -232,13 +232,20 @@ namespace SoupV2
             //_testEntity.GetComponent<EnergyComponent>().Energy = 1000;
             //_testEntity.RemoveComponent<BrainComponent>();
 
-            for (int i = 0; i < 150; i++)
+            Species originSpecies = new Species();
+            for (int i = 0; i < 300; i++)
             {
                 var testEntity = _main.AddEntityFromDefinition("Critterling");
 
                 testEntity.GetComponent<TransformComponent>().LocalPosition = new Vector2(rand.Next(WorldMinX, WorldMaxX), rand.Next(WorldMinY, WorldMaxY));
 
                 NeatGenotype genotype = new NeatGenotype();
+                genotype.Species = originSpecies;
+                if (i == 0)
+                {
+                    originSpecies.Representative = genotype;
+                }
+
                 var brainComponent = testEntity.GetComponent<BrainComponent>();
                 genotype.CreateBrain(brainComponent);
                 var phenotype = new NeatPhenotype(genotype);

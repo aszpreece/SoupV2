@@ -66,9 +66,9 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var movementControl = new MovementControlComponent(critter)
             {
-                MaxMovementForceNewtons = 10.0f,
+                MaxMovementForceNewtons = 14.0f,
                 WishForceForward = 0.0f,
-                MaxRotationForceNewtons = 6.0f,
+                MaxRotationForceNewtons = 4.6f,
             };
 
             var colour = new ColourComponent(critter)
@@ -103,17 +103,29 @@ namespace SoupV2.Simulation.EntityDefinitions
                 InputMap = new Dictionary<string, string>
                     {
                         {"eye1R", "eye1.EyeComponent.ActivationR" },
-                        {"eye1G", "eye2.EyeComponent.ActivationG" },
+                        {"eye1G", "eye1.EyeComponent.ActivationG" },
                         {"eye1B", "eye1.EyeComponent.ActivationB" },
+
                         {"eye2R", "eye2.EyeComponent.ActivationR" },
-                        {"eye2G", "eye1.EyeComponent.ActivationG" },
+                        {"eye2G", "eye2.EyeComponent.ActivationG" },
                         {"eye2B", "eye2.EyeComponent.ActivationB" },
+
+                        {"eye3R", "eye3.EyeComponent.ActivationR" },
+                        {"eye3G", "eye3.EyeComponent.ActivationG" },
+                        {"eye3B", "eye3.EyeComponent.ActivationB" },
+
+                        {"eye4R", "eye4.EyeComponent.ActivationR" },
+                        {"eye4G", "eye4.EyeComponent.ActivationG" },
+                        {"eye4B", "eye4.EyeComponent.ActivationB" },
+
                         {"mouth", "mouth.MouthComponent.Eating" },
                         {"nose", "nose.NoseComponent.Activation" },
                         {"health", "HealthComponent.HealthPercent" },
                         {"myRed", "ColourComponent.RealR" },
                         {"myGreen", "ColourComponent.RealG" },
                         {"myBlue", "ColourComponent.RealB" },
+                        {"Random", "Random" },
+
                     },
                 OutputMap = new Dictionary<string, string>
                     {
@@ -129,13 +141,21 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             critter.AddComponents(transform, graphics, velocity, circleCollider, rigidbody, drag, movementControl, reproduction, colour, energy, health, brain);
 
-            var eye = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(30)));
-            eye.Tag = "eye1";
-            critter.AddChild(eye);
+            var eye1 = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(30)));
+            eye1.Tag = "eye1";
+            critter.AddChild(eye1);
 
-            eye = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(-30)));
-            eye.Tag = "eye2";
-            critter.AddChild(eye);
+            var eye2 = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(-30)));
+            eye2.Tag = "eye2";
+            critter.AddChild(eye2);
+
+            var eye3 = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(90)));
+            eye3.Tag = "eye3";
+            critter.AddChild(eye3);
+
+            var eye4 = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(-90)));
+            eye4.Tag = "eye4";
+            critter.AddChild(eye4);
 
 
             var mouth = Entity.FromDefinition(Mouth.GetMouth(Color.White));

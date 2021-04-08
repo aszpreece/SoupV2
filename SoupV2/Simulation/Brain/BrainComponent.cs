@@ -44,6 +44,8 @@ namespace SoupV2.Simulation.Brain
             _brain = brain;
         }
 
+        static Random rand = new Random();
+        static Func<AbstractComponent, float> randomGetter = (_)=> (float)rand.NextDouble() -0.5f;
         public void SetUpLinks()
         {
             // 'Compile' brain inputs/outputs to a map of functions and their component objects.
@@ -57,8 +59,15 @@ namespace SoupV2.Simulation.Brain
                 // then store the method to get the input, the component to get it from, and the name of the input to the brain to send it to.
 
                 string[] separators = source.Split('.');
+                if (separators.Length == 1 && separators[0] == "Random" )
+                {
+                    // Get getter for random node.
+                    _brainInputs.Add((randomGetter, null, brainInput));
+                    continue;
+                }
                 if (separators.Length < 2)
                 {
+     
                     throw new InvalidMappingException(source);
                 }
                 var currentEntity = Owner;

@@ -9,6 +9,7 @@ using SoupV2.NEAT.Genes;
 using SoupV2.NEAT.mutation;
 using SoupV2.Simulation.Brain;
 using SoupV2.Simulation.Components;
+using SoupV2.Simulation.Events;
 using SoupV2.Simulation.Physics;
 
 namespace SoupV2.Simulation.Systems.Abilities
@@ -20,6 +21,9 @@ namespace SoupV2.Simulation.Systems.Abilities
 
         private List<Collision> _collisions;
         private EnergyManager _energyManager;
+
+        public delegate void AttackEvent(AttackEventInfo e);
+        public event AttackEvent OnAttack;
 
         public WeaponSystem(EntityPool pool, List<Collision> collisionList, EnergyManager energyManager) 
             : base(pool, (e) => e.HasComponent<WeaponComponent>() && e.RootEntity.HasComponent<EnergyComponent>())
@@ -112,7 +116,9 @@ namespace SoupV2.Simulation.Systems.Abilities
 
                 var healthComp = health.GetComponent<HealthComponent>();
 
-                float damage = (float)(weaponComp.DamagePerSecond * gameTime.ElapsedGameTime.TotalSeconds * gameSpeed);
+                float damage = (float)(weaponComp.Damage);
+                weaponComp.Active = 0;
+
                 healthComp.Health -= damage;
             }
         }

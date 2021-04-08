@@ -42,6 +42,7 @@ namespace EntityComponentSystem
         public int GetNextId { get => _nextEntityId++; }
         public int PeekNextId { get => _nextEntityId+1; }
 
+
         public Dictionary<string, EntityDefinition> _definitionDict = new Dictionary<string, EntityDefinition>();
 
         public EntityPool(string Id)
@@ -123,11 +124,7 @@ namespace EntityComponentSystem
         /// <param name="id"></param>
         /// <param name="parent"></param>
         internal Entity AddEntityFromDefinition(string definitionId, Entity parent=null)
-        {
-            // Try get new entity
-            int id = GetNextId;
-            Ids.Add(id);
-
+        { 
             var entity = Entity.FromDefinition(_definitionDict[definitionId]);
 
             AddDeserializedEntity(entity, parent);

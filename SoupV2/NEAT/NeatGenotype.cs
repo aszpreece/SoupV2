@@ -8,15 +8,13 @@ using System.Text;
 
 namespace SoupV2.NEAT
 {
-    public class NeatGenotype: AbstractGenotype, ICloneable
+    public class NeatGenotype: AbstractGenotype
     {
         public List<ConnectionGene> ConnectionGenes { get; }
         public List<NodeGene> NodeGenes { get; }
 
         public float? Fitness { get; set; }
         public float? AdjustedFitness { get; set; } = 0;
-
-        public Species Species { get; set; }
         
         public Dictionary<string, int> NodeNameMap { get; set; }
 
@@ -196,7 +194,7 @@ namespace SoupV2.NEAT
             return (totalDisjointGenes, totalExcessGenes, totalWeightDiff / Math.Max(1, totalSharedConnections));
         }
         
-        public object Clone()
+        public override object Clone()
         {
             return new NeatGenotype(this);
         }
@@ -218,7 +216,7 @@ namespace SoupV2.NEAT
             int connInnovationId = 0;
             Random r = new Random();
 
-            double chanceToMakeConnection = 0.7d;
+            double chanceToMakeConnection = 1d;
 
             foreach(var input in NodeGenes.FindAll((g) => g.NodeType == NodeType.INPUT || g.NodeType == NodeType.BIAS))
             {
@@ -228,7 +226,7 @@ namespace SoupV2.NEAT
                     if (r.NextDouble() < chanceToMakeConnection)
                     {
                         // Add new connection gene
-                        ConnectionGenes.Add(new ConnectionGene(connInnovationId, input.InnovationId, output.InnovationId, r.Normal(0, 1)));
+                        ConnectionGenes.Add(new ConnectionGene(connInnovationId, input.InnovationId, output.InnovationId, r.Normal(0, 1.5)));
                         connInnovationId++;
                     }
                 }

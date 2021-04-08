@@ -13,7 +13,7 @@ namespace SoupV2.Simulation.EntityDefinitions
     public static class Eye
     {
 
-        public static EntityDefinition GetEye(Color color, float angle = 0, float distFromParent = 8)
+        public static EntityDefinition GetEye(Color color, float angle = 0, float fov=60, float distFromParent = 8)
         {
             float radius = 5f;
 
@@ -38,8 +38,8 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var eyeComp = new EyeComponent(eyeEntity)
             {
-                EyeRange = 100,
-                Fov = MathHelper.ToRadians(60),
+                EyeRange = 140,
+                Fov = MathHelper.ToRadians(fov),
             };
             eyeEntity.AddComponents(transform, graphics, eyeComp);
 
