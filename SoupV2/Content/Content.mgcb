@@ -116,3 +116,9 @@
 /processorParam:TextureFormat=Color
 /build:BoxingGloveRetracted.png
 
+#begin Selected.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Selected.fx
+

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Physics
 {
-    internal class SortAndSweep : EntitySystem
+    public class SortAndSweep : EntitySystem
     {
         private List<Entity> _toRemove = new List<Entity>();
         private Func<Entity, Entity, bool> _shouldDetectCollision;

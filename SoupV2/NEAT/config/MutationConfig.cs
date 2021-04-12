@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class MutationConfig
 {
-    public List<AbstractMutator> Mutators { get; set; }
+    public List<AbstractMutator> NeatMutators { get; set; }
 
 
 }

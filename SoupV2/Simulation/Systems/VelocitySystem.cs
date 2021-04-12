@@ -9,7 +9,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Systems
 {
-    class VelocitySystem : EntitySystem
+    public class VelocitySystem : EntitySystem
     {
         public VelocitySystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(VelocityComponent)))
         {

@@ -1,0 +1,27 @@
+<Project>
+  <Project.ExportOptions Namespace="UI" Class="DbConnectUI" OutputPath="C:\Users\Tom\Source\Repos\SoupV2\SoupV2\UI" />
+  <Grid ShowGridLines="True" ColumnSpacing="8" RowSpacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid.ColumnsProportions>
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+    </Grid.ColumnsProportions>
+    <Grid.RowsProportions>
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+    </Grid.RowsProportions>
+    <Label Text="IP Address:" Id="_ipLabel" />
+    <TextBox Text="localhost" MinWidth="150" GridColumn="1" Id="_ipAddressInput" />
+    <Label Text="Port:" GridRow="1" Id="_portLabel" />
+    <TextBox Text="27017" MinWidth="150" GridColumn="1" GridRow="1" Id="_portInput" />
+    <Label Text="Username:" GridRow="2" Id="_usernameLabel" />
+    <TextBox Text="username" MinWidth="150" GridColumn="1" GridRow="2" Id="_usernameInput" />
+    <Label Text="Password:" GridRow="3" Id="_passwordLabel" />
+    <TextBox PasswordField="True" MinWidth="150" GridColumn="1" GridRow="3" Id="_passwordInput" />
+    <TextButton Text="Connect" GridRow="4" Id="_connectButton" />
+    <Label Text="Status:" MinWidth="150" GridColumn="1" GridRow="4" Id="_statusLabel" />
+    <TextButton Text="Back" GridRow="5" Id="_backButton" />
+  </Grid>
+</Project>

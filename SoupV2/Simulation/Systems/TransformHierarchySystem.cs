@@ -10,7 +10,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Systems
 {
-    class TransformHierarchySystem : EntitySystem
+    public class TransformHierarchySystem : EntitySystem
     {
         private readonly AdjacencyGrid _grid;
 

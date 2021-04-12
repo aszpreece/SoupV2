@@ -10,7 +10,7 @@ using System.Text;
 
 namespace SoupV2.Systems
 {
-    internal class RenderSystem : EntitySystem
+    public class RenderSystem : EntitySystem
     {
         public RenderSystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(GraphicsComponent)))
         {
@@ -28,10 +28,10 @@ namespace SoupV2.Systems
                 var graphics = Compatible[i].GetComponent<GraphicsComponent>();
 
                 Color filter = Color.White;
-                ColourComponent col;
-                if (Compatible[i].TryGetComponent<ColourComponent>(out col))
+                VisibleColourComponent col;
+                if (Compatible[i].TryGetComponent<VisibleColourComponent>(out col))
                 {
-                    filter = col.colour * graphics.Multiplier;
+                    filter = col.Colour * graphics.Multiplier;
                 } else
                 {
                     filter = graphics.Color * graphics.Multiplier;

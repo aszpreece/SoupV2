@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace SoupV2.Simulation.Components
@@ -12,6 +13,8 @@ namespace SoupV2.Simulation.Components
         : AbstractComponent
     {
         public GraphicsComponent(Entity owner): base(owner) { }
+        
+        [Browsable(false)]
         public Texture2D Texture { get; set; }
         public Color Color { get; set; } = Color.White;
 

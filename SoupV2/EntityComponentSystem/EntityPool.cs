@@ -138,7 +138,7 @@ namespace EntityComponentSystem
         /// <param name="entity"></param>
         /// <param name="id"></param>
         /// <param name="parent"></param>
-        private void AddDeserializedEntity(Entity entity, Entity parent = null)
+        public void AddDeserializedEntity(Entity entity, Entity parent = null)
         {
 
             entity.Id = GetNextId;
@@ -246,6 +246,15 @@ namespace EntityComponentSystem
         public void EntityDetachedFromParent(Entity parent, Entity child)
         {
            DetachedFromParent?.Invoke(parent, child);
+        }
+
+        public static bool IsValidTag(string text)
+        {
+            if (text != null && text != string.Empty)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

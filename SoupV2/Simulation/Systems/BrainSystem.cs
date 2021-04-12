@@ -1,12 +1,13 @@
 ﻿using EntityComponentSystem;
 using SoupV2.Simulation.Brain;
+using SoupV2.Simulation.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SoupV2.Simulation.Systems
 {
-    class BrainSystem : EntitySystem
+    public class BrainSystem : EntitySystem
     {
         public BrainSystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(BrainComponent)))
         {

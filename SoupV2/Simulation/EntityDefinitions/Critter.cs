@@ -59,19 +59,18 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var drag = new DragComponent(critter)
             {
-                MovementDragCoefficient = 0.5f,
-                RotationDragCoefficient = 10f
+                MovementDragCoefficient = 0.1f,
+                RotationDragCoefficient = 16f
 
             };
 
             var movementControl = new MovementControlComponent(critter)
             {
-                MaxMovementForceNewtons = 14.0f,
-                WishForceForward = 0.0f,
-                MaxRotationForceNewtons = 4.6f,
+                MaxMovementForceNewtons = 10.0f,
+                MaxRotationForceNewtons = 3.0f,
             };
 
-            var colour = new ColourComponent(critter)
+            var colour = new VisibleColourComponent(critter)
             {
 
             };
@@ -87,7 +86,7 @@ namespace SoupV2.Simulation.EntityDefinitions
                 ReproductionEnergyCost = 8f,
                 Reproduce = 0,
                 ReproductionThreshold = 0.5f,
-                RequiredRemaining = 1f,
+                RequiredRemainingEnergy = 1f,
                 ChildDefinitionId = "Critterling"
             };
 
@@ -121,9 +120,9 @@ namespace SoupV2.Simulation.EntityDefinitions
                         {"mouth", "mouth.MouthComponent.Eating" },
                         {"nose", "nose.NoseComponent.Activation" },
                         {"health", "HealthComponent.HealthPercent" },
-                        {"myRed", "ColourComponent.RealR" },
-                        {"myGreen", "ColourComponent.RealG" },
-                        {"myBlue", "ColourComponent.RealB" },
+                        {"myRed", "VisibleColourComponent.RealR" },
+                        {"myGreen", "VisibleColourComponent.RealG" },
+                        {"myBlue", "VisibleColourComponent.RealB" },
                         {"Random", "Random" },
 
                     },
@@ -132,9 +131,9 @@ namespace SoupV2.Simulation.EntityDefinitions
                         {"forwardback", "MovementControlComponent.WishForceForward" },
                         {"rotation", "MovementControlComponent.WishRotForce" },
                         {"reproduce", "ReproductionComponent.Reproduce" },
-                        {"red", "ColourComponent.R" },
-                        {"green", "ColourComponent.G" },
-                        {"blue", "ColourComponent.B" },
+                        {"red", "VisibleColourComponent.R" },
+                        {"green", "VisibleColourComponent.G" },
+                        {"blue", "VisibleColourComponent.B" },
                         {"attack", "weapon.WeaponComponent.Activation" }
                     }
             };

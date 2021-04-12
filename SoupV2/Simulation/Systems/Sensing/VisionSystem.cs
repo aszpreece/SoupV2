@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SoupV2.Simulation.Systems
 {
@@ -21,17 +22,18 @@ namespace SoupV2.Simulation.Systems
 
         public void Update()
         {
-            for (int i = 0; i < Compatible.Count; i++)
+            Parallel.For(0, Compatible.Count, (i) =>
+            //for (int i = 0; i < Compatible.Count; i++)
             {
                 var transform = Compatible[i].GetComponent<TransformComponent>();
                 var eye = Compatible[i].GetComponent<EyeComponent>();
-                var nearby =_grid.GetNearbyEntities(transform.WorldPosition, eye.EyeRange, (e) => e.HasComponent<ColourComponent>());
+                var nearby = _grid.GetNearbyEntities(transform.WorldPosition, eye.EyeRange, (e) => e.HasComponent<VisibleColourComponent>());
 
                 eye.ActivationR = 0;
                 eye.ActivationG = 0;
                 eye.ActivationB = 0;
 
-                foreach (var(distSqr, entity) in nearby)
+                foreach (var (distSqr, entity) in nearby)
                 {
                     if (distSqr <= 0)
                     {
@@ -53,8 +55,8 @@ namespace SoupV2.Simulation.Systems
 
                     //eyeRot: {MathHelper.ToDegrees(transform.WorldRotation.Theta)}, diffAngle: {MathHelper.ToDegrees(diffAngle)}, 
 #if DEBUG
-                   // Debug.WriteLine($"Diff {diffAngle}");
-                   //Debug.WriteLine($"angleBetween {MathHelper.ToDegrees(angleBetween)}");
+                    // Debug.WriteLine($"Diff {diffAngle}");
+                    //Debug.WriteLine($"angleBetween {MathHelper.ToDegrees(angleBetween)}");
 #endif
                     // Check in fov
                     // if not continue;
@@ -67,7 +69,7 @@ namespace SoupV2.Simulation.Systems
                         continue;
                     }
 
-                    var targetColour= entity.GetComponent<ColourComponent>();
+                    var targetColour = entity.GetComponent<VisibleColourComponent>();
 
                     var distMult = (eye.EyeRangeSquared / distSqr);
                     eye.ActivationR += distMult * targetColour.R;
@@ -95,7 +97,7 @@ namespace SoupV2.Simulation.Systems
                     graphics.Color = Color.Lerp(graphics.Color, newCol, 0.1f);
 
                 }
-            }
+            });
         }
 
     }

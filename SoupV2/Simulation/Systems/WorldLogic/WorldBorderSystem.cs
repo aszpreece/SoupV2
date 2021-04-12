@@ -9,7 +9,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Systems
 {
-    class WorldBorderSystem : EntitySystem
+    public class WorldBorderSystem : EntitySystem
     {
         public int WorldWidth { get; private set; }
         public int WorldHeight { get; private set; }

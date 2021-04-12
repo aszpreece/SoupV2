@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 using EntityComponentSystem.Exceptions;
@@ -23,45 +24,58 @@ namespace EntityComponentSystem
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="component"></param>
+        [Browsable(false)]	
         public delegate void EntityComponentChanged(Entity entity, AbstractComponent component);
-
+        [Browsable(false)]
         public delegate void EntityRelationshipChanged(Entity parent, Entity child);
 
         /// <summary>
         /// Events
         /// </summary>
+        [Browsable(false)]
         public event EntityComponentChanged ComponentAdded;
+        [Browsable(false)]
         public event EntityComponentChanged ComponentRemoved;
-
+        [Browsable(false)]
         public event EntityRelationshipChanged MadeChild;
+        [Browsable(false)]
         public event EntityRelationshipChanged DetachedFromParent;
 
+        [Browsable(false)]
+        [JsonIgnore]
         public (int, int)? Cell { get; set; }
 
         [JsonIgnore]
+        [Browsable(false)]
         public int Id { get; set; }
         public string Tag { get; set; }
 
         /// <summary>
         /// The Id of this individual. This is seperate from the entity Id, which is recycled.
         /// </summary>
+        [Browsable(false)]
         public uint IndividualId { get; set; }
 
         /// <summary>
         /// The pool which this Entity resides in.
         /// </summary>
         [JsonIgnore]
+        [Browsable(false)]
         public EntityPool OwnerPool { get; set; }
 
         /// <summary>
         /// The set of this entitities' components
         /// </summary>
         //public List<AbstractComponent> Components { get; set; } = new List<AbstractComponent>();
+        [Browsable(false)]
+
         public Dictionary<int, AbstractComponent> Components { get; set; } = new Dictionary<int, AbstractComponent>();
 
         /// <summary>
         /// The map of this entity's children indexed by entity tag.
         /// </summary>
+        /// 
+        [Browsable(false)]
         public Dictionary<string, Entity> Children { get; set; } = new Dictionary<string, Entity>();
 
         /// <summary>
@@ -69,6 +83,7 @@ namespace EntityComponentSystem
         /// Is null if this Entity is root
         /// </summary>
         [JsonIgnore]
+        [Browsable(false)]
         public Entity Parent { get; set; }
 
         /// <summary>
@@ -76,6 +91,7 @@ namespace EntityComponentSystem
         /// This Entity is called "root"
         /// </summary>
         [JsonIgnore]
+        [Browsable(false)]
         public Entity RootEntity 
         {
             get 
@@ -101,6 +117,7 @@ namespace EntityComponentSystem
         /// Holds the current state of this Entity
         /// </summary>
         [JsonIgnore]
+        [Browsable(false)]
         public EntityState State { get; internal set; } = EntityState.Active;
 
         public Entity()
@@ -338,7 +355,7 @@ namespace EntityComponentSystem
                 return false;
 
             if (!componentType.IsComponent())
-                throw new Exception("One or more of the types you passed were not IComponent children.");
+                throw new Exception("One or more of the types you passed were not AbstractComponent children..");
 
             return Components.ContainsKey(componentType.GetHashCode());
         }

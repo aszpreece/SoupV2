@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace EntityComponentSystem
 {
@@ -8,6 +9,7 @@ namespace EntityComponentSystem
         private readonly int _hash;
 
         [JsonIgnore]
+        [Browsable(false)]
         public Entity Owner { get; set;  }
         public AbstractComponent(Entity owner)
         {

@@ -31,15 +31,15 @@ namespace Test
                 }
             };
 
-            MutationConfig config = new MutationConfig() { Mutators = mutators };
+            MutationConfig config = new MutationConfig() { NeatMutators = mutators };
             
             JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
             var json = JsonConvert.SerializeObject(config, settings);
 
             MutationConfig deserializedConfig = JsonConvert.DeserializeObject<MutationConfig>(json, settings);
 
-            Assert.IsTrue(deserializedConfig.Mutators[0] is ConnectionWeightMutator);
-            Assert.IsTrue(deserializedConfig.Mutators[1] is SplitConnectionMutator);
+            Assert.IsTrue(deserializedConfig.NeatMutators[0] is ConnectionWeightMutator);
+            Assert.IsTrue(deserializedConfig.NeatMutators[1] is SplitConnectionMutator);
 
         }
     }

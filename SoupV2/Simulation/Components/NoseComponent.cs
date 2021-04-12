@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace SoupV2.Simulation.Components
 {
@@ -12,6 +13,7 @@ namespace SoupV2.Simulation.Components
         } 
 
         [JsonIgnore]
+        [Browsable(false)]
         public float Activation { get; set; }
 
         /// <summary>
@@ -25,8 +27,11 @@ namespace SoupV2.Simulation.Components
             get => _noseRange;
             set
             {
-                _noseRange = value;
-                _noseRangeSquared = value * value;
+                if (value > 0)
+                {
+                    _noseRange = value;
+                    _noseRangeSquared = value * value;
+                }
             }
         }
 

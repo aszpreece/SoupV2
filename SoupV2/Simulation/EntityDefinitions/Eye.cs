@@ -38,7 +38,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var eyeComp = new EyeComponent(eyeEntity)
             {
-                EyeRange = 140,
+                EyeRange = 50,
                 Fov = MathHelper.ToRadians(fov),
             };
             eyeEntity.AddComponents(transform, graphics, eyeComp);

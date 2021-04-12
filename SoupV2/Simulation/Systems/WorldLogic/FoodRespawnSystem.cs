@@ -12,7 +12,7 @@ namespace SoupV2.Simulation.Systems
 
     }
 
-    class FoodRespawnSystem
+    public class FoodRespawnSystem
     {
         private EntityPool _pool;
         private EnergyManager _energyManager;

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace SoupV2.Simulation.Components
@@ -14,22 +15,46 @@ namespace SoupV2.Simulation.Components
         {
 
         }
+
+        private float _maxMovementForceNewtons = 1.0f;
         /// <summary>
         /// The maximum amount of movement force that can be exterted.
         /// </summary>
-        public float MaxMovementForceNewtons { get; set; } = 1.0f;
+        public float MaxMovementForceNewtons {
+            get => _maxMovementForceNewtons;
+            set
+            {
+                if (value >= 0)
+                {
+                    _maxMovementForceNewtons = value;
+                }
+            }
+        }
+
+        private float _maxRotationForceNewtons = 1.0f;
+
         /// <summary>
         /// The maximum amount of rotational force that can be exterted.
         /// </summary>
-        public float MaxRotationForceNewtons { get; set; } = 1.0f;
+        public float MaxRotationForceNewtons {
+            get => _maxMovementForceNewtons;
+            set
+            {
+                if (value >= 0)
+                {
+                    _maxMovementForceNewtons = value;
+                }
+            }
+        }
 
         /// <summary>
         /// The percentage (represented as a number between -1 and 1) of the maximum movement force that is wished to be exterted.
         /// </summary>
+        [Browsable(false)]
+        [Control]
         public float WishForceForward
         {
              get;
-            [Control]
             set; } = 0.0f;
 
 
@@ -37,9 +62,9 @@ namespace SoupV2.Simulation.Components
         /// The percentage (represented as a number between -1 and 1) of the maximum rotational force that is wished to be exterted.
         /// </summary>
         [Control]
+        [Browsable(false)]
         public float WishRotForce { 
             get;
-            [Control]
             set; 
         } = 0.0f;
 
@@ -48,6 +73,7 @@ namespace SoupV2.Simulation.Components
         /// Same as WishForceForward * MaxMovementForceNewtons
         /// </summary>
         [JsonIgnore]
+        [Browsable(false)]
         public float ForwardForce
         {
             get
@@ -61,6 +87,7 @@ namespace SoupV2.Simulation.Components
         /// Same as WishRotForce * MaxRotationForceNewtons
         /// </summary>
         [JsonIgnore]
+        [Browsable(false)]
         public float RotationForce
         {
             get

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SoupV2.Simulation.Components;
+using System;
 
 namespace SoupV2.Simulation.Brain
 {

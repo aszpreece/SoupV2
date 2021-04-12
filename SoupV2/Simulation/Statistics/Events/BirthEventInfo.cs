@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Events
 {
-    class BirthEventInfo : AbstractEventInfo
+    public class BirthEventInfo : AbstractEventInfo
     {
         public int ParentId { get; set; }
         public int ChildId { get; set; }

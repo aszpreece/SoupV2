@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace SoupV2.Simulation.Components
@@ -19,6 +20,7 @@ namespace SoupV2.Simulation.Components
         /// Signals if the wepaon is active. 0 = off 1 = on.
         /// </summary>
         [JsonIgnore]
+        [Browsable(false)]
         public float Active { get; set; }
 
         /// <summary>
@@ -49,6 +51,7 @@ namespace SoupV2.Simulation.Components
         /// </summary>
         [Control]
         [JsonIgnore]
+        [Browsable(false)]
         public float Activation { get; set; }
 
         /// <summary>

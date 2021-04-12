@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Text;
 using SoupV2.util;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using SoupV2.Simulation.Brain;
 
-namespace SoupV2.Simulation.Brain
+namespace SoupV2.Simulation.Components
 {
 
     /// <summary>
@@ -21,6 +23,7 @@ namespace SoupV2.Simulation.Brain
         private AbstractBrain _brain;
 
         [JsonIgnore]
+        [Browsable(false)]
         public AbstractBrain Brain { get => _brain; }
 
         /// <summary>

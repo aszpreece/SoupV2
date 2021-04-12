@@ -5,6 +5,7 @@ using SoupV2.NEAT.Genes;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace SoupV2.Simulation.Components
@@ -14,6 +15,7 @@ namespace SoupV2.Simulation.Components
 
         [JsonIgnore]
         [Control]
+        [Browsable(false)]
         // Control whether to try and reproduce
         public float Reproduce { get; set; }
 
@@ -26,7 +28,7 @@ namespace SoupV2.Simulation.Components
 
         // The amount of energy that it takes to give birth
         public float ReproductionEnergyCost { get; set; }
-        public float RequiredRemaining { get; set; }
+        public float RequiredRemainingEnergy { get; set; }
         public float Efficency { get; set; }
 
         public ReproductionComponent(Entity owner) : base(owner)

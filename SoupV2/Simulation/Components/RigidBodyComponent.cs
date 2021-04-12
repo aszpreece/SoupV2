@@ -18,6 +18,7 @@ namespace SoupV2.Simulation.Components
 
         }
 
+
         public float Mass
         {
             get
@@ -26,8 +27,15 @@ namespace SoupV2.Simulation.Components
             }
             set
             {
-                _inv_mass = 1.0f / value;
-                _mass = value;
+                if (value > 0)
+                {
+                    _inv_mass = 1.0f / value;
+                    _mass = value;
+                } else if(value == 0)
+                {
+                    _inv_mass = 0;
+                    _mass = value;
+                }
             }
         }
 

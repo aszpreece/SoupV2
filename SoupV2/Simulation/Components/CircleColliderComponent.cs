@@ -4,9 +4,10 @@ using Newtonsoft.Json;
 using SoupV2.Simulation.Components;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
-namespace SoupV2.Simulation.Physics
+namespace SoupV2.Simulation.Components
 {
     class CircleColliderComponent : AbstractComponent
     {
@@ -14,12 +15,24 @@ namespace SoupV2.Simulation.Physics
         [JsonIgnore]
         public TransformComponent Transform { get; set; }
 
-        public float Radius { get; set; } = 1.0f;
+        private float _radius = 1.0f;
+        public float Radius {
+            get => _radius;
+            set
+            {
+                if (value >= 0)
+                {
+                    _radius = value;
+                }
+            }
+        }
 
         [JsonIgnore]
+        [Browsable(false)]
         public Vector2 Position { get; set; } = Vector2.Zero;
 
         [JsonIgnore]
+        [Browsable(false)]
         public bool Colliding
         {
             get
@@ -29,6 +42,7 @@ namespace SoupV2.Simulation.Physics
         }
 
         [JsonIgnore]
+        [Browsable(false)]
         public List<CircleColliderComponent> Collisions { get; internal set; } = new List<CircleColliderComponent>();
 
         public CircleColliderComponent(Entity owner) : base(owner)

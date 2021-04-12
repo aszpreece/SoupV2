@@ -33,7 +33,7 @@ namespace SoupV2.Simulation.EntityDefinitions
                 Color = color
             };
 
-            var colourComp = new ColourComponent(foodEntity)
+            var colourComp = new VisibleColourComponent(foodEntity)
             {
                 RealR = 0.9f,
                 RealB = 0.05f,

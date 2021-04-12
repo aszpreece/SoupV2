@@ -1,5 +1,7 @@
-﻿using SoupV2.NEAT.Genes;
+﻿using Newtonsoft.Json;
+using SoupV2.NEAT.Genes;
 using SoupV2.Simulation.Brain;
+using SoupV2.Simulation.Components;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
@@ -20,8 +22,7 @@ namespace SoupV2.NEAT
 
         public int ConnectionIdStart { get; private set; } = 0;
         public int NodeIdStart { get; private set; } = 0;
-        public NeatPhenotype Phenotype { get; internal set; }
-
+        
         public NeatGenotype(NeatGenotype other)
         {
             // Node name map does not need copying as it should remain the same between different genomes

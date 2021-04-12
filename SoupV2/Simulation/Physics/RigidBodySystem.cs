@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Physics
 {
-    class RigidBodySystem : EntitySystem
+    public class RigidBodySystem : EntitySystem
     {
         public RigidBodySystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(RigidBodyComponent), typeof(VelocityComponent), typeof(CircleColliderComponent)))
         {

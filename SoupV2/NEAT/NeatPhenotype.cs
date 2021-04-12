@@ -64,8 +64,6 @@ namespace SoupV2.NEAT
 
             }
 
-            genotype.Phenotype = this;
-
             this.NodeNameMap = genotype.NodeNameMap;
         }
          

@@ -1,0 +1,24 @@
+<Project>
+  <Project.ExportOptions Namespace="UI" Class="ExperimentSetUpUI" OutputPath="C:\Users\Tom\Source\Repos\SoupV2\SoupV2\UI" />
+  <Grid ColumnSpacing="8" RowSpacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid ShowGridLines="True" ColumnSpacing="8" RowSpacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Grid.ColumnsProportions>
+        <Proportion Type="Auto" />
+        <Proportion Type="Auto" />
+      </Grid.ColumnsProportions>
+      <Grid.RowsProportions>
+        <Proportion Type="Auto" />
+        <Proportion Type="Auto" />
+      </Grid.RowsProportions>
+      <TextButton Text="Load Settings" Id="_loadSettingsButton" />
+      <TextButton Text="Save Settings" GridColumn="1" Id="_saveSettingsButton" />
+      <TextButton Text="Edit Settings" GridRow="1" Id="_editSettingsButton" />
+      <Label Text="Statistics Output:" GridRow="2" Id="_saveExperimentLabel" />
+      <ComboBox GridColumn="1" GridRow="2" Id="_settingsDestinationComboBox" />
+      <TextButton Text="Browse Statistics File..." GridRow="3" Id="_browseFileButton" />
+      <Label GridColumn="1" GridRow="3" Id="_currentFilePathLabel" />
+      <TextButton Text="Start Experiment" GridColumn="1" GridRow="4" Id="_beginButton" />
+      <TextButton Text="Back" GridRow="4" Id="_backButton" />
+    </Grid>
+  </Grid>
+</Project>

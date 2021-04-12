@@ -12,7 +12,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Systems
 {
-    class ReproductionSystem : EntitySystem
+    public class ReproductionSystem : EntitySystem
     {
 
         private MutationManager _muationManager;
@@ -52,7 +52,7 @@ namespace SoupV2.Simulation.Systems
                     {
                         continue;
                     }
-                    if (energy.Energy - reproduction.ReproductionEnergyCost < reproduction.RequiredRemaining)
+                    if (energy.Energy - reproduction.ReproductionEnergyCost < reproduction.RequiredRemainingEnergy)
                     {
                         continue;
                     }
@@ -97,10 +97,15 @@ namespace SoupV2.Simulation.Systems
                     {
                         int newId = _nextSpeciesIdCounter;
                         _nextSpeciesIdCounter++;
+
+                        // Create representative for species
+                        NeatGenotype rep = (NeatGenotype)childGenotype.Clone();
+                        rep.Species = null;
+
                         var newSpecies = new Species()
                         {
                             Id = newId,
-                            Representative = childGenotype,
+                            Representative = rep,
                             TimeCreated = 0,
                         };
                         // Create new species.

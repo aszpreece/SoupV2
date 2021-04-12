@@ -180,7 +180,63 @@ namespace SoupV2.Simulation.Grid
             }
 
         }
-        
+
+
+
+        /// <summary>
+        /// Returns a pair of distance squared and entities within the given range
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="WURadius"></param>
+        /// <returns>(distance from point squared, entity)</returns>
+        public IEnumerable<(float, Entity)> GetEntitiesInFov(Vector2 pos, float WURadius, float angle, float fov, Func<Entity, bool> predicate = null)
+        {
+
+            //find top left of range to check
+            float tlx = pos.X - WURadius;
+            float tly = pos.Y - WURadius;
+            var tl = ClampToWorldCoords((tlx, tly));
+
+            // find bottom right of range to check
+            float brx = pos.X + WURadius;
+            float bry = pos.Y + WURadius;
+            var br = ClampToWorldCoords((brx, bry));
+
+            var (ctlx, ctly) = WorldCoordsToCellCoords(tl);
+            var (cbrx, cbry) = WorldCoordsToCellCoords(br);
+
+            float rs = WURadius * WURadius;
+
+            // Future optimization: use circle arithmetic to check if cell is in circle
+            // If top left of circle in radius + 1 wu cell?
+
+            for (int x = ctlx; x <= cbrx; x++)
+            {
+                for (int y = ctly; y <= cbry; y++)
+                {
+                    // Yield entities in this cell
+                    if (predicate is null)
+                    {
+                        predicate = AlwaysTrue;
+                    }
+                    var inRange = _cells[x, y].Entities
+                        .Where(e => e.IsActive())
+                        .Where(predicate)
+                        .Select((entity) => ((pos - entity.GetComponent<TransformComponent>().WorldPosition)
+                        .LengthSquared(), entity))
+                        .Where((pair) => pair.Item1 < rs);
+
+                    foreach (var p in inRange)
+                    {
+                        yield return p;
+                    }
+
+                }
+
+            }
+
+        }
+
         /// <summary>
         /// Clamps int coordinates to valid grid coords
         /// </summary>

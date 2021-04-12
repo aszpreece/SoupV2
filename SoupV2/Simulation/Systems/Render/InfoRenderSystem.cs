@@ -9,7 +9,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Systems
 {
-    class InfoRenderSystem : EntitySystem
+    public class InfoRenderSystem : EntitySystem
     {
         public InfoRenderSystem(EntityPool pool) : base(pool, (e) => e.HasComponent(typeof(TransformComponent)) && (e.HasComponent<EnergyComponent>() || e.HasComponent<HealthComponent>() || e.HasComponent<WeaponComponent>()))
         {

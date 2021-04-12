@@ -3,9 +3,14 @@ namespace SoupV2.UI
 {
 	public partial class MainUI
 	{
-		public MainUI()
+		public MainUI(Soup soup)
 		{
 			BuildUI();
+
+			_quit.Selected += (s, a) =>
+			{
+				soup.EndExperiment();
+			};
 		}
 	}
 }

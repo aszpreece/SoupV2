@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SoupV2.Simulation
+namespace SoupV2.Simulation 
 {
-    class EnergyManager
+    public class EnergyManager
     {
         public float Energy { get; private set; }
 

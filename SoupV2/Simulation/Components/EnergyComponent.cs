@@ -7,7 +7,19 @@ namespace SoupV2.Simulation.Components
 {
     public class EnergyComponent : AbstractComponent 
     {
-        public float Energy { get; set; }
+        private float _energy;
+        public float Energy { get => _energy;
+            set
+            {
+                if (value < 0)
+                {
+                    _energy = 0;
+                } else
+                {
+                    _energy = value;
+                }
+            }
+        }
 
         public EnergyComponent(Entity owner) : base(owner)
         {

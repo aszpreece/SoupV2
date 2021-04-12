@@ -13,7 +13,7 @@ namespace SoupV2.NEAT.Genes
 
         public MutationManager(MutationConfig config)
         {
-            Mutators = config.Mutators;
+            Mutators = config.NeatMutators;
         }
 
         /// <summary>

@@ -4,8 +4,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Events.DeathCause
 {
-    class HealthDeathCause
+    public class AbstractDeathCause
     {
-        public int LastDamagedByEntityId;
     }
 }

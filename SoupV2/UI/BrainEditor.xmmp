@@ -1,0 +1,26 @@
+<Project>
+  <Project.ExportOptions Namespace="UI" Class="BrainEditor" OutputPath="C:\Users\Tom\Source\Repos\SoupV2\SoupV2\UI" />
+  <Grid ShowGridLines="True" ColumnSpacing="8" RowSpacing="8">
+    <Grid.ColumnsProportions>
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+    </Grid.ColumnsProportions>
+    <Grid.RowsProportions>
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+    </Grid.RowsProportions>
+    <Label Text="Inputs" />
+    <Label Text="Outputs" GridColumn="1" />
+    <ScrollViewer MaxHeight="150" GridRow="1">
+      <ListBox Id="_inputList" />
+    </ScrollViewer>
+    <ScrollViewer MaxHeight="150" GridColumn="1" GridRow="1">
+      <ListBox Id="_outputList" />
+    </ScrollViewer>
+    <TextButton Text="Remove Selected" GridRow="2" Id="_removeSelectedInput" />
+    <TextButton Text="Remove Selected" GridColumn="1" GridRow="2" Id="_removeSelectedOutput" />
+    <TextButton Text="Add Input" GridRow="3" Id="_addInputButton" />
+    <TextButton Text="Add Output" GridColumn="1" GridRow="3" Id="_addOutputButton" />
+  </Grid>
+</Project>

@@ -16,7 +16,7 @@ namespace SoupV2.Simulation.Systems.Abilities
 {
 
 
-    class WeaponSystem : EntitySystem
+    public class WeaponSystem : EntitySystem
     {
 
         private List<Collision> _collisions;
@@ -120,6 +120,7 @@ namespace SoupV2.Simulation.Systems.Abilities
                 weaponComp.Active = 0;
 
                 healthComp.Health -= damage;
+                OnAttack.Invoke(new AttackEventInfo(weapon.Id, health.Id, damage));
             }
         }
 

@@ -5,6 +5,7 @@ using SoupV2.Simulation.Exceptions;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace SoupV2.Simulation.Components
@@ -12,6 +13,7 @@ namespace SoupV2.Simulation.Components
     public class TransformComponent
          : AbstractComponent
     {
+        [Browsable(false)]
         public bool Dirty { get; set; }
 
 
@@ -31,6 +33,7 @@ namespace SoupV2.Simulation.Components
 
 
         [JsonIgnore]
+        [Browsable(false)]
         public Vector2 WorldPosition { get; internal set; }= new Vector2(0, 0);
 
         private Rotation _localRotation;
@@ -48,6 +51,7 @@ namespace SoupV2.Simulation.Components
         }
 
         [JsonIgnore]
+        [Browsable(false)]
         public Rotation WorldRotation { get; set; } = new Rotation(0);
 
 
@@ -68,6 +72,7 @@ namespace SoupV2.Simulation.Components
         }
 
         [JsonIgnore]
+        [Browsable(false)]
         public float WorldDepth { get; set; } = 0;
 
         public delegate void TransformChange(TransformComponent transform);
@@ -80,6 +85,7 @@ namespace SoupV2.Simulation.Components
         }
 
         [JsonIgnore]
+        [Browsable(false)]
         public Vector2 WorldForward {
             get {
                 return new Vector2((float)Math.Cos(WorldRotation.Theta), (float)Math.Sin(WorldRotation.Theta));
@@ -87,6 +93,7 @@ namespace SoupV2.Simulation.Components
         }
 
         [JsonIgnore]
+        [Browsable(false)]
         public Vector2 WorldLeft
         {
             get

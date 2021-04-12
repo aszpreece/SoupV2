@@ -1,0 +1,6 @@
+<Project>
+  <Project.ExportOptions Namespace="UI" Class="ErrorBox" OutputPath="C:\Users\Tom\Source\Repos\SoupV2\SoupV2\UI" />
+  <Window Title="Error" Left="693" Top="205" Id="_errorWindow" >
+    <Label Id="_message" />
+  </Window>
+</Project>

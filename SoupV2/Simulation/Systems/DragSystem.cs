@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.Systems
 {
-    class DragSystem : EntitySystem
+    public class DragSystem : EntitySystem
     {
         private float _massDensity;
         public DragSystem(EntityPool pool, float massDensity) : base(pool, 
@@ -33,7 +33,7 @@ namespace SoupV2.Simulation.Systems
 
                     //vel squared version
                     //var dragForce = 0.5f * dragComponent.DragCoefficient * dir * velocity.Velocity.LengthSquared() * _massDensity;
-                    var dragForce = 0.5f * dragComponent.MovementDragCoefficient *  velocity.Velocity * _massDensity;
+                    var dragForce = dragComponent.MovementDragCoefficient *  velocity.Velocity * _massDensity;
 
                     rigidBody.ApplyForce(-dragForce);
                 }

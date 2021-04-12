@@ -10,7 +10,7 @@ namespace SoupV2.Simulation.Systems.Energy
     /// <summary>
     /// Charges entities with energy and a movement control system for the movement they make
     /// </summary>
-    class MovementControlEnergyCostSystem : EntitySystem
+    public class MovementControlEnergyCostSystem : EntitySystem
     {
         public float CostPerNewtonPerSecond { get; set; } = 0.0025f;
         private EnergyManager _energyManager;

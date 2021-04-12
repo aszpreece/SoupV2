@@ -18,6 +18,7 @@
     <None Remove="Content\bin\DesktopGL\eye.xnb" />
     <None Remove="Content\bin\DesktopGL\mouth.xnb" />
     <None Remove="Content\bin\DesktopGL\pirateship.xnb" />
+    <None Remove="Content\bin\DesktopGL\Selected.xnb" />
     <None Remove="Content\bin\DesktopGL\soup.xnb" />
     <None Remove="Content\bin\DesktopGL\SoupNose.xnb" />
     <None Remove="Icon.ico" />
@@ -48,6 +49,9 @@
     <Content Include="Content\bin\DesktopGL\pirateship.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\bin\DesktopGL\Selected.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bin\DesktopGL\soup.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -64,14 +68,5 @@
   </ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.12.2" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-    <PackageReference Include="Myra" Version="1.2.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\" />
   </ItemGroup>
 </Project>
