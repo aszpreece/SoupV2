@@ -25,7 +25,7 @@ namespace SoupV2.Simulation.Systems
         public delegate void ChildBorn(BirthEventInfo e);
         public event ChildBorn BirthEvent;
 
-        public ReproductionSystem(EntityPool pool, MutationConfig config, InnovationIdManager innovationIdManager, EnergyManager energyManager, int currentMaxSpeciesId, float similarityThreshold) : base(pool, (e) => e.HasComponents(typeof(ReproductionComponent), typeof(EnergyComponent)))
+        public ReproductionSystem(EntityPool pool, NeatMutationConfig config, InnovationIdManager innovationIdManager, EnergyManager energyManager, int currentMaxSpeciesId, float similarityThreshold) : base(pool, (e) => e.HasComponents(typeof(ReproductionComponent), typeof(EnergyComponent)))
         {
             _muationManager = new MutationManager(config);
             _innovationIdManager = innovationIdManager;

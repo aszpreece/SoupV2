@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SoupV2\SoupV2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Forms\Controls\SoupGraphicControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Forms\NewExperiment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\SimulationTabContent.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+
+</Project>

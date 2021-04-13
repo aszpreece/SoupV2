@@ -19,7 +19,7 @@ namespace SoupV2.Simulation.Systems.Energy
             _energyManager = energyManager;
         }
 
-        public void Update(GameTime gameTime, float gameSpeed)
+        public void Update(float gameSpeed)
         {
             for (int i = 0; i < Compatible.Count; i++)
             {
@@ -27,7 +27,7 @@ namespace SoupV2.Simulation.Systems.Energy
                 var energy = movementEntity.GetComponent<EnergyComponent>();
                 var movement = movementEntity.GetComponent<MovementControlComponent>();
 
-                float extertedMove = (float)(Math.Abs(movement.ForwardForce) * CostPerNewtonPerSecond * gameTime.ElapsedGameTime.TotalSeconds * gameSpeed);
+                float extertedMove = (float)(Math.Abs(movement.ForwardForce) * CostPerNewtonPerSecond * gameSpeed);
                 
                 //Figure out if we can afford the energy for both movement and rotation
                 if (!energy.CanAfford(extertedMove))
@@ -40,7 +40,7 @@ namespace SoupV2.Simulation.Systems.Energy
                 _energyManager.DepositEnergy(energy.ChargeEnergy(extertedMove));
                 
 
-                float extertedRotate = (float)(Math.Abs(movement.RotationForce) * CostPerNewtonPerSecond * gameTime.ElapsedGameTime.TotalSeconds * gameSpeed);
+                float extertedRotate = (float)(Math.Abs(movement.RotationForce) * CostPerNewtonPerSecond * gameSpeed);
 
                 if (!energy.CanAfford(extertedRotate))
                 {

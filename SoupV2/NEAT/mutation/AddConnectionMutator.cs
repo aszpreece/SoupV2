@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SoupV2.NEAT.mutation
 {
-    class AddConnectionMutator : AbstractMutator
+    public class AddConnectionMutator : AbstractMutator
     {
         public bool AllowRecurrentConns { get; set; }
         public float NewWeightStd { get; set; }

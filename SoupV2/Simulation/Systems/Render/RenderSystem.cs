@@ -17,10 +17,10 @@ namespace SoupV2.Systems
             
         }
 
-        public void Draw(SpriteBatch spriteBatch, Camera _camera)
+        public void Draw(SpriteBatch spriteBatch, Matrix camera)
         {
 
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, null, null, null, null, null, _camera.GetViewTransformationMatrix());
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, null, null, null, null, null, camera);
 
             for (int i = 0; i < Compatible.Count; i++)
             {

@@ -13,7 +13,7 @@ namespace SoupV2.Simulation.Physics
         {
 
         }
-        public void Update(GameTime gameTime, float gameSpeed)
+        public void Update(float gameSpeed)
         {
             
 
@@ -27,14 +27,14 @@ namespace SoupV2.Simulation.Physics
 
                 //f = ma
                 //a = f*1/m
-                velocity.Velocity += rigidbody.Force * rigidbody.InvMass * (float)gameTime.ElapsedGameTime.TotalSeconds * gameSpeed;
+                velocity.Velocity += rigidbody.Force * rigidbody.InvMass * gameSpeed;
 
                 //Angular acceleration = torque(N/m)/Moment of Inertia(Kg/m^2)
                 // Moment of inertia = 1/2(mass)(radius^2)
 
                 var momentOfInertia = 0.5f * collider.Radius * collider.Radius * rigidbody.Mass;
 
-                var moment = rigidbody.Torque / momentOfInertia * (float)gameTime.ElapsedGameTime.TotalSeconds * gameSpeed;
+                var moment = rigidbody.Torque / momentOfInertia  * gameSpeed;
 
                 velocity.RotationalVelocity += moment;
 

@@ -16,7 +16,7 @@ namespace SoupV2.Simulation.Systems
             _collisions = collisionList;
         }
 
-        public void Update(GameTime gameTime, float gameSpeed)
+        public void Update(float gameSpeed)
         {
             foreach (Entity mouth in Compatible)
             {
@@ -53,7 +53,7 @@ namespace SoupV2.Simulation.Systems
                 //Find energy in mouth family tree
                 var mouthEnergy = mouth.RootEntity.GetComponent<EnergyComponent>();
 
-                float taken = foodEnergy.ChargeEnergy((float)(mouthComp.EnergyPerSecond * gameTime.ElapsedGameTime.TotalSeconds * gameSpeed));
+                float taken = foodEnergy.ChargeEnergy((float)(mouthComp.EnergyPerSecond * gameSpeed));
                 mouthEnergy.DepositEnergy(taken);
 
             }

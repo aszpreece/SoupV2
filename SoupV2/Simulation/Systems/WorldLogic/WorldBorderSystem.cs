@@ -24,7 +24,7 @@ namespace SoupV2.Simulation.Systems
             WorldHeightRadius = worldHeight / 2;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             for(int i = 0; i < Compatible.Count; i ++)
             {
@@ -56,9 +56,9 @@ namespace SoupV2.Simulation.Systems
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Camera camera)
+        public void Draw(SpriteBatch spriteBatch, Matrix camera)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, camera.GetViewTransformationMatrix());
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, camera);
             spriteBatch.FillRectangle(new Rectangle(-WorldWidthRadius, -WorldHeightRadius, WorldWidth, WorldHeight), Color.Gray);
             spriteBatch.End();
         }

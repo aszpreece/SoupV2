@@ -32,12 +32,13 @@ namespace SoupV2.Simulation.Systems.Abilities
             _energyManager = energyManager;
         }
 
-        public void Update(GameTime gameTime, float gameSpeed)
+        public void Update(float gameSpeed)
         {
             for (int i = 0; i < Compatible.Count; i++)
             {
 
-                float timeElapsed = (float)(gameTime.ElapsedGameTime.TotalSeconds * gameSpeed);
+                float timeElapsed = gameSpeed;
+
                 var entity = Compatible[i];
                 var weapon = entity.GetComponent<WeaponComponent>();
 
@@ -120,7 +121,7 @@ namespace SoupV2.Simulation.Systems.Abilities
                 weaponComp.Active = 0;
 
                 healthComp.Health -= damage;
-                OnAttack.Invoke(new AttackEventInfo(weapon.Id, health.Id, damage));
+                OnAttack?.Invoke(new AttackEventInfo(weapon.Id, health.Id, damage));
             }
         }
 

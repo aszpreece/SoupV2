@@ -11,9 +11,12 @@ namespace SoupV2.NEAT.Genes
 
         public List<AbstractMutator> Mutators { get; set; }
 
-        public MutationManager(MutationConfig config)
+        public MutationManager(NeatMutationConfig config)
         {
-            Mutators = config.NeatMutators;
+            Mutators.Add(config.AddConnectionMutator);
+            Mutators.Add(config.SplitConnectionMutator);
+            Mutators.Add(config.ConnectionWeightMutator);
+
         }
 
         /// <summary>

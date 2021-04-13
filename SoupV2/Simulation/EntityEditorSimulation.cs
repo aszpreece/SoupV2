@@ -30,9 +30,9 @@ namespace SoupV2.Simulation
         }
         public bool Pause { get; set; } = true;
 
-        public EntityEditorSimulation(GameWindow window, SimulationSettings settings) : base(window, settings, Statistics.StatLoggers.StatLogDestination.NONE)
+        public EntityEditorSimulation(GameWindow window, SimulationSettings settings) : base(settings)
         {
-            _camera.Zoom = 1f;
+            //_camera.Zoom = 1f;
     
         }
 
@@ -48,7 +48,7 @@ namespace SoupV2.Simulation
 
             if (EditTarget.HasComponent<TransformComponent>())
             {
-                _camera.Position = EditTarget.GetComponent<TransformComponent>().WorldPosition;
+                //_camera.Position = EditTarget.GetComponent<TransformComponent>().WorldPosition;
             }
             var kbState = Keyboard.GetState();
 
@@ -92,7 +92,7 @@ namespace SoupV2.Simulation
 
             _movementControlSystem.Update();
             // If these systems have energy costs remember to update those systems before anything else happens, in case we need to cancel it
-            _movementControlEnergyCostSystem.Update(gameTime, 1);
+            _movementControlEnergyCostSystem.Update(1);
 
             // These systems gather collisions between certain types of entities that are processed by other systems
             _rigidbodyCollisionSystem.GetCollisions();
@@ -101,19 +101,19 @@ namespace SoupV2.Simulation
 
             // Update the aforementioned systems to process the collisions
             _rigidBodyCollisionSystem.Update();
-            _mouthFoodCollisionSystem.Update(gameTime, 1);
-            _weaponSystem.Update(gameTime, 1);
+            _mouthFoodCollisionSystem.Update(1);
+            _weaponSystem.Update(1);
 
             // Calculate forces acting upon each body
-            _rigidBodySystem.Update(gameTime, 1);
+            _rigidBodySystem.Update(1);
             _dragSystem.Update();
 
             // bounce entities on edge of the world
-            _worldBorderSystem.Update(gameTime);
+            _worldBorderSystem.Update();
             // Actually modify transforms
-            _velocitySystem.Update(gameTime, 1);
+            _velocitySystem.Update(1);
 
-            _foodRespawnSystem.Update(gameTime, 1);
+            _foodRespawnSystem.Update(1);
             //At the end of each loop update the hierarchy system so that it renders correctly and everything is ready for the next loop
             _transformHierarchySystem.Update();
         }

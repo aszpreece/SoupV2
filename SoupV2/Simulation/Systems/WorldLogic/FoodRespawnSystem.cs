@@ -33,9 +33,9 @@ namespace SoupV2.Simulation.Systems
         private float timer = 0;
         private float _foodEnergy = 3;
         private float freeSpaceWU = 30f;
-        public void Update(GameTime gameTime, float gameSpeed)
+        public void Update(float gameSpeed)
         {
-            timer += (float)(gameTime.ElapsedGameTime.TotalSeconds * gameSpeed);
+            timer += gameSpeed;
             if (timer >= _delaySeconds && _energyManager.CanAfford(_foodEnergy))
             {
                 timer = 0;

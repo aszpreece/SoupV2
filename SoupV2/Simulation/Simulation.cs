@@ -51,8 +51,8 @@ namespace SoupV2.Simulation
         protected WeaponSystem _weaponSystem;
         protected AdjacencyGrid _grid;
 
-        private float _gameSpeed = 1.0f;
-        private float _maxGameSpeed = 5.0f;
+        private float _gameSpeed = 1/30f;
+
         private int _worldWidth = 4000;
         private int _worldHeight = 4000;
 
@@ -61,21 +61,12 @@ namespace SoupV2.Simulation
         public int WorldMinY { get => -_worldHeight / 2; }
         public int WorldMaxY { get => _worldHeight / 2; }
 
-        protected Thread _statisticsHandlerThread;
-        protected StatisticsGatherer _statisticsGatherer;
-        protected IStatLogger _statLogger;
-        protected string _statFile;
-
-        protected Camera _camera;
         SimulationSettings _settings;
-        StatLogDestination _statDestination;
         
-        public Simulation(GameWindow window, SimulationSettings settings, StatLogDestination statDestination, string statFile = null)
+        public Simulation(SimulationSettings settings)
         {
-            _statFile = statFile;
-            _statDestination = statDestination;
+
             _settings = settings;
-            _camera = new Camera(window);
             _grid = new AdjacencyGrid(_settings.WorldWidth, _settings.WorldHeight, 25);
 
             _main = new EntityPool("Main Pool");
@@ -128,7 +119,7 @@ namespace SoupV2.Simulation
 
             InnovationIdManager innovationIdManager = new InnovationIdManager(100, 100);
             //TODO remember max species ID
-            _reproductionSystem = new ReproductionSystem(_main, _settings.MutationConfig, innovationIdManager, _energyManager, 0, _settings.SpeciesCompatabilityThreshold);
+            //_reproductionSystem = new ReproductionSystem(_main, _settings.MutationConfig, innovationIdManager, _energyManager, 0, _settings.SpeciesCompatabilityThreshold);
 
         }
 
@@ -139,10 +130,6 @@ namespace SoupV2.Simulation
             _main.AddDefinition("Critterling", Critter.GetCritter(TextureAtlas.Circle, Color.Blue));
             _main.AddDefinition("Grabber", Critter.GetGrabber(TextureAtlas.Circle, Color.Green));
             _main.AddDefinition("Food", FoodPellets.GetFoodPellet(Color.White));
-
-            //_testEntity = _main.AddEntityFromDefinition("Critterling");
-            //_testEntity.GetComponent<EnergyComponent>().Energy = 1000;
-            //_testEntity.RemoveComponent<BrainComponent>();
 
             Species originSpecies = new Species();
             for (int i = 0; i < 300; i++)
@@ -173,65 +160,33 @@ namespace SoupV2.Simulation
                 foodEntity.GetComponent<TransformComponent>().LocalPosition = new Vector2(rand.Next(WorldMinX, WorldMaxX), rand.Next(WorldMinY, WorldMaxY));
             }
 
-            _statisticsGatherer = new StatisticsGatherer();
-            if (_statDestination == StatLogDestination.FILE)
-            {
-                _statLogger = new FileStatLogger(_statisticsGatherer, _statFile);
-            }
-            _statisticsHandlerThread = new Thread(() =>
-            {
-                _statLogger?.LogStats();
-            });
-            _statisticsHandlerThread.Start();
+            //_statisticsGatherer = new StatisticsGatherer();
+            //if (_statDestination == StatLogDestination.FILE)
+            //{
+            //    _statLogger = new FileStatLogger(_statisticsGatherer, _statFile);
+            //}
+            //_statisticsHandlerThread = new Thread(() =>
+            //{
+            //    _statLogger?.LogStats();
+            //});
+            //_statisticsHandlerThread.Start();
             // set up event hooks.
-            _reproductionSystem.BirthEvent += _statisticsGatherer.HandleInfo;
-            _weaponSystem.OnAttack += _statisticsGatherer.HandleInfo;
-            _healthDeathSystem.OnDeath += _statisticsGatherer.HandleInfo;
-            _energyDeathSystem.OnDeath += _statisticsGatherer.HandleInfo;
+            //_reproductionSystem.BirthEvent += _statisticsGatherer.HandleInfo;
+            //_weaponSystem.OnAttack += _statisticsGatherer.HandleInfo;
+            //_healthDeathSystem.OnDeath += _statisticsGatherer.HandleInfo;
+            //_energyDeathSystem.OnDeath += _statisticsGatherer.HandleInfo;
             // _rigidbodyCollisionSystem.OnCollision += _statisticsGatherer.HandleInfo;
         }
 
-        public void Stop()
-        {
-            _statisticsHandlerThread.Interrupt();
-            _statisticsHandlerThread.Join();
-        }
+        //public void Stop()
+        //{
+        //    _statisticsHandlerThread.Interrupt();
+        //    _statisticsHandlerThread.Join();
+        //}
 
-
-        private float _cameraMoveSpeed = 500;
-        private float _cameraZoomSpeed = 5;
         public virtual void Update(GameTime gameTime)
         {
-            var kbState = Keyboard.GetState();
-            if (kbState.IsKeyDown(Keys.Z))
-            {
-                _camera.Zoom += _cameraZoomSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            else if (kbState.IsKeyDown(Keys.X))
-            {
-                _camera.Zoom -= _cameraZoomSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-
-            if (kbState.IsKeyDown(Keys.Up))
-            {
-                _camera.Position += new Vector2(0, -1) * (float)gameTime.ElapsedGameTime.TotalSeconds * _cameraMoveSpeed;
-            }
-            else if (kbState.IsKeyDown(Keys.Down))
-            {
-                _camera.Position += new Vector2(0, 1) * (float)gameTime.ElapsedGameTime.TotalSeconds * _cameraMoveSpeed;
-            }
-
-
-            if (kbState.IsKeyDown(Keys.Left))
-            {
-                _camera.Position += new Vector2(-1, 0) * (float)gameTime.ElapsedGameTime.TotalSeconds * _cameraMoveSpeed;
-            }
-            else if (kbState.IsKeyDown(Keys.Right))
-            {
-                _camera.Position += new Vector2(1, 0) * (float)gameTime.ElapsedGameTime.TotalSeconds * _cameraMoveSpeed;
-            }
-
-
+            //Ignore gametime. We are only bothered about ticks.
 
             // Make sure all the dead things are removed in case they interfere with other systems
             _energyDeathSystem.Update();
@@ -246,7 +201,7 @@ namespace SoupV2.Simulation
             _reproductionSystem.Update();
             _movementControlSystem.Update();
             // If these systems have energy costs remember to update those systems before anything else happens, in case we need to cancel it
-            _movementControlEnergyCostSystem.Update(gameTime, _gameSpeed);
+            _movementControlEnergyCostSystem.Update(_gameSpeed);
 
             // These systems gather collisions between certain types of entities that are processed by other systems
             _rigidbodyCollisionSystem.GetCollisions();
@@ -255,32 +210,32 @@ namespace SoupV2.Simulation
 
             // Update the aforementioned systems to process the collisions
             _rigidBodyCollisionSystem.Update();
-            _mouthFoodCollisionSystem.Update(gameTime, _gameSpeed);
-            _weaponSystem.Update(gameTime, _gameSpeed);
+            _mouthFoodCollisionSystem.Update(_gameSpeed);
+            _weaponSystem.Update(_gameSpeed);
 
             // Calculate forces acting upon each body
-            _rigidBodySystem.Update(gameTime, _gameSpeed);
+            _rigidBodySystem.Update(_gameSpeed);
             _dragSystem.Update();
 
             // bounce entities on edge of the world
-            _worldBorderSystem.Update(gameTime);
+            _worldBorderSystem.Update();
             // Actually modify transforms
-            _velocitySystem.Update(gameTime, _gameSpeed);
+            _velocitySystem.Update(_gameSpeed);
 
-            _foodRespawnSystem.Update(gameTime, _gameSpeed);
+            _foodRespawnSystem.Update(_gameSpeed);
             //At the end of each loop update the hierarchy system so that it renders correctly and everything is ready for the next loop
             _transformHierarchySystem.Update();
         }
 
 
-        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, Matrix camera)
         {
-            _worldBorderSystem.Draw(spriteBatch, _camera);
+            _worldBorderSystem.Draw(spriteBatch, camera);
 #if DEBUG
             //_grid.DrawGrid(_spriteBatch, _camera);
 #endif
-            _renderSystem.Draw(spriteBatch, _camera);
-            _infoRenderSystem.Draw(spriteBatch, _camera);
+            _renderSystem.Draw(spriteBatch, camera);
+            _infoRenderSystem.Draw(spriteBatch, camera);
         }
     }
 }

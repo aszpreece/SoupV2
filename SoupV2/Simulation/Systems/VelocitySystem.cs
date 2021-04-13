@@ -16,15 +16,15 @@ namespace SoupV2.Simulation.Systems
 
         }
 
-        public void Update(GameTime gameTime, float gameSpeed)
+        public void Update(float gameSpeed)
         {
             for (int i = 0; i < Compatible.Count; i++)
             {
                 var transform = Compatible[i].GetComponent<TransformComponent>();
                 var velocity = Compatible[i].GetComponent<VelocityComponent>();
 
-                transform.LocalPosition += velocity.Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds * gameSpeed;
-                transform.LocalRotation += velocity.RotationalVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds * gameSpeed;
+                transform.LocalPosition += velocity.Velocity * gameSpeed;
+                transform.LocalRotation += velocity.RotationalVelocity * gameSpeed;
 
             }
 

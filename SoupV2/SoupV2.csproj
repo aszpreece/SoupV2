@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows7.0</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
@@ -10,12 +10,18 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="UI\**" />
+    <EmbeddedResource Remove="UI\**" />
+    <None Remove="UI\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Content\bin\DesktopGL\BoxingGloveExtended.xnb" />
     <None Remove="Content\bin\DesktopGL\BoxingGloveRetracted.xnb" />
     <None Remove="Content\bin\DesktopGL\circle.xnb" />
     <None Remove="Content\bin\DesktopGL\default_font.spritefont" />
     <None Remove="Content\bin\DesktopGL\Energy.xnb" />
     <None Remove="Content\bin\DesktopGL\eye.xnb" />
+    <None Remove="Content\bin\DesktopGL\Logo_Shadow_256.xnb" />
     <None Remove="Content\bin\DesktopGL\mouth.xnb" />
     <None Remove="Content\bin\DesktopGL\pirateship.xnb" />
     <None Remove="Content\bin\DesktopGL\Selected.xnb" />
@@ -43,6 +49,9 @@
     <Content Include="Content\bin\DesktopGL\eye.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\bin\DesktopGL\Logo_Shadow_256.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bin\DesktopGL\mouth.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -65,6 +74,15 @@
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="Myra" Version="1.2.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MonoGame.Forms\MonoGame.Forms.DX\MonoGame.Forms.DX.csproj" />
   </ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />

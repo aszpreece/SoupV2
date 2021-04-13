@@ -82,16 +82,16 @@ namespace EntityComponentSystem
         /// The Entity which this Entity is a child of
         /// Is null if this Entity is root
         /// </summary>
-        [JsonIgnore]
         [Browsable(false)]
+        [JsonIgnore]
         public Entity Parent { get; set; }
 
         /// <summary>
         /// Walks up all the parents of this Entity and returns the top one
         /// This Entity is called "root"
         /// </summary>
-        [JsonIgnore]
         [Browsable(false)]
+        [JsonIgnore]
         public Entity RootEntity 
         {
             get 
