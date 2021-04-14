@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SoupV2.Simulation.Systems
 {
@@ -21,7 +22,8 @@ namespace SoupV2.Simulation.Systems
 
         public void Update()
         {
-            for (int i = 0; i < Compatible.Count; i++)
+            //for (int i = 0; i < Compatible.Count; i++)
+            Parallel.For(0, Compatible.Count, (i) =>
             {
                 var transform = Compatible[i].GetComponent<TransformComponent>();
                 var nose = Compatible[i].GetComponent<NoseComponent>();
@@ -61,7 +63,7 @@ namespace SoupV2.Simulation.Systems
                 nose.Activation = (float)ActivationFunctions.Softsign(nose.Activation);
 
 
-                if (Compatible[i].TryGetComponent<GraphicsComponent> (out GraphicsComponent graphics))
+                if (Compatible[i].TryGetComponent<GraphicsComponent>(out GraphicsComponent graphics))
                 {
                     var newCol = new Color(
                         (float)Math.Max(nose.Activation, 0.3),
@@ -70,7 +72,7 @@ namespace SoupV2.Simulation.Systems
 
                     graphics.Color = Color.Lerp(graphics.Color, newCol, 0.1f);
                 }
-            }
+            });
         }
 
     }

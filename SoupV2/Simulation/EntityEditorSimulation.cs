@@ -79,43 +79,43 @@ namespace SoupV2.Simulation
                 }
             }
 
-            _energyDeathSystem.Update();
-            _healthDeathSystem.Update();
+            //EnergyDeathSystem.Update();
+            //HealthDeathSystem.Update();
 
-            // Update all systems that regard input values before updating brains
-            _visionSystem.Update();
-            _noseSystem.Update();
+            //// Update all systems that regard input values before updating brains
+            //_visionSystem.Update();
+            //_noseSystem.Update();
 
-            _brainSystem.Update();
-            // Following this update all systems that regard output
-            _reproductionSystem.Update();
+            //_brainSystem.Update();
+            //// Following this update all systems that regard output
+            //ReproductionSystem.Update();
 
-            _movementControlSystem.Update();
-            // If these systems have energy costs remember to update those systems before anything else happens, in case we need to cancel it
-            _movementControlEnergyCostSystem.Update(1);
+            //_movementControlSystem.Update();
+            //// If these systems have energy costs remember to update those systems before anything else happens, in case we need to cancel it
+            //_movementControlEnergyCostSystem.Update(1);
 
-            // These systems gather collisions between certain types of entities that are processed by other systems
-            _rigidbodyCollisionSystem.GetCollisions();
-            _mouthCollisionSystem.GetCollisions();
-            _weaponHealthCollisionSystem.GetCollisions();
+            //// These systems gather collisions between certain types of entities that are processed by other systems
+            //_rigidbodyCollisionSystem.GetCollisions();
+            //_mouthCollisionSystem.GetCollisions();
+            //_weaponHealthCollisionSystem.GetCollisions();
 
-            // Update the aforementioned systems to process the collisions
-            _rigidBodyCollisionSystem.Update();
-            _mouthFoodCollisionSystem.Update(1);
-            _weaponSystem.Update(1);
+            //// Update the aforementioned systems to process the collisions
+            //RigidbodyCollisionSystem.Update();
+            //MouthFoodCollisionSystem.Update(1);
+            //WeaponSystem.Update(1);
 
-            // Calculate forces acting upon each body
-            _rigidBodySystem.Update(1);
-            _dragSystem.Update();
+            //// Calculate forces acting upon each body
+            //_rigidBodySystem.Update(1);
+            //_dragSystem.Update();
 
-            // bounce entities on edge of the world
-            _worldBorderSystem.Update();
-            // Actually modify transforms
-            _velocitySystem.Update(1);
+            //// bounce entities on edge of the world
+            //WorldBorderSystem.Update();
+            //// Actually modify transforms
+            //_velocitySystem.Update(1);
 
-            _foodRespawnSystem.Update(1);
-            //At the end of each loop update the hierarchy system so that it renders correctly and everything is ready for the next loop
-            _transformHierarchySystem.Update();
+            //FoodRespawnSystem.Update(1);
+            ////At the end of each loop update the hierarchy system so that it renders correctly and everything is ready for the next loop
+            //_transformHierarchySystem.Update();
         }
     }
 }

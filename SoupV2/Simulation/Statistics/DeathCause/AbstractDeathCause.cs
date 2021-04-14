@@ -4,7 +4,8 @@ using System.Text;
 
 namespace SoupV2.Simulation.Events.DeathCause
 {
-    public class AbstractDeathCause
+    public abstract class AbstractDeathCause
     {
+        public abstract override string ToString();
     }
 }

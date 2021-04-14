@@ -4,6 +4,7 @@ using SoupV2.Simulation.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SoupV2.Simulation.Physics
 {
@@ -16,10 +17,7 @@ namespace SoupV2.Simulation.Physics
         }
         public void Update()
         {
-            foreach(Collision c in _collisions)
-            {
-                ResolveCollision(c.E1, c.E2, c.Normal);
-            }
+            Parallel.ForEach(_collisions, (c) => ResolveCollision(c.E1, c.E2, c.Normal));
         }
 
         private void ResolveCollision(Entity e1, Entity e2, Vector2 collisionNormal)

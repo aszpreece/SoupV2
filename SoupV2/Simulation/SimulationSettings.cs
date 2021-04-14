@@ -34,10 +34,10 @@ namespace SoupV2.Simulation
         [DisplayName("Old Age Speed Multiplier")]
         public float OldAgeMultiplier { get; set; } = 1.0f;
 
-        //[CategoryAttribute("Mutation"), DescriptionAttribute("Slows down or speed up aging.")]
-        //[DisplayName("Mutation Config")]
-        //[TypeConverter(typeof(ExpandableObjectConverter))]
-        //public NeatMutationConfig MutationConfig { get; set; } = new NeatMutationConfig();
+        [CategoryAttribute("Mutation"), DescriptionAttribute("Slows down or speed up aging.")]
+        [DisplayName("Mutation Config")]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public NeatMutationConfig MutationConfig { get; set; } = new NeatMutationConfig();
 
         [CategoryAttribute("Reproduction"), DescriptionAttribute("Defines the compatibility for young to be placed into their parent's species, or create a new one. Lower values mean more unique species.")]
         [DisplayName("Species Compatability Threshold")]

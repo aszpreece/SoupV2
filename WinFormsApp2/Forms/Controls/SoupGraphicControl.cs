@@ -26,8 +26,8 @@ namespace SoupForm.Controls
             TextureAtlas.Load(Editor.Content);
             SpriteBatchExtension.InitSpriteBatchExtension(Editor.graphics);
             Editor.BackgroundColor = new Color(20, 19, 40);
-            CurrentSimulation = new Simulation(new SimulationSettings());
             CurrentSimulation.Initialize();
+            Editor.Cam.Zoom = 0.1f;
         }
 
         protected override void Update(GameTime gameTime)
@@ -35,35 +35,6 @@ namespace SoupForm.Controls
             // Stop visual studio crashing.
             if (DesignMode)
                 return;
-
-            var kbState = Keyboard.GetState();
-            if (kbState.IsKeyDown(Keys.Up))
-            {
-                Editor.Cam.Zoom += 4 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            else if (kbState.IsKeyDown(Keys.Down))
-            {
-                Editor.Cam.Zoom -= 4 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-
-            if (kbState.IsKeyDown(Keys.Up))
-            {
-                Editor.Cam.Move(new Vector2(0, -1) * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
-            }
-            else if (kbState.IsKeyDown(Keys.Down))
-            {
-                Editor.Cam.Move(new Vector2(0, 1) * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
-            }
-
-
-            if (kbState.IsKeyDown(Keys.Left))
-            {
-                Editor.Cam.Move(new Vector2(-1, 0) * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
-            }
-            else if (kbState.IsKeyDown(Keys.Right))
-            {
-                Editor.Cam.Move(new Vector2(1, 0) * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
-            }
 
             base.Update(gameTime);
             // TODO change to be based on ticks.
@@ -79,7 +50,7 @@ namespace SoupForm.Controls
             base.Draw();
 
             Editor.ShowCamPosition = true;
-            Editor.Cam.Zoom = 0.1f;
+
 
             CurrentSimulation.Draw(Editor.spriteBatch, Editor.Cam.GetTransformation());
 

@@ -34,7 +34,7 @@ namespace SoupV2.Simulation.Systems
             _similarityThreshold = similarityThreshold;
         }
 
-        public void Update()
+        public void Update(uint tick)
         {
             Random r = new Random();
 
@@ -91,7 +91,6 @@ namespace SoupV2.Simulation.Systems
                     // Else, create a new species.
                     if (parentGenotype.Species.Representative.CompareSimilarity(childGenotype) <= _similarityThreshold)
                     {
-                        Debug.WriteLine("Old species");
                         childGenotype.Species = parentGenotype.Species;
                     } else
                     {
@@ -111,17 +110,8 @@ namespace SoupV2.Simulation.Systems
                         // Create new species.
                         _species.Add(newSpecies);
                         childGenotype.Species = newSpecies;
-                        Debug.WriteLine("New species");
                     }
-                    BirthEventInfo e = new BirthEventInfo()
-                    {
-                        ChildGenotype = childGenotype,
-                        ChildId = babyEntity.Id,
-                        Location = parentPosition,
-                        ParentId = parentEntity.Id,
-                        TimeStamp = 0,
-                    };
-
+                    BirthEventInfo e = new BirthEventInfo(parentPosition, tick, parentEntity.Id, babyEntity.Id, childGenotype);
                     BirthEvent?.Invoke(e);
                 }
             }

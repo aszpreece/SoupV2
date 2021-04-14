@@ -8,5 +8,10 @@ namespace SoupV2.Simulation.Events.DeathCause
     {
         public string Cause { get; } = "Health";
         public int LastDamagedByEntityId { get; set; }
+
+        public override string ToString()
+        {
+            return Cause;
+        }
     }
 }

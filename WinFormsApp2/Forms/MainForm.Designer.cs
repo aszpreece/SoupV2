@@ -33,6 +33,7 @@ namespace SoupForm.Forms
             this.simulationMenuStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.newSimulationButton = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.endSimulationButton = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +50,8 @@ namespace SoupForm.Forms
             // simulationMenuStrip
             // 
             this.simulationMenuStrip.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newSimulationButton});
+            this.newSimulationButton,
+            this.endSimulationButton});
             this.simulationMenuStrip.Name = "simulationMenuStrip";
             this.simulationMenuStrip.Size = new System.Drawing.Size(76, 20);
             this.simulationMenuStrip.Text = "Simulation";
@@ -68,6 +70,12 @@ namespace SoupForm.Forms
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(800, 426);
             this.tabControl1.TabIndex = 1;
+            // 
+            // endSimulationButton
+            // 
+            this.endSimulationButton.Name = "endSimulationButton";
+            this.endSimulationButton.Size = new System.Drawing.Size(158, 22);
+            this.endSimulationButton.Text = "End Simulation";
             // 
             // MainForm
             // 
@@ -92,5 +100,6 @@ namespace SoupForm.Forms
         private System.Windows.Forms.ToolStripMenuItem simulationMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem newSimulationButton;
         private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.ToolStripMenuItem endSimulationButton;
     }
 }

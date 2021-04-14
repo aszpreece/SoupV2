@@ -17,9 +17,18 @@
     <Compile Update="Forms\NewExperiment.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forms\SimulationTabContent - Copy.Designer.cs">
+      <DependentUpon>SimulationTabContent.Designer.cs</DependentUpon>
+    </Compile>
     <Compile Update="Forms\SimulationTabContent.cs">
       <SubType>UserControl</SubType>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Forms\SimulationTabContent - Copy.resx">
+      <DependentUpon>SimulationTabContent.resx</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

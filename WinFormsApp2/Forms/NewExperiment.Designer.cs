@@ -34,7 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.loadSettingsButton = new System.Windows.Forms.Button();
             this.saveSettingsButton = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.saveStatsCheckBox = new System.Windows.Forms.CheckBox();
             this.saveStatsButton = new System.Windows.Forms.Button();
             this.statsFileLocation = new System.Windows.Forms.Label();
             this.openSettingsDialog = new System.Windows.Forms.OpenFileDialog();
@@ -97,15 +97,16 @@
             this.saveSettingsButton.UseVisualStyleBackColor = true;
             this.saveSettingsButton.Click += new System.EventHandler(this.saveSettingsButton_Click);
             // 
-            // checkBox1
+            // saveStatsCheckBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(3, 25);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(99, 19);
-            this.checkBox1.TabIndex = 5;
-            this.checkBox1.Text = "Save Statistics";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.saveStatsCheckBox.AutoSize = true;
+            this.saveStatsCheckBox.Location = new System.Drawing.Point(3, 25);
+            this.saveStatsCheckBox.Name = "saveStatsCheckBox";
+            this.saveStatsCheckBox.Size = new System.Drawing.Size(99, 19);
+            this.saveStatsCheckBox.TabIndex = 5;
+            this.saveStatsCheckBox.Text = "Save Statistics";
+            this.saveStatsCheckBox.UseVisualStyleBackColor = true;
+            this.saveStatsCheckBox.CheckedChanged += new System.EventHandler(this.saveStatsCheckBox_CheckedChanged);
             // 
             // saveStatsButton
             // 
@@ -156,7 +157,7 @@
             // 
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.experimentNameBox);
-            this.panel1.Controls.Add(this.checkBox1);
+            this.panel1.Controls.Add(this.saveStatsCheckBox);
             this.panel1.Controls.Add(this.statsFileLocation);
             this.panel1.Controls.Add(this.saveStatsButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -232,7 +233,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button loadSettingsButton;
         private System.Windows.Forms.Button saveSettingsButton;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox saveStatsCheckBox;
         private System.Windows.Forms.Button saveStatsButton;
         private System.Windows.Forms.Label statsFileLocation;
         private System.Windows.Forms.OpenFileDialog openSettingsDialog;

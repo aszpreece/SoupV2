@@ -18,7 +18,7 @@ namespace SoupV2.Simulation.Systems
 
         }
 
-        public void Update()
+        public void Update(uint tick)
         {
             List<Entity> toDestroy = new List<Entity>();
 
@@ -30,7 +30,10 @@ namespace SoupV2.Simulation.Systems
                 if (energy.Energy <= 0)
                 {
                     toDestroy.Add(entity);
-                    OnDeath?.Invoke(new DeathEventInfo(entity.Id, new EnergyDeathCause()));
+                    var transform = entity.GetComponent<TransformComponent>();
+                    OnDeath?.Invoke(new DeathEventInfo(transform.WorldPosition, tick, entity.Id, new EnergyDeathCause()) {
+                        Location = entity.GetComponent<TransformComponent>().WorldPosition
+                    });
                 }
             }
             foreach(var e in toDestroy)

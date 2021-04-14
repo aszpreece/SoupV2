@@ -24,31 +24,43 @@ namespace SoupV2.Simulation
     public class Simulation
     {
 
+        /// <summary>
+        /// Protected 'boring' systems. These do not expose any interesting fields.
+        /// </summary>
         protected EntityPool _main;
         protected RenderSystem _renderSystem;
         protected TransformHierarchySystem _transformHierarchySystem;
         protected VelocitySystem _velocitySystem;
-
         protected SortAndSweep _rigidbodyCollisionSystem;
         protected SortAndSweep _mouthCollisionSystem;
         protected SortAndSweep _weaponHealthCollisionSystem;
-        protected RigidBodySystem _rigidBodySystem;
-        protected DragSystem _dragSystem;
         protected MovementControlSystem _movementControlSystem;
+        protected DragSystem _dragSystem;
         protected BrainSystem _brainSystem;
-        protected ReproductionSystem _reproductionSystem;
-        protected WorldBorderSystem _worldBorderSystem;
         protected VisionSystem _visionSystem;
-        protected RigidBodyCollisionSystem _rigidBodyCollisionSystem;
-        protected MouthFoodCollisionSystem _mouthFoodCollisionSystem;
-        protected EnergyDeathSystem _energyDeathSystem;
-        protected InfoRenderSystem _infoRenderSystem;
-        protected FoodRespawnSystem _foodRespawnSystem;
+        protected RigidBodySystem _rigidBodySystem;
+        protected NoseSystem _noseSystem;
         protected MovementControlEnergyCostSystem _movementControlEnergyCostSystem;
         protected EnergyManager _energyManager;
-        protected NoseSystem _noseSystem;
-        protected HealthDeathSystem _healthDeathSystem;
-        protected WeaponSystem _weaponSystem;
+
+        /// <summary>
+        /// Systems that are public expose events that can be subscribed to by interested third parties.
+        /// </summary>
+        public ReproductionSystem ReproductionSystem { get; }
+        public WorldBorderSystem WorldBorderSystem { get; }
+        public RigidBodyCollisionSystem RigidbodyCollisionSystem { get; }
+        public MouthFoodCollisionSystem MouthFoodCollisionSystem { get; }
+        public FoodRespawnSystem FoodRespawnSystem { get; }
+        public EnergyDeathSystem EnergyDeathSystem { get; }
+        public HealthDeathSystem HealthDeathSystem { get; }
+        public WeaponSystem WeaponSystem { get; }
+        
+        /// <summary>
+        /// Expose info system to enable render toggling.
+        /// </summary>
+        public InfoRenderSystem InfoRenderSystem { get; set; }
+
+
         protected AdjacencyGrid _grid;
 
         private float _gameSpeed = 1/30f;
@@ -62,7 +74,8 @@ namespace SoupV2.Simulation
         public int WorldMaxY { get => _worldHeight / 2; }
 
         SimulationSettings _settings;
-        
+
+        private uint _tick = 0;
         public Simulation(SimulationSettings settings)
         {
 
@@ -101,25 +114,29 @@ namespace SoupV2.Simulation
             _dragSystem = new DragSystem(_main, _settings.MassDensity);
             _movementControlSystem = new MovementControlSystem(_main);
             _brainSystem = new BrainSystem(_main);
-            _worldBorderSystem = new WorldBorderSystem(_main, _worldWidth, _worldHeight);
+            WorldBorderSystem = new WorldBorderSystem(_main, _worldWidth, _worldHeight);
             _visionSystem = new VisionSystem(_main, _grid);
-            _rigidBodyCollisionSystem = new RigidBodyCollisionSystem(_rigidbodyCollisionSystem.Collisions);
-            _mouthFoodCollisionSystem = new MouthFoodCollisionSystem(_main, _mouthCollisionSystem.Collisions);
-            _energyDeathSystem = new EnergyDeathSystem(_main);
-            _infoRenderSystem = new InfoRenderSystem(_main);
+
+            // These systems take a reference to a list of collisions. This means that should collision code checking change, the objects do not.
+            RigidbodyCollisionSystem = new RigidBodyCollisionSystem(_rigidbodyCollisionSystem.Collisions);
+            MouthFoodCollisionSystem = new MouthFoodCollisionSystem(_main, _mouthCollisionSystem.Collisions);
+            InfoRenderSystem = new InfoRenderSystem(_main);
             _noseSystem = new NoseSystem(_main, _grid);
-            _healthDeathSystem = new HealthDeathSystem(_main, _settings.FoodObjectName);
+            
+            
+            EnergyDeathSystem = new EnergyDeathSystem(_main);
+            HealthDeathSystem = new HealthDeathSystem(_main, _settings.FoodObjectName);
 
             // Global energy manager. This Ensures a closed system so there is a fixed amount of enegry in the simulation
             _energyManager = new EnergyManager();
             // These are systems that take into account energy and need the energy manager system
-            _weaponSystem = new WeaponSystem(_main, _weaponHealthCollisionSystem.Collisions, _energyManager);
+            WeaponSystem = new WeaponSystem(_main, _weaponHealthCollisionSystem.Collisions, _energyManager);
             _movementControlEnergyCostSystem = new MovementControlEnergyCostSystem(_main, _energyManager);
-            _foodRespawnSystem = new FoodRespawnSystem(_main, _energyManager, _grid, _settings.FoodObjectName, 2f);
+            FoodRespawnSystem = new FoodRespawnSystem(_main, _energyManager, _grid, _settings.FoodObjectName, 2f);
 
             InnovationIdManager innovationIdManager = new InnovationIdManager(100, 100);
             //TODO remember max species ID
-            //_reproductionSystem = new ReproductionSystem(_main, _settings.MutationConfig, innovationIdManager, _energyManager, 0, _settings.SpeciesCompatabilityThreshold);
+            ReproductionSystem = new ReproductionSystem(_main, _settings.MutationConfig, innovationIdManager, _energyManager, 0, _settings.SpeciesCompatabilityThreshold);
 
         }
 
@@ -127,6 +144,7 @@ namespace SoupV2.Simulation
         {
 
             Random rand = new Random();
+            // Temp
             _main.AddDefinition("Critterling", Critter.GetCritter(TextureAtlas.Circle, Color.Blue));
             _main.AddDefinition("Grabber", Critter.GetGrabber(TextureAtlas.Circle, Color.Green));
             _main.AddDefinition("Food", FoodPellets.GetFoodPellet(Color.White));
@@ -160,37 +178,18 @@ namespace SoupV2.Simulation
                 foodEntity.GetComponent<TransformComponent>().LocalPosition = new Vector2(rand.Next(WorldMinX, WorldMaxX), rand.Next(WorldMinY, WorldMaxY));
             }
 
-            //_statisticsGatherer = new StatisticsGatherer();
-            //if (_statDestination == StatLogDestination.FILE)
-            //{
-            //    _statLogger = new FileStatLogger(_statisticsGatherer, _statFile);
-            //}
-            //_statisticsHandlerThread = new Thread(() =>
-            //{
-            //    _statLogger?.LogStats();
-            //});
-            //_statisticsHandlerThread.Start();
-            // set up event hooks.
-            //_reproductionSystem.BirthEvent += _statisticsGatherer.HandleInfo;
-            //_weaponSystem.OnAttack += _statisticsGatherer.HandleInfo;
-            //_healthDeathSystem.OnDeath += _statisticsGatherer.HandleInfo;
-            //_energyDeathSystem.OnDeath += _statisticsGatherer.HandleInfo;
-            // _rigidbodyCollisionSystem.OnCollision += _statisticsGatherer.HandleInfo;
         }
-
-        //public void Stop()
-        //{
-        //    _statisticsHandlerThread.Interrupt();
-        //    _statisticsHandlerThread.Join();
-        //}
 
         public virtual void Update(GameTime gameTime)
         {
+            // Increment tick
+            _tick++;
+
             //Ignore gametime. We are only bothered about ticks.
 
             // Make sure all the dead things are removed in case they interfere with other systems
-            _energyDeathSystem.Update();
-            _healthDeathSystem.Update();
+            EnergyDeathSystem.Update(_tick);
+            HealthDeathSystem.Update(_tick);
 
             // Update all systems that regard input values before updating brains
             _visionSystem.Update();
@@ -198,7 +197,7 @@ namespace SoupV2.Simulation
 
             _brainSystem.Update();
             // Following this update all systems that regard output
-            _reproductionSystem.Update();
+            ReproductionSystem.Update(_tick);
             _movementControlSystem.Update();
             // If these systems have energy costs remember to update those systems before anything else happens, in case we need to cancel it
             _movementControlEnergyCostSystem.Update(_gameSpeed);
@@ -209,33 +208,35 @@ namespace SoupV2.Simulation
             _weaponHealthCollisionSystem.GetCollisions();
 
             // Update the aforementioned systems to process the collisions
-            _rigidBodyCollisionSystem.Update();
-            _mouthFoodCollisionSystem.Update(_gameSpeed);
-            _weaponSystem.Update(_gameSpeed);
+            RigidbodyCollisionSystem.Update();
+            MouthFoodCollisionSystem.Update(_tick, _gameSpeed);
+            WeaponSystem.Update(_tick, _gameSpeed);
 
             // Calculate forces acting upon each body
             _rigidBodySystem.Update(_gameSpeed);
             _dragSystem.Update();
 
             // bounce entities on edge of the world
-            _worldBorderSystem.Update();
+            WorldBorderSystem.Update();
             // Actually modify transforms
             _velocitySystem.Update(_gameSpeed);
 
-            _foodRespawnSystem.Update(_gameSpeed);
+            FoodRespawnSystem.Update(_tick, _gameSpeed);
             //At the end of each loop update the hierarchy system so that it renders correctly and everything is ready for the next loop
             _transformHierarchySystem.Update();
+            
+    
         }
 
 
         public virtual void Draw(SpriteBatch spriteBatch, Matrix camera)
         {
-            _worldBorderSystem.Draw(spriteBatch, camera);
+            WorldBorderSystem.Draw(spriteBatch, camera);
 #if DEBUG
             //_grid.DrawGrid(_spriteBatch, _camera);
 #endif
             _renderSystem.Draw(spriteBatch, camera);
-            _infoRenderSystem.Draw(spriteBatch, camera);
+            InfoRenderSystem.Draw(spriteBatch, camera);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SoupV2.Simulation.Systems
             _foodDefinition = foodDefinition;
         }
 
-        public void Update()
+        public void Update(uint tick)
         {
             List<Entity> toDestroy = new List<Entity>();
 
@@ -29,9 +29,11 @@ namespace SoupV2.Simulation.Systems
                 var entity = Compatible[i];
                 var health = entity.GetComponent<HealthComponent>();
 
+                // If heath is below 0 then kill it
                 if (health.Health <= 0)
                 {
                     toDestroy.Add(entity);
+                    // Check if we would be killing an entity with energy
                     if (entity.TryGetComponent<EnergyComponent>(out EnergyComponent deadEnergy))
                     {
                         var food = Pool.AddEntityFromDefinition(_foodDefinition);
@@ -39,7 +41,8 @@ namespace SoupV2.Simulation.Systems
                         var deadTransform = entity.GetComponent<TransformComponent>();
                         food.GetComponent<TransformComponent>().LocalPosition = deadTransform.WorldPosition;
                     }
-                    OnDeath?.Invoke(new DeathEventInfo(entity.Id, new HealthDeathCause()));
+                    var loc = entity.GetComponent<TransformComponent>().WorldPosition;
+                    OnDeath?.Invoke(new DeathEventInfo(loc, tick, entity.Id, new HealthDeathCause()));
                 }
             }
             foreach(var e in toDestroy)

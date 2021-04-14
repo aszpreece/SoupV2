@@ -32,7 +32,7 @@ namespace SoupV2.Simulation.Systems.Abilities
             _energyManager = energyManager;
         }
 
-        public void Update(float gameSpeed)
+        public void Update(uint tick, float gameSpeed)
         {
             for (int i = 0; i < Compatible.Count; i++)
             {
@@ -120,8 +120,10 @@ namespace SoupV2.Simulation.Systems.Abilities
                 float damage = (float)(weaponComp.Damage);
                 weaponComp.Active = 0;
 
+                var trans = weapon.GetComponent<TransformComponent>();
+
                 healthComp.Health -= damage;
-                OnAttack?.Invoke(new AttackEventInfo(weapon.Id, health.Id, damage));
+                OnAttack?.Invoke(new AttackEventInfo(trans.WorldPosition, tick, weapon.Id, health.Id, damage));
             }
         }
 

@@ -9,14 +9,14 @@ using System.Threading;
 
 namespace SoupV2.Simulation.Statistics.StatLoggers
 {
-    class FileStatLogger : IStatLogger
+    public class FileStatLogger : IStatLogger
     {
         private StatisticsGatherer _gatherer;
-        private string _outputFile;
-        public FileStatLogger(StatisticsGatherer gatherer, string outputFile)
+        private Stream _outputStream;
+        public FileStatLogger(StatisticsGatherer gatherer, Stream outputStream)
         {
             _gatherer = gatherer;
-            _outputFile = outputFile;
+            _outputStream = outputStream;
         }
         public void LogStats()
         {
@@ -24,7 +24,7 @@ namespace SoupV2.Simulation.Statistics.StatLoggers
             JsonSerializer serializer = new JsonSerializer();
             serializer.TypeNameHandling = TypeNameHandling.All;
             serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            using (StreamWriter outputFile = new StreamWriter(_outputFile, true))
+            using (StreamWriter outputFile = new StreamWriter(_outputStream))
             using (JsonWriter writer = new JsonTextWriter(outputFile))
             {
                 // Write start of array
@@ -35,12 +35,11 @@ namespace SoupV2.Simulation.Statistics.StatLoggers
                     while (true)
                     {
                         // Continually try to write stats to destination
-                        if (_gatherer.InformationToLog.IsEmpty)
-                        {
-                            continue;
-                        }
+            
                         if (!_gatherer.InformationToLog.TryDequeue(out AbstractSimulationInfo infoToLog))
                         {
+                            // Sleep so the interrupted exception will throw.
+                            Thread.Sleep(1);
                             continue;
                         }
                         serializer.Serialize(writer, infoToLog);

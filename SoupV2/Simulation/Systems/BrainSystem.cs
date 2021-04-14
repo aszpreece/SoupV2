@@ -4,6 +4,7 @@ using SoupV2.Simulation.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SoupV2.Simulation.Systems
 {
@@ -15,12 +16,12 @@ namespace SoupV2.Simulation.Systems
 
         public void Update()
         {
-            for (int i = 0; i < Compatible.Count; i++)
-            {
+            Parallel.For(0, Compatible.Count, (i) => {
                 var entity = Compatible[i];
                 var brain = entity.GetComponent<BrainComponent>();
                 brain.Calculate();
-            }
+
+            });
         }
     }
 }

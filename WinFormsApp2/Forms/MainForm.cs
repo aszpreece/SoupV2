@@ -16,6 +16,18 @@ namespace SoupForm.Forms
         {
             InitializeComponent();
             newSimulationButton.Click += NewSimulationButton_Click;
+            endSimulationButton.Click += EndSimulationButton_Click;
+        }
+
+        private void EndSimulationButton_Click(object sender, EventArgs e)
+        {
+            //Safely end a simulation by removings its tab.
+            var tab = tabControl1.SelectedTab;
+            if (!(tab is null))
+            {
+                tabControl1.TabPages.Remove(tab);
+                tab.Dispose();
+            }
         }
 
         private void NewSimulationButton_Click(object sender, EventArgs e)
@@ -24,11 +36,23 @@ namespace SoupForm.Forms
             newExperimentForm.ShowDialog();
             if (newExperimentForm.DialogResult == DialogResult.OK)
             {
-                var newSimTab = new TabPage(newExperimentForm.SimulationName);
-                tabControl1.TabPages.Add(newSimTab);
-                var simTab = new SimulationTabContent();
-                simTab.Dock = DockStyle.Fill;
-                newSimTab.Controls.Add(simTab);
+
+                try
+                {
+                    var newSimTab = new TabPage(newExperimentForm.SimulationName);
+                    tabControl1.TabPages.Add(newSimTab);
+                    var simTab = new SimulationTabContent(
+                        newExperimentForm.StatsFileStream,
+                        newExperimentForm.NewSimulationSettings
+                    );
+                    simTab.Dock = DockStyle.Fill;
+                    newSimTab.Controls.Add(simTab);
+
+                } catch (Exception exception)
+                {
+                    MessageBox.Show($"Something went wrong initializing the new simulation: {exception.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
 
             }
         }

@@ -7,5 +7,10 @@ namespace SoupV2.Simulation.Events.DeathCause
     public class EnergyDeathCause : AbstractDeathCause
     {
         public string Cause { get; } = "Energy";
+
+        public override string ToString()
+        {
+            return Cause;
+        }
     }
 }

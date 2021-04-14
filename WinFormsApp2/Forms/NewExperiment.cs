@@ -9,13 +9,29 @@ namespace SoupForm.Forms
     public partial class NewExperimentForm : Form
     {
 
-        SimulationSettings NewSimulationSettings { get; set; } = new SimulationSettings();
+        /// <summary>
+        /// The created settings objects
+        /// </summary>
+        public SimulationSettings NewSimulationSettings { get; set; } = new SimulationSettings();
+        /// <summary>
+        /// The name of the new simulation (For the tab name)
+        /// </summary>
         public string SimulationName { get; set; } = "New Simulation";
+
+        /// <summary>
+        /// Open a file stream to wherever we will save our file to.
+        /// </summary>
+        public Stream StatsFileStream { get; set; }
+        public bool SaveStats { get; set; } = false;
+    
         public NewExperimentForm()
         {
             InitializeComponent();
             settingPropertyGrid.SelectedObject = NewSimulationSettings;
             experimentNameBox.Text = SimulationName;
+            saveStatsButton.Enabled = false;
+
+
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -61,6 +77,10 @@ namespace SoupForm.Forms
         private void okButton_Click(object sender, EventArgs e)
         {
            
+            if (SaveStats && (StatsFileStream is null)) {
+                MessageBox.Show($"Please select a file to save statistics to.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             this.DialogResult = DialogResult.OK;
         }
 
@@ -71,7 +91,20 @@ namespace SoupForm.Forms
 
         private void saveStatsButton_Click_1(object sender, EventArgs e)
         {
+            if (saveStatsFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
 
+            try
+            {
+                StatsFileStream = saveStatsFileDialog.OpenFile();
+                statsFileLocation.Text = saveStatsFileDialog.FileName;
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"Something went wrong saving stats file {exception.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -92,7 +125,7 @@ namespace SoupForm.Forms
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.TypeNameHandling = TypeNameHandling.All;
-                    serializer.Serialize(sw, typeof(SimulationSettings));
+                    serializer.Serialize(sw, NewSimulationSettings);
                 }
             }
             catch (Exception exception)
@@ -104,6 +137,13 @@ namespace SoupForm.Forms
         private void experimentNameBox_TextChanged(object sender, EventArgs e)
         {
             SimulationName = experimentNameBox.Text;
+        }
+
+        private void saveStatsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveStats = saveStatsCheckBox.Checked;
+            saveStatsButton.Enabled = saveStatsCheckBox.Checked;
+            statsFileLocation.Enabled = saveStatsButton.Enabled;
         }
     }
 }

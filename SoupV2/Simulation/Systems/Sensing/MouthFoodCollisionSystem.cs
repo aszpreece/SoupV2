@@ -16,7 +16,7 @@ namespace SoupV2.Simulation.Systems
             _collisions = collisionList;
         }
 
-        public void Update(float gameSpeed)
+        public void Update(uint tick, float gameSpeed)
         {
             foreach (Entity mouth in Compatible)
             {
