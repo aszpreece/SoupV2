@@ -12,7 +12,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 {
     public static class FoodPellets
     {
-        public static EntityDefinition GetFoodPellet(Color color)
+        public static Entity GetFoodPellet(Color color)
         {
             float radius = 10f;
 
@@ -28,7 +28,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var graphics = new GraphicsComponent(foodEntity)
             {
-                Texture = TextureAtlas.Soup,
+                TexturePath = TextureAtlas.SoupPath,
                 Dimensions = new Point((int)(radius * 2), (int)(radius * 2)),
                 Color = color
             };
@@ -59,7 +59,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             foodEntity.AddComponents(transform, graphics, energy, edible, collider, colourComp);
 
-            return foodEntity.ToDefinition();
+            return foodEntity;
 
         }
     }

@@ -12,7 +12,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 {
     public static class Mouth
     {
-        public static EntityDefinition GetMouth(Color color)
+        public static Entity GetMouth(Color color)
         {
             float radius = 10f;
 
@@ -28,7 +28,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var graphics = new GraphicsComponent(mouthEntity)
             {
-                Texture = TextureAtlas.Mouth,
+                TexturePath = TextureAtlas.MouthPath,
                 Dimensions = new Point((int)(radius * 2), (int)(radius * 2)),
                 Color = color
             };
@@ -45,7 +45,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             mouthEntity.AddComponents(transform, graphics, mouthComp, collider);
 
-            return mouthEntity.ToDefinition();
+            return mouthEntity;
 
         }
     }

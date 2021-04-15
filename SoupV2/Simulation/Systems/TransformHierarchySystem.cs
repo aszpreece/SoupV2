@@ -14,7 +14,7 @@ namespace SoupV2.Simulation.Systems
     {
         private readonly AdjacencyGrid _grid;
 
-        public TransformHierarchySystem(EntityPool pool, AdjacencyGrid grid) : base(pool, 
+        public TransformHierarchySystem(EntityManager pool, AdjacencyGrid grid) : base(pool, 
             ent => ent.HasComponents(typeof(TransformComponent)) 
             && ent.Parent is null
         )
@@ -62,7 +62,7 @@ namespace SoupV2.Simulation.Systems
 
         }
 
-        protected override void OnPoolEntityChanged(EntityPool pool, Entity entity)
+        protected override void OnPoolEntityChanged(EntityManager pool, Entity entity)
         {
             var index = Compatible.IndexOf(entity);
             // If we already have the entity, check if we are still compatible

@@ -25,7 +25,7 @@ namespace SoupV2.Simulation.Systems.Abilities
         public delegate void AttackEvent(AttackEventInfo e);
         public event AttackEvent OnAttack;
 
-        public WeaponSystem(EntityPool pool, List<Collision> collisionList, EnergyManager energyManager) 
+        public WeaponSystem(EntityManager pool, List<Collision> collisionList, EnergyManager energyManager) 
             : base(pool, (e) => e.HasComponent<WeaponComponent>() && e.RootEntity.HasComponent<EnergyComponent>())
         {
             _collisions = collisionList;

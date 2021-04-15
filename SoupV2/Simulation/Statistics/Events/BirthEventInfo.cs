@@ -10,9 +10,9 @@ namespace SoupV2.Simulation.Events
     {
         public int ParentId { get; set; }
         public int ChildId { get; set; }
-        public AbstractGenotype ChildGenotype { get; set; }
+        public AbstractBrainGenotype ChildGenotype { get; set; }
 
-        public BirthEventInfo(Vector2 location, uint tick, int parentId, int childId, AbstractGenotype childGenotype): base(tick, location)
+        public BirthEventInfo(Vector2 location, uint tick, int parentId, int childId, AbstractBrainGenotype childGenotype): base(tick, location)
         {
             ParentId = parentId;
             ChildId = childId;

@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
+using SoupV2.EntityComponentSystem;
 using SoupV2.NEAT;
 using SoupV2.NEAT.mutation;
 using SoupV2.Simulation.Brain;
@@ -9,14 +11,17 @@ using SoupV2.Simulation.Components;
 using SoupV2.Simulation.EntityDefinitions;
 using SoupV2.Simulation.Grid;
 using SoupV2.Simulation.Physics;
+using SoupV2.Simulation.Settings;
 using SoupV2.Simulation.Statistics;
 using SoupV2.Simulation.Statistics.StatLoggers;
 using SoupV2.Simulation.Systems;
 using SoupV2.Simulation.Systems.Abilities;
 using SoupV2.Simulation.Systems.Energy;
+using SoupV2.Simulation.Systems.WorldLogic;
 using SoupV2.Systems;
 using SoupV2.util;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace SoupV2.Simulation
@@ -27,7 +32,7 @@ namespace SoupV2.Simulation
         /// <summary>
         /// Protected 'boring' systems. These do not expose any interesting fields.
         /// </summary>
-        protected EntityPool _main;
+        protected EntityManager _main;
         protected RenderSystem _renderSystem;
         protected TransformHierarchySystem _transformHierarchySystem;
         protected VelocitySystem _velocitySystem;
@@ -43,18 +48,24 @@ namespace SoupV2.Simulation
         protected MovementControlEnergyCostSystem _movementControlEnergyCostSystem;
         protected EnergyManager _energyManager;
 
+
         /// <summary>
         /// Systems that are public expose events that can be subscribed to by interested third parties.
         /// </summary>
-        public ReproductionSystem ReproductionSystem { get; }
-        public WorldBorderSystem WorldBorderSystem { get; }
-        public RigidBodyCollisionSystem RigidbodyCollisionSystem { get; }
-        public MouthFoodCollisionSystem MouthFoodCollisionSystem { get; }
-        public FoodRespawnSystem FoodRespawnSystem { get; }
-        public EnergyDeathSystem EnergyDeathSystem { get; }
-        public HealthDeathSystem HealthDeathSystem { get; }
-        public WeaponSystem WeaponSystem { get; }
-        
+        public ReproductionSystem ReproductionSystem { get; internal set; }
+        public WorldBorderSystem WorldBorderSystem { get; internal set;  }
+        public RigidBodyCollisionSystem RigidbodyCollisionSystem { get; internal set; }
+        public MouthFoodCollisionSystem MouthFoodCollisionSystem { get; internal set; }
+        public FoodRespawnSystem FoodRespawnSystem { get; internal set; }
+        public CritterPopulationSystem CritterPopulationSystem { get; private set; }
+        public EnergyDeathSystem EnergyDeathSystem { get; internal set; }
+        public HealthDeathSystem HealthDeathSystem { get; internal set; }
+        public OldAgeDeathSystem OldAgeDeathSystem { get; internal set; }
+
+        public WeaponSystem WeaponSystem { get; internal set; }
+
+        public SpeciesSystem SpeciesSystem { get; set; }
+
         /// <summary>
         /// Expose info system to enable render toggling.
         /// </summary>
@@ -63,7 +74,8 @@ namespace SoupV2.Simulation
 
         protected AdjacencyGrid _grid;
 
-        private float _gameSpeed = 1/30f;
+        public float GameSpeed { get; set; } = 1 / 30f;
+        public uint Tick { get; set; } = 0;
 
         private int _worldWidth = 4000;
         private int _worldHeight = 4000;
@@ -72,17 +84,35 @@ namespace SoupV2.Simulation
         public int WorldMaxX { get => _worldWidth / 2; }
         public int WorldMinY { get => -_worldHeight / 2; }
         public int WorldMaxY { get => _worldHeight / 2; }
+        public JsonSerializerSettings JsonSettings { get; set; }
 
         SimulationSettings _settings;
 
-        private uint _tick = 0;
-        public Simulation(SimulationSettings settings)
+
+        private Random _random = new Random();
+
+        /// <summary>
+        /// Constructor for creating a simulation.
+        /// Must call SetUp to set up simulation.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="entityDefinitionDatabase"></param>
+        /// <param name="graphicsDevice"></param>
+        public Simulation(SimulationSettings settings, EntityDefinitionDatabase entityDefinitionDatabase)
+        {
+            _settings = settings;
+            _main = new EntityManager("Main Pool", entityDefinitionDatabase);
+            Initialize();
+        }
+
+        private void Initialize()
         {
 
-            _settings = settings;
+            _worldWidth = _settings.WorldWidth;
+            _worldHeight = _settings.WorldHeight;
+
             _grid = new AdjacencyGrid(_settings.WorldWidth, _settings.WorldHeight, 25);
 
-            _main = new EntityPool("Main Pool");
             _renderSystem = new RenderSystem(_main);
             _transformHierarchySystem = new TransformHierarchySystem(_main, _grid);
             _velocitySystem = new VelocitySystem(_main);
@@ -122,85 +152,89 @@ namespace SoupV2.Simulation
             MouthFoodCollisionSystem = new MouthFoodCollisionSystem(_main, _mouthCollisionSystem.Collisions);
             InfoRenderSystem = new InfoRenderSystem(_main);
             _noseSystem = new NoseSystem(_main, _grid);
-            
-            
-            EnergyDeathSystem = new EnergyDeathSystem(_main);
-            HealthDeathSystem = new HealthDeathSystem(_main, _settings.FoodObjectName);
 
             // Global energy manager. This Ensures a closed system so there is a fixed amount of enegry in the simulation
-            _energyManager = new EnergyManager();
+            _energyManager = new EnergyManager(_settings.InitialWorldEnergy);
+
             // These are systems that take into account energy and need the energy manager system
+
+            EnergyDeathSystem = new EnergyDeathSystem(_main);
+            HealthDeathSystem = new HealthDeathSystem(_main, this, _energyManager);
+            OldAgeDeathSystem = new OldAgeDeathSystem(_main, this, _energyManager, _settings.OldAgeEnabled, _settings.OldAgeMultiplier);
+
             WeaponSystem = new WeaponSystem(_main, _weaponHealthCollisionSystem.Collisions, _energyManager);
             _movementControlEnergyCostSystem = new MovementControlEnergyCostSystem(_main, _energyManager);
-            FoodRespawnSystem = new FoodRespawnSystem(_main, _energyManager, _grid, _settings.FoodObjectName, 2f);
+            FoodRespawnSystem = new FoodRespawnSystem(_main, _energyManager, _grid, _settings.FoodTypes, this);
+            CritterPopulationSystem = new CritterPopulationSystem(_main, _energyManager, _grid, _settings.CritterTypes, this);
 
             InnovationIdManager innovationIdManager = new InnovationIdManager(100, 100);
             //TODO remember max species ID
-            ReproductionSystem = new ReproductionSystem(_main, _settings.MutationConfig, innovationIdManager, _energyManager, 0, _settings.SpeciesCompatabilityThreshold);
-
+            ReproductionSystem = new ReproductionSystem(_main, _settings.MutationConfig, innovationIdManager, _energyManager, 0, _settings.SpeciesCompatabilityThreshold, this);
+            SpeciesSystem = new SpeciesSystem(_main, this, _settings.SpeciesCompatabilityThreshold);
         }
 
-        public virtual void Initialize()
+        /// <summary>
+        /// Sets up the simulation with all the provided critters and food etc.
+        /// </summary>
+        public virtual void SetUp(GraphicsDevice graphicsDevice)
         {
+            JsonSettings = SerializerSettings.GetDefaultSettings(graphicsDevice);
 
-            Random rand = new Random();
-            // Temp
-            _main.AddDefinition("Critterling", Critter.GetCritter(TextureAtlas.Circle, Color.Blue));
-            _main.AddDefinition("Grabber", Critter.GetGrabber(TextureAtlas.Circle, Color.Green));
-            _main.AddDefinition("Food", FoodPellets.GetFoodPellet(Color.White));
+            SpeciesSystem.InitializeSpecies(_settings.CritterTypes);
 
-            Species originSpecies = new Species();
-            for (int i = 0; i < 300; i++)
+
+
+            // Initialize critters
+            foreach (CritterTypeSetting critterTypeSetting in _settings.CritterTypes)
             {
-                var testEntity = _main.AddEntityFromDefinition("Critterling");
-
-                testEntity.GetComponent<TransformComponent>().LocalPosition = new Vector2(rand.Next(WorldMinX, WorldMaxX), rand.Next(WorldMinY, WorldMaxY));
-
-                NeatGenotype genotype = new NeatGenotype();
-                genotype.Species = originSpecies;
-                if (i == 0)
-                {
-                    originSpecies.Representative = genotype;
-                }
-
-                var brainComponent = testEntity.GetComponent<BrainComponent>();
-                genotype.CreateBrain(brainComponent);
-                var phenotype = new NeatPhenotype(genotype);
-                brainComponent.SetBrain(phenotype);
-                brainComponent.SetUpLinks();
-                // Temp!!
-                // testEntity.RemoveComponent<BrainComponent>();
+                InitialSpawnRandom(critterTypeSetting);
             }
 
-            for (int i = 0; i < 150; i++)
+            // Initialize food
+            foreach (FoodTypeSetting foodTypeSetting in _settings.FoodTypes)
             {
-                var foodEntity = _main.AddEntityFromDefinition("Food");
-                foodEntity.GetComponent<TransformComponent>().LocalPosition = new Vector2(rand.Next(WorldMinX, WorldMaxX), rand.Next(WorldMinY, WorldMaxY));
+                InitialSpawnRandom(foodTypeSetting);
             }
 
+            _brainSystem.SetUpBrains(_settings.CritterTypes);
+        }
+
+        /// <summary>
+        /// Creates the initial population of a critter type.
+        /// </summary>
+        /// <param name="setting"></param>
+        private void InitialSpawnRandom(AbstractEntityTypeSetting setting)
+        {
+            for (int i = 0; i < setting.InitialCount; i++)
+            {
+                var entity = _main.AddEntityFromDefinition(setting.DefinitionId, JsonSettings);
+                entity.Tag = setting.DefinitionId;
+                entity.GetComponent<TransformComponent>().LocalPosition = new Vector2(_random.Next(WorldMinX, WorldMaxX), _random.Next(WorldMinY, WorldMaxY));
+            }
         }
 
         public virtual void Update(GameTime gameTime)
         {
             // Increment tick
-            _tick++;
+            Tick++;
 
             //Ignore gametime. We are only bothered about ticks.
 
             // Make sure all the dead things are removed in case they interfere with other systems
-            EnergyDeathSystem.Update(_tick);
-            HealthDeathSystem.Update(_tick);
+            EnergyDeathSystem.Update(Tick, GameSpeed);
+            HealthDeathSystem.Update(Tick, GameSpeed);
+            OldAgeDeathSystem.Update(Tick, GameSpeed);
 
             // Update all systems that regard input values before updating brains
             _visionSystem.Update();
             _noseSystem.Update();
 
-            _brainSystem.Update();
+            _brainSystem.Update(_settings.CritterTypes);
             // Following this update all systems that regard output
-            ReproductionSystem.Update(_tick);
+            ReproductionSystem.Update(Tick, GameSpeed);
             _movementControlSystem.Update();
             // If these systems have energy costs remember to update those systems before anything else happens, in case we need to cancel it
-            _movementControlEnergyCostSystem.Update(_gameSpeed);
+            _movementControlEnergyCostSystem.Update(GameSpeed);
 
             // These systems gather collisions between certain types of entities that are processed by other systems
             _rigidbodyCollisionSystem.GetCollisions();
@@ -209,19 +243,21 @@ namespace SoupV2.Simulation
 
             // Update the aforementioned systems to process the collisions
             RigidbodyCollisionSystem.Update();
-            MouthFoodCollisionSystem.Update(_tick, _gameSpeed);
-            WeaponSystem.Update(_tick, _gameSpeed);
+            MouthFoodCollisionSystem.Update(Tick, GameSpeed);
+            WeaponSystem.Update(Tick, GameSpeed);
 
             // Calculate forces acting upon each body
-            _rigidBodySystem.Update(_gameSpeed);
+            _rigidBodySystem.Update(GameSpeed);
             _dragSystem.Update();
 
             // bounce entities on edge of the world
             WorldBorderSystem.Update();
             // Actually modify transforms
-            _velocitySystem.Update(_gameSpeed);
+            _velocitySystem.Update(GameSpeed);
 
-            FoodRespawnSystem.Update(_tick, _gameSpeed);
+            CritterPopulationSystem.Update(Tick, GameSpeed);
+            FoodRespawnSystem.Update(Tick, GameSpeed);
+
             //At the end of each loop update the hierarchy system so that it renders correctly and everything is ready for the next loop
             _transformHierarchySystem.Update();
             

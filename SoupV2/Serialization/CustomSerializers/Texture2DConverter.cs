@@ -3,15 +3,16 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SoupV2.Simulation;
 using System;
 using System.Linq;
 
-public class TextureConverter : JsonConverter
+public class Texture2DConverter : JsonConverter
 {
-    private ContentManager _content;
-    public TextureConverter(ContentManager content)
+    private GraphicsDevice _graphicsDevice;
+    public Texture2DConverter(GraphicsDevice graphicsDevice)
     {
-        _content = content;
+        _graphicsDevice = graphicsDevice;
     }
 
     public override bool CanConvert(Type objectType)
@@ -23,9 +24,9 @@ public class TextureConverter : JsonConverter
     {
         JObject jsonObject = JObject.Load(reader);
         var properties = jsonObject.Properties().ToList();
-
         var path = (string)properties[0].Value;
-        return _content.Load<Texture2D>(path);
+
+        return TextureAtlas.GetTexture(path, _graphicsDevice);
     }
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

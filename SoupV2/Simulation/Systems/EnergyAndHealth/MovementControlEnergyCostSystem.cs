@@ -14,7 +14,7 @@ namespace SoupV2.Simulation.Systems.Energy
     {
         public float CostPerNewtonPerSecond { get; set; } = 0.0025f;
         private EnergyManager _energyManager;
-        public MovementControlEnergyCostSystem(EntityPool pool, EnergyManager energyManager) : base(pool, (e) => e.HasComponents(typeof(EnergyComponent), typeof(MovementControlComponent)))
+        public MovementControlEnergyCostSystem(EntityManager pool, EnergyManager energyManager) : base(pool, (e) => e.HasComponents(typeof(EnergyComponent), typeof(MovementControlComponent)))
         {
             _energyManager = energyManager;
         }

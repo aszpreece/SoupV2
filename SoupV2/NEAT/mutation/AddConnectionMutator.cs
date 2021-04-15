@@ -15,7 +15,7 @@ namespace SoupV2.NEAT.mutation
 
         private readonly Dictionary<(int, int), int> NewConnectionSignatures = new Dictionary<(int, int), int>();
 
-        public override void Mutate(NeatGenotype genotype, Random random, InnovationIdManager innovationIdManager)
+        public override void Mutate(NeatBrainGenotype genotype, Random random, InnovationIdManager innovationIdManager)
         {
             // Shuffle two copies of the list of nodes. We can run through the first and attempt to pair it with a node from the second
 

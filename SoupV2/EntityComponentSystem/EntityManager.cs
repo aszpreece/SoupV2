@@ -5,16 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 using EntityComponentSystem.Exceptions;
+using Newtonsoft.Json;
 using SoupV2.EntityComponentSystem;
+using SoupV2.Simulation;
 
 namespace EntityComponentSystem
 {
     /// <summary>
     /// The object that managed all your game Entities.
     /// </summary>
-    public class EntityPool
+    public class EntityManager
     {
-        public delegate void EntityChanged(EntityPool pool, Entity entity);
+        public delegate void EntityChanged(EntityManager pool, Entity entity);
 
         public event EntityChanged EntityAdded;
         public event EntityChanged EntityRemoved;
@@ -28,7 +30,6 @@ namespace EntityComponentSystem
         public event EntityRelationshipChanged DetachedFromParent;
 
         public List<Entity> Entities { get; private set; }
-
         public Stack<Entity> CachedEntities { get; private set; }
 
         public string Id { get; set; }
@@ -36,17 +37,16 @@ namespace EntityComponentSystem
         // How many Entites the cache can store at a time.
         private readonly int MAX_CACHED_ENTITIES = 25;
 
+        private EntityDefinitionDatabase _entityDefinitionDatabase;
 
         private int _nextEntityId = 0;
 
         public int GetNextId { get => _nextEntityId++; }
         public int PeekNextId { get => _nextEntityId+1; }
 
-
-        public Dictionary<string, EntityDefinition> _definitionDict = new Dictionary<string, EntityDefinition>();
-
-        public EntityPool(string Id)
+        public EntityManager(string Id, EntityDefinitionDatabase entityDefinitionDatabase)
         {
+            _entityDefinitionDatabase = entityDefinitionDatabase;
             Entities = new List<Entity>();
             CachedEntities = new Stack<Entity>();
 
@@ -58,15 +58,6 @@ namespace EntityComponentSystem
 
         public HashSet<int> Ids { get; } = new HashSet<int>();
 
-        //internal void AssertValidEntityId(int entityId)
-        //{
-        //    if (Ids.Contains(entityId))
-        //        throw new DuplicateEntityException(this);
-
-        //    if (string.IsNullOrEmpty(entityId))
-        //        throw new Exception("The string you entered was blank or null.");
-
-        //}
         /// <summary>
         /// Creates a new Entity with "entityId", adds it to active Entities and returns it.
         /// </summary>
@@ -123,9 +114,10 @@ namespace EntityComponentSystem
         /// <param name="definition"></param>
         /// <param name="id"></param>
         /// <param name="parent"></param>
-        internal Entity AddEntityFromDefinition(string definitionId, Entity parent=null)
+        internal Entity AddEntityFromDefinition(string definitionId, JsonSerializerSettings settings, Entity parent=null)
         { 
-            var entity = Entity.FromDefinition(_definitionDict[definitionId]);
+            var entity = Entity.FromDefinition(_entityDefinitionDatabase.GetEntityDefinition(definitionId), settings);
+            entity.Tag = definitionId;
 
             AddDeserializedEntity(entity, parent);
 
@@ -184,8 +176,7 @@ namespace EntityComponentSystem
         }
 
         /// <summary>
-        /// Adds an Entity to the cache to be re-used if cachedEntities isn't full.
-        /// If the cache is full, just remove completely.
+        /// Destroyes an entity and adds it to the cache if it is not full.
         /// </summary>
         /// <param Id="entity"></param>
         public void DestroyEntity(Entity entity)
@@ -202,9 +193,9 @@ namespace EntityComponentSystem
                 CachedEntities.Push(entity);
             }
 
+            EntityRemoved?.Invoke(this, entity);
             entity.Reset();
             Entities.Remove(entity);
-            EntityRemoved?.Invoke(this, entity);
         }
 
         /// <summary>
@@ -221,11 +212,6 @@ namespace EntityComponentSystem
         public void WipeEntities()
         {
             Entities.Clear();
-        }
-
-        public void AddDefinition(string definitionId, EntityDefinition definition)
-        {
-            _definitionDict[definitionId] = definition;
         }
 
         internal void ComponentAdded(Entity entity)

@@ -16,7 +16,7 @@ namespace SoupV2.Simulation.Systems
         public int WorldWidthRadius { get; private set; }
         public int WorldHeightRadius { get; private set; }
 
-        public WorldBorderSystem(EntityPool pool, int worldWidth, int worldHeight) : base(pool, (e) => e.HasComponents(typeof(VelocityComponent), typeof(TransformComponent)))
+        public WorldBorderSystem(EntityManager pool, int worldWidth, int worldHeight) : base(pool, (e) => e.HasComponents(typeof(VelocityComponent), typeof(TransformComponent)))
         {
             WorldWidth = worldWidth;
             WorldHeight = worldHeight;

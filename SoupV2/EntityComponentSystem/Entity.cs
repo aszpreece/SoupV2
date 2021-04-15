@@ -61,7 +61,7 @@ namespace EntityComponentSystem
         /// </summary>
         [JsonIgnore]
         [Browsable(false)]
-        public EntityPool OwnerPool { get; set; }
+        public EntityManager OwnerPool { get; set; }
 
         /// <summary>
         /// The set of this entitities' components
@@ -125,9 +125,9 @@ namespace EntityComponentSystem
 
         }
 
-        public static Entity FromDefinition(EntityDefinition definition)
+        public static Entity FromDefinition(EntityDefinition definition, JsonSerializerSettings settings)
         {
-            Entity e = JsonConvert.DeserializeObject<Entity>(definition.Json, SerializerSettings.DefaultSettings);
+            Entity e = JsonConvert.DeserializeObject<Entity>(definition.Json, settings);
 
             return e;
         }
@@ -418,6 +418,7 @@ namespace EntityComponentSystem
 
             Children.Clear();
 
+            this.Tag = string.Empty;
             this.Id = -1;
             this.State = EntityState.Cached;
         }
@@ -523,8 +524,14 @@ namespace EntityComponentSystem
 
         public EntityDefinition ToDefinition()
         {
-            string output = JsonConvert.SerializeObject(this, SerializerSettings.DefaultSettings);
+            // Don't need graphics device to convert TO json so pass in null
+            string output = JsonConvert.SerializeObject(this, SerializerSettings.GetDefaultSettings(null));
             return new EntityDefinition(output);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 }

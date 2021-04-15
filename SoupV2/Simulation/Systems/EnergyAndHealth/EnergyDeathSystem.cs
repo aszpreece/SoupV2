@@ -13,12 +13,12 @@ namespace SoupV2.Simulation.Systems
         public delegate void DeathEvent(DeathEventInfo info);
 
         public event DeathEvent OnDeath;
-        public EnergyDeathSystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(EnergyComponent)))
+        public EnergyDeathSystem(EntityManager pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(EnergyComponent)))
         {
 
         }
 
-        public void Update(uint tick)
+        public void Update(uint tick, float gameSpeed)
         {
             List<Entity> toDestroy = new List<Entity>();
 
@@ -31,7 +31,7 @@ namespace SoupV2.Simulation.Systems
                 {
                     toDestroy.Add(entity);
                     var transform = entity.GetComponent<TransformComponent>();
-                    OnDeath?.Invoke(new DeathEventInfo(transform.WorldPosition, tick, entity.Id, new EnergyDeathCause()) {
+                    OnDeath?.Invoke(new DeathEventInfo(transform.WorldPosition, tick * gameSpeed, entity.Id, new EnergyDeathCause()) {
                         Location = entity.GetComponent<TransformComponent>().WorldPosition
                     });
                 }

@@ -1,6 +1,7 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SoupV2.Simulation;
 using SoupV2.Simulation.Components;
 using SoupV2.util;
 using System;
@@ -12,7 +13,7 @@ namespace SoupV2.Systems
 {
     public class RenderSystem : EntitySystem
     {
-        public RenderSystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(GraphicsComponent)))
+        public RenderSystem(EntityManager pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(GraphicsComponent)))
         {
             
         }
@@ -38,7 +39,13 @@ namespace SoupV2.Systems
                 }
                 if (Compatible[i].State == EntityState.Active)
                 {
-
+                    // hacky way to load textures....
+                    // tried to do it in json convertor, but it wouldn't work for some reason (the custom reader would not trigger)
+                    // should be past because only done once and null checks are fast.
+                    if (graphics.Texture is null)
+                    {
+                        graphics.Texture = TextureAtlas.GetTexture(graphics.TexturePath, spriteBatch.GraphicsDevice);
+                    }
                     if (!(graphics.Dimensions is null)) {
                         var dest = new Rectangle((int)transform.WorldPosition.X, (int)transform.WorldPosition.Y, (int)(transform.Scale.X * graphics.Dimensions.Value.X), (int)(transform.Scale.Y * graphics.Dimensions.Value.Y));
                         spriteBatch.Draw(

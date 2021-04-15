@@ -11,7 +11,7 @@ namespace SoupV2.Simulation.Systems
 {
     public class VelocitySystem : EntitySystem
     {
-        public VelocitySystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(VelocityComponent)))
+        public VelocitySystem(EntityManager pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(VelocityComponent)))
         {
 
         }

@@ -45,6 +45,9 @@
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.settingPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.selectDefinitionFolderButton = new System.Windows.Forms.Button();
+            this.entityDFolderLabel = new System.Windows.Forms.Label();
+            this.selectEntityDFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -59,7 +62,7 @@
             // 
             // experimentNameBox
             // 
-            this.experimentNameBox.Location = new System.Drawing.Point(111, 0);
+            this.experimentNameBox.Location = new System.Drawing.Point(111, 6);
             this.experimentNameBox.Multiline = false;
             this.experimentNameBox.Name = "experimentNameBox";
             this.experimentNameBox.Size = new System.Drawing.Size(145, 21);
@@ -70,7 +73,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(0, 3);
+            this.label1.Location = new System.Drawing.Point(0, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(105, 15);
             this.label1.TabIndex = 2;
@@ -89,7 +92,7 @@
             // saveSettingsButton
             // 
             this.saveSettingsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveSettingsButton.Location = new System.Drawing.Point(506, 10);
+            this.saveSettingsButton.Location = new System.Drawing.Point(267, 10);
             this.saveSettingsButton.Name = "saveSettingsButton";
             this.saveSettingsButton.Size = new System.Drawing.Size(102, 23);
             this.saveSettingsButton.TabIndex = 4;
@@ -100,7 +103,7 @@
             // saveStatsCheckBox
             // 
             this.saveStatsCheckBox.AutoSize = true;
-            this.saveStatsCheckBox.Location = new System.Drawing.Point(3, 25);
+            this.saveStatsCheckBox.Location = new System.Drawing.Point(3, 74);
             this.saveStatsCheckBox.Name = "saveStatsCheckBox";
             this.saveStatsCheckBox.Size = new System.Drawing.Size(99, 19);
             this.saveStatsCheckBox.TabIndex = 5;
@@ -110,7 +113,7 @@
             // 
             // saveStatsButton
             // 
-            this.saveStatsButton.Location = new System.Drawing.Point(2, 50);
+            this.saveStatsButton.Location = new System.Drawing.Point(3, 99);
             this.saveStatsButton.Name = "saveStatsButton";
             this.saveStatsButton.Size = new System.Drawing.Size(118, 23);
             this.saveStatsButton.TabIndex = 6;
@@ -121,7 +124,7 @@
             // statsFileLocation
             // 
             this.statsFileLocation.AutoSize = true;
-            this.statsFileLocation.Location = new System.Drawing.Point(126, 54);
+            this.statsFileLocation.Location = new System.Drawing.Point(127, 103);
             this.statsFileLocation.Name = "statsFileLocation";
             this.statsFileLocation.Size = new System.Drawing.Size(61, 15);
             this.statsFileLocation.TabIndex = 7;
@@ -145,7 +148,7 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(518, 67);
+            this.cancelButton.Location = new System.Drawing.Point(279, 67);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 9;
@@ -155,6 +158,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.entityDFolderLabel);
+            this.panel1.Controls.Add(this.selectDefinitionFolderButton);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.experimentNameBox);
             this.panel1.Controls.Add(this.saveStatsCheckBox);
@@ -163,7 +168,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(649, 81);
+            this.panel1.Size = new System.Drawing.Size(410, 128);
             this.panel1.TabIndex = 10;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -176,15 +181,15 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(0, 430);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(649, 100);
+            this.panel2.Size = new System.Drawing.Size(410, 100);
             this.panel2.TabIndex = 11;
             // 
             // splitter1
             // 
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitter1.Location = new System.Drawing.Point(0, 81);
+            this.splitter1.Location = new System.Drawing.Point(0, 128);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(649, 3);
+            this.splitter1.Size = new System.Drawing.Size(410, 3);
             this.splitter1.TabIndex = 12;
             this.splitter1.TabStop = false;
             // 
@@ -193,23 +198,42 @@
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.splitter2.Location = new System.Drawing.Point(0, 427);
             this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(649, 3);
+            this.splitter2.Size = new System.Drawing.Size(410, 3);
             this.splitter2.TabIndex = 13;
             this.splitter2.TabStop = false;
             // 
             // settingPropertyGrid
             // 
             this.settingPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.settingPropertyGrid.Location = new System.Drawing.Point(0, 84);
+            this.settingPropertyGrid.Location = new System.Drawing.Point(0, 131);
             this.settingPropertyGrid.Name = "settingPropertyGrid";
-            this.settingPropertyGrid.Size = new System.Drawing.Size(649, 343);
+            this.settingPropertyGrid.Size = new System.Drawing.Size(410, 296);
             this.settingPropertyGrid.TabIndex = 14;
+            // 
+            // selectDefinitionFolderButton
+            // 
+            this.selectDefinitionFolderButton.Location = new System.Drawing.Point(3, 33);
+            this.selectDefinitionFolderButton.Name = "selectDefinitionFolderButton";
+            this.selectDefinitionFolderButton.Size = new System.Drawing.Size(184, 23);
+            this.selectDefinitionFolderButton.TabIndex = 8;
+            this.selectDefinitionFolderButton.Text = "Select Entity Definition Folder...";
+            this.selectDefinitionFolderButton.UseVisualStyleBackColor = true;
+            this.selectDefinitionFolderButton.Click += new System.EventHandler(this.selectDefinitionFolderButton_Click);
+            // 
+            // entityDFolderLabel
+            // 
+            this.entityDFolderLabel.AutoSize = true;
+            this.entityDFolderLabel.Location = new System.Drawing.Point(195, 37);
+            this.entityDFolderLabel.Name = "entityDFolderLabel";
+            this.entityDFolderLabel.Size = new System.Drawing.Size(61, 15);
+            this.entityDFolderLabel.TabIndex = 9;
+            this.entityDFolderLabel.Text = "[Location]";
             // 
             // NewExperimentForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(649, 530);
+            this.ClientSize = new System.Drawing.Size(410, 530);
             this.Controls.Add(this.settingPropertyGrid);
             this.Controls.Add(this.splitter2);
             this.Controls.Add(this.splitter1);
@@ -244,5 +268,8 @@
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Splitter splitter2;
         private System.Windows.Forms.PropertyGrid settingPropertyGrid;
+        private System.Windows.Forms.Label entityDFolderLabel;
+        private System.Windows.Forms.Button selectDefinitionFolderButton;
+        private System.Windows.Forms.FolderBrowserDialog selectEntityDFolderDialog;
     }
 }

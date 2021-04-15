@@ -10,7 +10,7 @@ using System.Text;
 
 namespace SoupV2.NEAT
 {
-    public class NeatGenotype: AbstractGenotype
+    public class NeatBrainGenotype: AbstractBrainGenotype
     {
         public List<ConnectionGene> ConnectionGenes { get; }
         public List<NodeGene> NodeGenes { get; }
@@ -23,13 +23,11 @@ namespace SoupV2.NEAT
         public int ConnectionIdStart { get; private set; } = 0;
         public int NodeIdStart { get; private set; } = 0;
         
-        public NeatGenotype(NeatGenotype other)
+        public NeatBrainGenotype(NeatBrainGenotype other)
         {
             // Node name map does not need copying as it should remain the same between different genomes
             this.NodeNameMap = other.NodeNameMap;
 
-            // Keep track of, but do not copy, this genotypes's species
-            this.Species = other.Species;
 
             // The genome lists do need to be copied as we can end up doing mutable operations to them
             this.ConnectionGenes = other.ConnectionGenes.ConvertAll(connectionGene => (ConnectionGene)connectionGene.Clone());
@@ -37,16 +35,15 @@ namespace SoupV2.NEAT
         }
 
 
-        public NeatGenotype(List<NodeGene> nodeGenes, List<ConnectionGene> connectionGenes, Species species=null)
+        public NeatBrainGenotype(List<NodeGene> nodeGenes, List<ConnectionGene> connectionGenes)
         {
             this.NodeNameMap = new Dictionary<string, int>();
-            this.Species = species;
 
             this.ConnectionGenes = connectionGenes;
             this.NodeGenes = nodeGenes;
         }
 
-        public NeatGenotype()
+        public NeatBrainGenotype()
         {
             this.NodeNameMap = new Dictionary<string, int>();
 
@@ -141,7 +138,7 @@ namespace SoupV2.NEAT
         /// </summary>
         /// <param name="other"></param>
         /// <returns>(Disjoint, excess, average weight difference)</returns>
-        public (int, int, double) CompareConnectionGenes(NeatGenotype other)
+        public (int, int, double) CompareConnectionGenes(NeatBrainGenotype other)
         {
             // Calculate number of similar genes
 
@@ -197,7 +194,7 @@ namespace SoupV2.NEAT
         
         public override object Clone()
         {
-            return new NeatGenotype(this);
+            return new NeatBrainGenotype(this);
         }
 
         public override void CreateBrain(BrainComponent brainComp)
@@ -210,8 +207,6 @@ namespace SoupV2.NEAT
             {
                 this.AddNamedNode(namedOutput, NodeType.OUTPUT, "softsign");
             }
-
-            this.AddNamedNode("bias", NodeType.BIAS, "softsign");
 
             // Increase connection innovation id as we loop
             int connInnovationId = 0;
@@ -235,15 +230,20 @@ namespace SoupV2.NEAT
 
         }
 
-        public override float CompareSimilarity(AbstractGenotype other)
+        public override float CompareSimilarity(AbstractBrainGenotype other)
         {
-            if (!(other is NeatGenotype))
+            if (!(other is NeatBrainGenotype))
             {
                 throw new Exception("Cannot compare two different types of genome.");
             }
-            var (disjoint, excess, weightDiff) = CompareConnectionGenes((NeatGenotype)other);
+            var (disjoint, excess, weightDiff) = CompareConnectionGenes((NeatBrainGenotype)other);
 
             return (float)(1.0 * disjoint + 1.0 * excess + 0.5 * weightDiff);
+        }
+
+        public override AbstractBrain GetBrain()
+        {
+            return new NeatBrainPhenotype(this);
         }
     }
 }

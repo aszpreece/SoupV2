@@ -8,7 +8,7 @@ namespace EntityComponentSystem.Exceptions
 {
     class DuplicateEntityException : Exception
     {
-        public DuplicateEntityException(EntityPool pool)
+        public DuplicateEntityException(EntityManager pool)
             : base($"Two entities in pool {pool.Id} shared the same tag.")
         {
 

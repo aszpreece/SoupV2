@@ -11,13 +11,14 @@ namespace SoupV2.Simulation.Systems
 {
     public class InfoRenderSystem : EntitySystem
     {
-        public InfoRenderSystem(EntityPool pool) : base(pool, (e) => e.HasComponent(typeof(TransformComponent)) && (e.HasComponent<EnergyComponent>() || e.HasComponent<HealthComponent>() || e.HasComponent<WeaponComponent>()))
+        public InfoRenderSystem(EntityManager pool) : base(pool, (e) => e.HasComponent(typeof(TransformComponent)) && (e.HasComponent<EnergyComponent>() || e.HasComponent<HealthComponent>() || e.HasComponent<OldAgeComponent>()))
         {
 
         }
 
         private readonly Vector2 _energyOffset = new Vector2(0, 10);
         private readonly Vector2 _healthOffset = new Vector2(0, 22);
+        private readonly Vector2 _ageOffset = new Vector2(0, 34);
 
 
         public void Draw(SpriteBatch spriteBatch, Matrix camera)
@@ -64,17 +65,22 @@ namespace SoupV2.Simulation.Systems
                     );
                 }
 
-                if (Compatible[i].HasComponent<WeaponComponent>())
+                if (Compatible[i].HasComponent<OldAgeComponent>())
                 {
 
+
                     var transform = Compatible[i].GetComponent<TransformComponent>();
-                    var weapon = Compatible[i].GetComponent<WeaponComponent>();
+                    var age = Compatible[i].GetComponent<OldAgeComponent>();
+
+                    var ageAmountString = $"{Math.Round((decimal)age.CurrentAge, decimals: 1)}";
+                    var pos = transform.WorldPosition - _ageOffset;
+                    pos -= TextureAtlas.Font.MeasureString(ageAmountString) / 2;
 
                     spriteBatch.DrawString(
                         TextureAtlas.Font,
-                        weapon.Active.ToString(),
-                        transform.WorldPosition,
-                        Color.Red
+                        ageAmountString,
+                        pos,
+                        Color.Purple
                     );
                 }
             }

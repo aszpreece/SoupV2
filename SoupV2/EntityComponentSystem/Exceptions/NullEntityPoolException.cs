@@ -8,7 +8,7 @@ namespace EntityComponentSystem.Exceptions
 {
     class NullEntityPoolException : Exception
     {
-        public NullEntityPoolException(EntityPool entityPool)
+        public NullEntityPoolException(EntityManager entityPool)
             : base($"EntityPool {entityPool.Id} was null.")
         {
 

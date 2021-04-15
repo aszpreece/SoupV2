@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SoupV2.Simulation.Components;
+using SoupV2.Simulation.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,7 @@ namespace SoupV2.Simulation
 
         public Entity Selected { get; set; }
 
-        public EntityPool Manager { get => _main; }
+        public EntityManager Manager { get => _main; }
         public Entity EditTarget {
             get => _editTarget;  
             set {
@@ -30,7 +31,7 @@ namespace SoupV2.Simulation
         }
         public bool Pause { get; set; } = true;
 
-        public EntityEditorSimulation(GameWindow window, SimulationSettings settings) : base(settings)
+        public EntityEditorSimulation(GameWindow window, SimulationSettings settings) : base(settings, null)
         {
             //_camera.Zoom = 1f;
     

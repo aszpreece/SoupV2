@@ -15,7 +15,7 @@ namespace SoupV2.Simulation.Systems
     public class VisionSystem : EntitySystem
     {
         private AdjacencyGrid _grid;
-        public VisionSystem(EntityPool pool, AdjacencyGrid grid) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(EyeComponent)))
+        public VisionSystem(EntityManager pool, AdjacencyGrid grid) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(EyeComponent)))
         {
             _grid = grid;
         }

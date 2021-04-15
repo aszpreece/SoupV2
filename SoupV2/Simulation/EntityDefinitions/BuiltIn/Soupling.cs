@@ -12,15 +12,14 @@ using System.Text;
 
 namespace SoupV2.Simulation.EntityDefinitions
 {
-    class Critter
+    class Soupling
     {
-        public static EntityDefinition GetCritter(Texture2D texture, Color color)
+        public static Entity GetCritter(Color color)
         {
             float radius = 10f;
 
             var critter = new Entity();
 
-            var vel = new Vector2(-100, 0);
             var pos = new Vector2(0, 0);
 
             var transform = new TransformComponent(critter)
@@ -33,7 +32,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var graphics = new GraphicsComponent(critter)
             {
-                Texture = texture,
+                TexturePath = TextureAtlas.CirclePath,
                 Dimensions = new Point((int)(radius * 2), (int)(radius * 2)),
                 Color = color
             };
@@ -87,14 +86,19 @@ namespace SoupV2.Simulation.EntityDefinitions
                 Reproduce = 0,
                 ReproductionThreshold = 0.5f,
                 RequiredRemainingEnergy = 1f,
-                ChildDefinitionId = "Critterling"
+                ChildDefinitionId = "Soupling"
             };
 
             var health = new HealthComponent(critter)
             {
                 Health = 100,
                 MaxHealth = 100,
+                
+            };
 
+            var age = new OldAgeComponent(critter)
+            {
+                MaxAge = 5 * 60
             };
 
             var brain = new BrainComponent(critter)
@@ -138,67 +142,39 @@ namespace SoupV2.Simulation.EntityDefinitions
                     }
             };
 
-            critter.AddComponents(transform, graphics, velocity, circleCollider, rigidbody, drag, movementControl, reproduction, colour, energy, health, brain);
+            critter.AddComponents(transform, graphics, velocity, circleCollider, rigidbody, drag, movementControl, reproduction, colour, energy, health, age, brain);
 
-            var eye1 = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(30)));
+            var eye1 = Eye.GetEye(Color.White, MathHelper.ToRadians(30));
             eye1.Tag = "eye1";
             critter.AddChild(eye1);
 
-            var eye2 = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(-30)));
+            var eye2 = Eye.GetEye(Color.White, MathHelper.ToRadians(-30));
             eye2.Tag = "eye2";
             critter.AddChild(eye2);
 
-            var eye3 = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(90)));
+            var eye3 = Eye.GetEye(Color.White, MathHelper.ToRadians(90));
             eye3.Tag = "eye3";
             critter.AddChild(eye3);
 
-            var eye4 = Entity.FromDefinition(Eye.GetEye(Color.White, MathHelper.ToRadians(-90)));
+            var eye4 = Eye.GetEye(Color.White, MathHelper.ToRadians(-90));
             eye4.Tag = "eye4";
             critter.AddChild(eye4);
 
 
-            var mouth = Entity.FromDefinition(Mouth.GetMouth(Color.White));
+            var mouth = Mouth.GetMouth(Color.White);
             critter.AddChild(mouth);
             mouth.GetComponent<TransformComponent>().LocalPosition = new Vector2(15, 0);
 
-            var nose = Entity.FromDefinition(Nose.GetNose(Color.White, 0, 10));
+            var nose = Nose.GetNose(Color.White, 0, 10);
             nose.Tag = "nose";
             critter.AddChild(nose);
 
-            
-
-            var weapon = Entity.FromDefinition(Weapon.GetWeapon(Color.White));
+            var weapon = Weapon.GetWeapon(Color.White);
             weapon.Tag = "weapon";
             critter.AddChild(weapon);
             weapon.GetComponent<TransformComponent>().LocalPosition = new Vector2(30, 0);
 
-
-            return critter.ToDefinition();
-        }
-
-        public static EntityDefinition GetGrabber(Texture2D texture, Color color)
-        {
-            float radius = 5f;
-
-            var grabber = new Entity("grabber");
-
-            var transform = new TransformComponent(grabber)
-            {
-                LocalPosition = Vector2.Zero,
-                LocalRotation = new Rotation(0),
-                LocalDepth = 0.1f,
-                Scale = new Vector2(1, 1)
-            };
-
-            var graphics = new GraphicsComponent(grabber)
-            {
-                Texture = texture,
-                Dimensions = new Point((int)(radius * 2), (int)(radius * 2)),
-                Color = color
-            };
-            grabber.AddComponents(transform, graphics);
-            return grabber.ToDefinition();
-
+            return critter;
         }
     }
 }

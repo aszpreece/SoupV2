@@ -22,12 +22,11 @@ namespace SoupForm.Controls
                 return;
 
             base.Initialize();
-            SerializerSettings.InitializeSettings(Editor.Content);
             TextureAtlas.Load(Editor.Content);
             SpriteBatchExtension.InitSpriteBatchExtension(Editor.graphics);
             Editor.BackgroundColor = new Color(20, 19, 40);
-            CurrentSimulation.Initialize();
             Editor.Cam.Zoom = 0.1f;
+            CurrentSimulation.SetUp(this.GraphicsDevice);
         }
 
         protected override void Update(GameTime gameTime)

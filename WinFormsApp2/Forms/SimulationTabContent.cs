@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using SoupV2.Simulation;
 using SoupV2.Simulation.Events;
+using SoupV2.Simulation.Settings;
 using SoupV2.Simulation.Statistics;
 using SoupV2.Simulation.Statistics.StatLoggers;
 using System;
@@ -23,10 +24,12 @@ namespace SoupForm.Forms
 
 
         private Thread? _statLoggingThread;
-        public SimulationTabContent(Stream statsOut, SimulationSettings settings)
+        public SimulationTabContent(Stream statsOut, string entityDefinitionPath, SimulationSettings settings)
         {
             InitializeComponent();
-            var newSim = new Simulation(settings);
+            var definitionDatabase = LocalStorage.GetDefinitionDatabase(entityDefinitionPath);
+
+            var newSim = new Simulation(settings, definitionDatabase);
             if (!(statsOut is null))
             {
                 // Set up statistics gathering

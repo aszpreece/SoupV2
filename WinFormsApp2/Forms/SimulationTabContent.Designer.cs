@@ -26,7 +26,6 @@ namespace SoupForm.Forms
             this.eventTypeHeader = new System.Windows.Forms.ColumnHeader();
             this.eventLocationHeader = new System.Windows.Forms.ColumnHeader();
             this.eventInfoHeader = new System.Windows.Forms.ColumnHeader();
-            this.listView2 = new System.Windows.Forms.ListView();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.soupGraphicsControl = new SoupForm.Controls.SoupGraphicControl();
@@ -73,20 +72,10 @@ namespace SoupForm.Forms
             this.eventInfoHeader.DisplayIndex = 2;
             this.eventInfoHeader.Text = "Info";
             // 
-            // listView2
-            // 
-            this.listView2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.listView2.HideSelection = false;
-            this.listView2.Location = new System.Drawing.Point(121, 383);
-            this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(472, 97);
-            this.listView2.TabIndex = 3;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            // 
             // splitter1
             // 
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter1.Location = new System.Drawing.Point(121, 380);
+            this.splitter1.Location = new System.Drawing.Point(121, 477);
             this.splitter1.Name = "splitter1";
             this.splitter1.Size = new System.Drawing.Size(472, 3);
             this.splitter1.TabIndex = 4;
@@ -96,7 +85,7 @@ namespace SoupForm.Forms
             // 
             this.splitter2.Location = new System.Drawing.Point(121, 0);
             this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(3, 380);
+            this.splitter2.Size = new System.Drawing.Size(3, 477);
             this.splitter2.TabIndex = 5;
             this.splitter2.TabStop = false;
             // 
@@ -108,7 +97,7 @@ namespace SoupForm.Forms
             this.soupGraphicsControl.MouseHoverUpdatesOnly = false;
             this.soupGraphicsControl.Name = "soupGraphicsControl";
             this.soupGraphicsControl.ShouldUpdate = true;
-            this.soupGraphicsControl.Size = new System.Drawing.Size(469, 380);
+            this.soupGraphicsControl.Size = new System.Drawing.Size(469, 477);
             this.soupGraphicsControl.TabIndex = 6;
             this.soupGraphicsControl.Text = "soupGraphicsControl";
             this.soupGraphicsControl.OnMouseWheelUpwards += new MonoGame.Forms.Controls.GraphicsDeviceControl.MouseWheelUpwardsEvent(this.soupGraphicsControl_OnMouseWheelUpwards);
@@ -124,7 +113,6 @@ namespace SoupForm.Forms
             this.Controls.Add(this.soupGraphicsControl);
             this.Controls.Add(this.splitter2);
             this.Controls.Add(this.splitter1);
-            this.Controls.Add(this.listView2);
             this.Controls.Add(this.eventView);
             this.Name = "SimulationTabContent";
             this.Size = new System.Drawing.Size(593, 480);
@@ -134,7 +122,6 @@ namespace SoupForm.Forms
 
         #endregion
         private System.Windows.Forms.ListView eventView;
-        private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Splitter splitter2;
         private Controls.SoupGraphicControl soupGraphicsControl;

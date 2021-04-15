@@ -7,6 +7,10 @@ namespace SoupV2.Simulation
     public class EnergyManager
     {
         public float Energy { get; private set; }
+        public EnergyManager(float initialEnergy)
+        {
+            Energy = initialEnergy;
+        }
 
         /// <summary>
         /// Attempt to charge the given amount of energy and return the amount charged.
@@ -25,7 +29,7 @@ namespace SoupV2.Simulation
             else
             {
                 float left = Energy;
-                Energy = 0;
+                Energy -= amount;
                 return left;
             }
         }

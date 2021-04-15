@@ -12,7 +12,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 {
     public static class Weapon
     {
-        public static EntityDefinition GetWeapon(Color color)
+        public static Entity GetWeapon(Color color)
         {
             float radius = 8f;
 
@@ -28,7 +28,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var graphics = new GraphicsComponent(weaponEntity)
             {
-                Texture = TextureAtlas.BoxingGloveRetracted,
+                TexturePath = TextureAtlas.BoxingGloveRetractedPath,
                 Dimensions = new Point((int)(radius * 2), (int)(radius * 2)),
                 Color = color
             };
@@ -50,7 +50,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             weaponEntity.AddComponents(transform, graphics, weaponComp, collider);
 
-            return weaponEntity.ToDefinition();
+            return weaponEntity;
 
         }
     }

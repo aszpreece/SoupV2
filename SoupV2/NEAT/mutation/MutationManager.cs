@@ -27,7 +27,7 @@ namespace SoupV2.NEAT.Genes
         /// </summary>
         /// <param name="genotype">Genotype to mutate</param>
         /// <param name="innovationIdManager">Innovation id manager. New innovation ids will be taken from here.</param>
-        public void Mutate(NeatGenotype genotype, InnovationIdManager innovationIdManager)
+        public void Mutate(NeatBrainGenotype genotype, InnovationIdManager innovationIdManager)
         {
             foreach (AbstractMutator mutator in Mutators)
             {

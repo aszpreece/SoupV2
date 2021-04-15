@@ -5,22 +5,26 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SoupV2.Simulation.Events.DeathCause;
+using Newtonsoft.Json;
 
 namespace SoupV2.Simulation.Systems
 {
     public class HealthDeathSystem : EntitySystem
     {
-        private string _foodDefinition;
-
         public delegate void DeathEvent(DeathEventInfo info);
 
         public event DeathEvent OnDeath;
-        public HealthDeathSystem(EntityPool pool, string foodDefinition) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(HealthComponent)))
+
+        private Simulation _simulation;
+
+        private EnergyManager _energyManager;
+        public HealthDeathSystem(EntityManager pool, Simulation simulation, EnergyManager energyManager) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(HealthComponent)))
         {
-            _foodDefinition = foodDefinition;
+            _simulation = simulation;
+            _energyManager = energyManager;
         }
 
-        public void Update(uint tick)
+        public void Update(uint tick, float gameSpeed)
         {
             List<Entity> toDestroy = new List<Entity>();
 
@@ -36,13 +40,10 @@ namespace SoupV2.Simulation.Systems
                     // Check if we would be killing an entity with energy
                     if (entity.TryGetComponent<EnergyComponent>(out EnergyComponent deadEnergy))
                     {
-                        var food = Pool.AddEntityFromDefinition(_foodDefinition);
-                        food.GetComponent<EnergyComponent>().Energy = deadEnergy.Energy;
-                        var deadTransform = entity.GetComponent<TransformComponent>();
-                        food.GetComponent<TransformComponent>().LocalPosition = deadTransform.WorldPosition;
+                        deadEnergy.HandleDeath(_energyManager, Pool, _simulation.JsonSettings, entity.GetComponent<TransformComponent>().WorldPosition);
                     }
                     var loc = entity.GetComponent<TransformComponent>().WorldPosition;
-                    OnDeath?.Invoke(new DeathEventInfo(loc, tick, entity.Id, new HealthDeathCause()));
+                    OnDeath?.Invoke(new DeathEventInfo(loc, tick * gameSpeed, entity.Id, new HealthDeathCause()));
                 }
             }
             foreach(var e in toDestroy)

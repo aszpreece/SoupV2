@@ -13,26 +13,25 @@ namespace SoupV2.Simulation.Systems.WorldLogic
 {
 
     /// <summary>
-    /// Maintains the amount of food in the simulation.
+    /// Maintains the population of each type of critter in the population.
     /// </summary>
-    public class FoodRespawnSystem
+    public class CritterPopulationSystem
     {
         private EntityManager _pool;
         private EnergyManager _energyManager;
         private AdjacencyGrid _grid;
 
-        private readonly float _delaySeconds;
         private Random _rand;
         private Simulation _simulation;
-        private List<FoodTypeSetting> _foodTypes;
+        private List<CritterTypeSetting> _critterTypes;
 
-        // Special data structure for mainting each type of food.
-        private Dictionary<string, (FoodTypeSetting, HashSet<Entity>)> Compatible = new Dictionary<string, (FoodTypeSetting, HashSet<Entity>)>();
+        // Special data structure for mainting each type of critter.
+        private Dictionary<string, (CritterTypeSetting, HashSet<Entity>)> Compatible = new Dictionary<string, (CritterTypeSetting, HashSet<Entity>)>();
 
-        public FoodRespawnSystem(EntityManager pool,
+        public CritterPopulationSystem(EntityManager pool,
             EnergyManager energyManager,
             AdjacencyGrid grid,
-            List<FoodTypeSetting> foodTypes,
+            List<CritterTypeSetting> critterTypes,
             Simulation simulation)
         {
             _pool = pool;
@@ -40,15 +39,15 @@ namespace SoupV2.Simulation.Systems.WorldLogic
             _grid = grid;
             _rand = new Random();
             _simulation = simulation;
-            _foodTypes = foodTypes;
+            _critterTypes = critterTypes;
 
             pool.EntityAdded += OnPoolEntityAdded;
             pool.EntityRemoved += OnPoolEntityRemoved;
 
             // Initialize the hash sets
-            foreach (FoodTypeSetting foodTypeSetting in _foodTypes)
+            foreach (CritterTypeSetting critterTypeSetting in _critterTypes)
             {
-                Compatible.Add(foodTypeSetting.DefinitionId, (foodTypeSetting, new HashSet<Entity>()));
+                Compatible.Add(critterTypeSetting.DefinitionId, (critterTypeSetting, new HashSet<Entity>()));
             }
         }
 
@@ -60,7 +59,7 @@ namespace SoupV2.Simulation.Systems.WorldLogic
         protected virtual void OnPoolEntityAdded(EntityManager pool, Entity entity)
         {
             // Check if we are tracking this tag
-            if (Compatible.ContainsKey(entity.Tag))
+            if(Compatible.ContainsKey(entity.Tag))
             {
                 Compatible[entity.Tag].Item2.Add(entity);
             }
@@ -77,16 +76,19 @@ namespace SoupV2.Simulation.Systems.WorldLogic
 
         public void Update(uint tick, float gameSpeed)
         {
-            foreach (var (foodTypeSetting, populationSet) in Compatible.Values)
+            foreach (var (critterTypeSetting, populationSet) in Compatible.Values)
             {
-                // Only spawn a new food if the population has dipped too low.
-                if (populationSet.Count >= foodTypeSetting.MinimumCount)
+                // Only spawn a new critter if the population has dipped too low.
+                if (populationSet.Count >= critterTypeSetting.MinimumCount)
                 {
                     continue;
                 }
 
-                foodTypeSetting.Timer += gameSpeed;
-                if (foodTypeSetting.Timer >= foodTypeSetting.RespawnDelay && _energyManager.CanAfford(foodTypeSetting.StartEnergy))
+                // Taken this out, as critters should be able to spawn no matter what.
+                // The energy manager will just have to go into debt
+                //  && _energyManager.CanAfford(critterTypeSetting.StartEnergy)
+                critterTypeSetting.Timer += gameSpeed;
+                if (critterTypeSetting.Timer >= critterTypeSetting.RespawnDelay)
                 {
                     // Only attempt a few times to avoid blocking up the simulation loop.
                     int attempts = 0;
@@ -97,26 +99,27 @@ namespace SoupV2.Simulation.Systems.WorldLogic
                         int y = _rand.Next(-_grid.WorldHeight / 2, _grid.WorldHeight / 2);
                         var pos = new Vector2(x, y);
 
-                        //// Make sure the immediate radius is free of anything with a mouth.
-                        if (_grid.GetNearbyEntities(pos, foodTypeSetting.FreeSpaceWorldUnits, (e) => e.HasComponent<MouthComponent>()).Any())
+                        //// Make sure the immediate radius is free of anything with a brain.
+                        if (_grid.GetNearbyEntities(pos, critterTypeSetting.FreeSpaceWorldUnits, (e) => e.HasComponent<BrainComponent>()).Any())
                         {
                             attempts++;
                             continue;
                         }
 
-                        Entity foodEntity = _pool.AddEntityFromDefinition(foodTypeSetting.DefinitionId, _simulation.JsonSettings);
-
-                        if (foodEntity.HasComponent<EnergyComponent>())
+                        Entity critter = _pool.AddEntityFromDefinition(critterTypeSetting.DefinitionId, _simulation.JsonSettings);
+                        
+                        if (critter.HasComponent<EnergyComponent>())
                         {
-                            foodEntity.GetComponent<EnergyComponent>().Energy = foodTypeSetting.StartEnergy;
-                            _energyManager.ChargeEnergy(foodTypeSetting.StartEnergy);
+                            critter.GetComponent<EnergyComponent>().Energy = critterTypeSetting.StartEnergy;
+                            _energyManager.ChargeEnergy(critterTypeSetting.StartEnergy);
                         }
-                        var transform = foodEntity.GetComponent<TransformComponent>();
-                        transform.LocalPosition = pos;
-                        transform.LocalRotation = new util.Rotation((float)(_rand.NextDouble() * MathHelper.TwoPi));
 
-                        // If we placed a food reset the timer.
-                        foodTypeSetting.Timer = 0;
+                        var transform = critter.GetComponent<TransformComponent>();
+                        transform.LocalPosition = pos;
+                        transform.LocalRotation = new util.Rotation((float)(_rand.NextDouble() * MathHelper.TwoPi)); 
+
+                        // If we placed a critter reset the timer.
+                        critterTypeSetting.Timer = 0;
                         break;
                     }
                 }

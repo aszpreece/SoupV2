@@ -6,7 +6,7 @@ namespace SoupV2.Simulation.EventsAndInfo
 {
     public abstract class AbstractSimulationInfo
     {
-        public uint TimeStamp { get; set; }
+        public float TimeStamp { get; set; }
         
     }
 }

@@ -24,7 +24,7 @@ namespace SoupV2.Simulation.Statistics
     public class BrainReporter : EntitySystem
     {
         private StatisticsGatherer _gatherer;
-        public BrainReporter(EntityPool pool, StatisticsGatherer gatherer) : base(pool, (e) => e.HasComponents(typeof(BrainComponent)))
+        public BrainReporter(EntityManager pool, StatisticsGatherer gatherer) : base(pool, (e) => e.HasComponents(typeof(BrainComponent)))
         {
             _gatherer = gatherer;
 

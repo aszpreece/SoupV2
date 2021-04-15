@@ -8,7 +8,7 @@ namespace EntityComponentSystem.Exceptions
 {
     class EntityNotFoundException : Exception
     {
-        public EntityNotFoundException(EntityPool pool)
+        public EntityNotFoundException(EntityManager pool)
             : base($"Entity not found in pool \"{pool.Id}\".")
         {
             

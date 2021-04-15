@@ -37,22 +37,23 @@ namespace SoupForm.Forms
             if (newExperimentForm.DialogResult == DialogResult.OK)
             {
 
-                try
-                {
+                //try
+                //{
                     var newSimTab = new TabPage(newExperimentForm.SimulationName);
                     tabControl1.TabPages.Add(newSimTab);
                     var simTab = new SimulationTabContent(
                         newExperimentForm.StatsFileStream,
+                        newExperimentForm.ChosenEntityDefinitionFolder,
                         newExperimentForm.NewSimulationSettings
                     );
                     simTab.Dock = DockStyle.Fill;
                     newSimTab.Controls.Add(simTab);
 
-                } catch (Exception exception)
-                {
-                    MessageBox.Show($"Something went wrong initializing the new simulation: {exception.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //} catch (Exception exception)
+                //{
+                //    MessageBox.Show($"Something went wrong initializing the new simulation: {exception.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                }
+                //}
 
             }
         }

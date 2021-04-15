@@ -15,7 +15,7 @@ namespace SoupV2.Simulation.Physics
 
         public List<Collision> Collisions { get; set; } = new List<Collision>();
 
-        public SortAndSweep(EntityPool pool, Func<Entity, bool> compatible, Func<Entity, Entity, bool> shouldResolveCollision) : base(pool, compatible)
+        public SortAndSweep(EntityManager pool, Func<Entity, bool> compatible, Func<Entity, Entity, bool> shouldResolveCollision) : base(pool, compatible)
         {
             _shouldDetectCollision = shouldResolveCollision;
         }

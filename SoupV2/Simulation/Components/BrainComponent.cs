@@ -7,6 +7,7 @@ using SoupV2.util;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using SoupV2.Simulation.Brain;
+using SoupV2.NEAT;
 
 namespace SoupV2.Simulation.Components
 {
@@ -16,8 +17,12 @@ namespace SoupV2.Simulation.Components
     /// </summary>
     public class BrainComponent : AbstractComponent
     {
-        private readonly List<(Func<AbstractComponent, float>, AbstractComponent, string)> _brainInputs;
-        private readonly List<(Action<AbstractComponent, float>, AbstractComponent, string)> _brainOutputs;
+        private readonly List<(Func<AbstractComponent, float>, AbstractComponent, string)> _brainInputs = new List<(Func<AbstractComponent, float>, AbstractComponent, string)>();
+        private readonly List<(Action<AbstractComponent, float>, AbstractComponent, string)> _brainOutputs = new List<(Action<AbstractComponent, float>, AbstractComponent, string)>();
+
+        [JsonIgnore]
+        [Browsable(false)]
+        public AbstractBrainGenotype BrainGenotype { get; set; }
 
         [JsonIgnore]
         private AbstractBrain _brain;
@@ -36,21 +41,56 @@ namespace SoupV2.Simulation.Components
         /// </summary>
         public Dictionary<string, string> OutputMap { get; set; } = new Dictionary<string, string>();
 
+
+        /// <summary>
+        /// Indicates whether or not this brain's links have been set up.
+        /// </summary>
+        [JsonIgnore]
+        public bool SetUp { get; internal set;  } = false;
+
+        [Browsable(false)]
+        public Species ParentSpecies { get; set; }
+        [Browsable(false)]
+        public Species Species { get; set; }
+
+
+
+        [JsonConstructor]
         public BrainComponent(Entity owner) : base(owner) 
         {
-            _brainInputs = new List<(Func<AbstractComponent, float>, AbstractComponent, string)>();
-            _brainOutputs = new List<(Action<AbstractComponent, float>, AbstractComponent, string)>();
+
         }
 
-        public void SetBrain(AbstractBrain brain)
+        public void SetGenotype(AbstractBrainGenotype genotype)
         {
-            _brain = brain;
+            BrainGenotype = genotype;
+            _brain = genotype.GetBrain();
         }
 
         static Random rand = new Random();
-        static Func<AbstractComponent, float> randomGetter = (_)=> (float)rand.NextDouble() -0.5f;
-        public void SetUpLinks()
+        static readonly Func<AbstractComponent, float> randomGetter = (_) => (float)rand.NextDouble() - 0.5f;
+        static readonly Func<AbstractComponent, float> biasGetter = (_) => 1;
+
+
+        /// <summary>
+        /// Compiles brain inputs/outputs to a map of functions and their component objects that they act upon.
+        /// Must be called before brain can function.
+        /// </summary>
+        public void SetUpLinks(Type brainType)
         {
+
+            // Brains that have been created without an explicit genotype will need to have one created.
+            if (BrainGenotype is null)
+            {
+                // create a genotype of the parameterized type
+                BrainGenotype = (AbstractBrainGenotype)Activator.CreateInstance(brainType);
+                // Create a default brain and set the phenotype etc.
+                BrainGenotype.CreateBrain(this);
+                var phenotype = BrainGenotype.GetBrain();
+                SetGenotype(BrainGenotype);
+            }
+
+
             // 'Compile' brain inputs/outputs to a map of functions and their component objects.
             _brainInputs.Clear();
             _brainOutputs.Clear();
@@ -61,11 +101,19 @@ namespace SoupV2.Simulation.Components
                 // take each brain input, figure out where to get the input from in the entity
                 // then store the method to get the input, the component to get it from, and the name of the input to the brain to send it to.
 
+                // These are the special case inputs.
+                // Instead of coming from somwhere on the component they come from the methods above.
                 string[] separators = source.Split('.');
                 if (separators.Length == 1 && separators[0] == "Random" )
                 {
                     // Get getter for random node.
                     _brainInputs.Add((randomGetter, null, brainInput));
+                    continue;
+                }
+                if (separators.Length == 1 && separators[0] == "Bias")
+                {
+                    // Get getter for random node.
+                    _brainInputs.Add((biasGetter, null, brainInput));
                     continue;
                 }
                 if (separators.Length < 2)
@@ -108,6 +156,9 @@ namespace SoupV2.Simulation.Components
                 _brainOutputs.Add((getter, component, brainOutput));
 
             }
+
+            // Indicate that this brain has been set up.
+            SetUp = true;
         }
 
         public void Calculate()

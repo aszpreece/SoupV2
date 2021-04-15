@@ -7,12 +7,12 @@ namespace EntityComponentSystem
 {
     public abstract class EntitySystem
     {
-        public EntityPool Pool { get; set; }
+        public EntityManager Pool { get; set; }
         public List<Entity> Compatible { get; set; }
 
         public Func<Entity, bool> CompatiblePredicate { get; }
 
-        public EntitySystem(EntityPool pool, Func<Entity, bool> compatiblePredicate)
+        public EntitySystem(EntityManager pool, Func<Entity, bool> compatiblePredicate)
         {
 
             CompatiblePredicate = compatiblePredicate;
@@ -29,7 +29,7 @@ namespace EntityComponentSystem
             Compatible = GetCompatibleInPool();
         }
 
-        protected virtual void OnPoolEntityChanged(EntityPool pool, Entity entity)
+        protected virtual void OnPoolEntityChanged(EntityManager pool, Entity entity)
         {
             var index = Compatible.IndexOf(entity);
             // If we already have the entity, check if we are still compatible

@@ -11,7 +11,7 @@ namespace SoupV2.Simulation.Systems
     public class DragSystem : EntitySystem
     {
         private float _massDensity;
-        public DragSystem(EntityPool pool, float massDensity) : base(pool, 
+        public DragSystem(EntityManager pool, float massDensity) : base(pool, 
             (e) => e.HasComponents(typeof(RigidBodyComponent), typeof(DragComponent), typeof(VelocityComponent)))
         {
             _massDensity = massDensity;

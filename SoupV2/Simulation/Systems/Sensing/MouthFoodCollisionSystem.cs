@@ -11,7 +11,7 @@ namespace SoupV2.Simulation.Systems
     public class MouthFoodCollisionSystem : EntitySystem
     {
         private List<Collision> _collisions;
-        public MouthFoodCollisionSystem(EntityPool pool, List<Collision> collisionList): base(pool, (e) => e.HasComponent<MouthComponent>())
+        public MouthFoodCollisionSystem(EntityManager pool, List<Collision> collisionList): base(pool, (e) => e.HasComponent<MouthComponent>())
         {
             _collisions = collisionList;
         }

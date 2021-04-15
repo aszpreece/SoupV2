@@ -19,7 +19,7 @@ namespace SoupV2.Simulation.Brain
         /// <summary>
         /// The representative of this species.
         /// </summary>
-        public AbstractGenotype Representative { get; set; }
+        public AbstractBrainGenotype Representative { get; set; }
 
     }
 }

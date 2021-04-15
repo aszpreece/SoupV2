@@ -10,10 +10,10 @@ namespace SoupV2.Simulation.Events
     {        
         public Vector2 Location { get; set; }
 
-        public AbstractEventInfo(uint tick, Vector2 location)
+        public AbstractEventInfo(float timestamp, Vector2 location)
         {
             Location = location;
-            TimeStamp = tick;
+            TimeStamp = timestamp;
         }
 
         public abstract override string ToString();

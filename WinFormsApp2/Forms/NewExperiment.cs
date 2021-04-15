@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SoupV2.Simulation;
+using SoupV2.Simulation.Settings;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -23,6 +24,8 @@ namespace SoupForm.Forms
         /// </summary>
         public Stream StatsFileStream { get; set; }
         public bool SaveStats { get; set; } = false;
+
+        public string ChosenEntityDefinitionFolder { get; set; }
     
         public NewExperimentForm()
         {
@@ -74,11 +77,21 @@ namespace SoupForm.Forms
 
         }
 
+        /// <summary>
+        /// When ok is pressed we need to do some validation to check the right data has been entered.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void okButton_Click(object sender, EventArgs e)
         {
            
             if (SaveStats && (StatsFileStream is null)) {
                 MessageBox.Show($"Please select a file to save statistics to.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (ChosenEntityDefinitionFolder is null)
+            {
+                MessageBox.Show($"Please select an entity definition folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             this.DialogResult = DialogResult.OK;
@@ -144,6 +157,16 @@ namespace SoupForm.Forms
             SaveStats = saveStatsCheckBox.Checked;
             saveStatsButton.Enabled = saveStatsCheckBox.Checked;
             statsFileLocation.Enabled = saveStatsButton.Enabled;
+        }
+
+        private void selectDefinitionFolderButton_Click(object sender, EventArgs e)
+        {
+            if (selectEntityDFolderDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            ChosenEntityDefinitionFolder = selectEntityDFolderDialog.SelectedPath;
+            entityDFolderLabel.Text = selectEntityDFolderDialog.SelectedPath;
         }
     }
 }

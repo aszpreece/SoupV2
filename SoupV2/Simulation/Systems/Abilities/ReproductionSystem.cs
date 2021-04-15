@@ -1,4 +1,5 @@
 ﻿using EntityComponentSystem;
+using Newtonsoft.Json;
 using SoupV2.NEAT;
 using SoupV2.NEAT.Genes;
 using SoupV2.NEAT.mutation;
@@ -20,21 +21,23 @@ namespace SoupV2.Simulation.Systems
         private EnergyManager _energyManager;
         private int _nextSpeciesIdCounter;
         private float _similarityThreshold;
-        private List<Species> _species = new List<Species>();
 
         public delegate void ChildBorn(BirthEventInfo e);
         public event ChildBorn BirthEvent;
 
-        public ReproductionSystem(EntityPool pool, NeatMutationConfig config, InnovationIdManager innovationIdManager, EnergyManager energyManager, int currentMaxSpeciesId, float similarityThreshold) : base(pool, (e) => e.HasComponents(typeof(ReproductionComponent), typeof(EnergyComponent)))
+        private Simulation _simulation;
+        public ReproductionSystem(EntityManager pool, NeatMutationConfig config, InnovationIdManager innovationIdManager, EnergyManager energyManager, int currentMaxSpeciesId, float similarityThreshold, Simulation simulation) 
+            : base(pool, (e) => e.HasComponents(typeof(ReproductionComponent), typeof(EnergyComponent)))
         {
             _muationManager = new MutationManager(config);
             _innovationIdManager = innovationIdManager;
             _energyManager = energyManager;
             _nextSpeciesIdCounter = currentMaxSpeciesId + 1;
             _similarityThreshold = similarityThreshold;
+            _simulation = simulation;
         }
 
-        public void Update(uint tick)
+        public void Update(uint tick, float _gameSpeed)
         {
             Random r = new Random();
 
@@ -67,50 +70,29 @@ namespace SoupV2.Simulation.Systems
                     _energyManager.DepositEnergy(wasted);
 
                     // Some set up for the new child, setting positions/giving energy.
-                    var babyEntity = Pool.AddEntityFromDefinition(reproduction.ChildDefinitionId);
+                    var babyEntity = Pool.AddEntityFromDefinition(reproduction.ChildDefinitionId, _simulation.JsonSettings);
 
                     babyEntity.GetComponent<EnergyComponent>().Energy = charged;
                     var parentPosition = parentEntity.GetComponent<TransformComponent>().LocalPosition;
                     babyEntity.GetComponent<TransformComponent>().LocalPosition = parentPosition;
 
                     // The new child will need a mutated brain
-                    var originalBrain = parentEntity.GetComponent<BrainComponent>().Brain;
+                    var originalBrainComponent = parentEntity.GetComponent<BrainComponent>();
+                    var originalBrain = originalBrainComponent.Brain;
 
-        
-                    AbstractGenotype parentGenotype = ((NeatPhenotype)originalBrain).Genotype;
-                    NeatGenotype childGenotype = (NeatGenotype)parentGenotype.Clone();
+
+                    AbstractBrainGenotype parentGenotype = ((NeatBrainPhenotype)originalBrain).Genotype;
+                    NeatBrainGenotype childGenotype = (NeatBrainGenotype)parentGenotype.Clone();
                    
                     
-                    _muationManager.Mutate((NeatGenotype)childGenotype, _innovationIdManager);
+                    _muationManager.Mutate((NeatBrainGenotype)childGenotype, _innovationIdManager);
                     var newBrain = babyEntity.GetComponent<BrainComponent>();
-                    newBrain.SetBrain(new NeatPhenotype(childGenotype));
-                    newBrain.SetUpLinks();
+                    newBrain.SetGenotype(childGenotype);
 
-                    // Check what species the child should go in.
-                    // If compatible with the parent species then place it in that species.
-                    // Else, create a new species.
-                    if (parentGenotype.Species.Representative.CompareSimilarity(childGenotype) <= _similarityThreshold)
-                    {
-                        childGenotype.Species = parentGenotype.Species;
-                    } else
-                    {
-                        int newId = _nextSpeciesIdCounter;
-                        _nextSpeciesIdCounter++;
+                    // Do not need to pass it type as we have already set the brain, therefore it does not need initializing.
+                    newBrain.SetUpLinks(null);
+                    newBrain.ParentSpecies = originalBrainComponent.Species;
 
-                        // Create representative for species
-                        NeatGenotype rep = (NeatGenotype)childGenotype.Clone();
-                        rep.Species = null;
-
-                        var newSpecies = new Species()
-                        {
-                            Id = newId,
-                            Representative = rep,
-                            TimeCreated = 0,
-                        };
-                        // Create new species.
-                        _species.Add(newSpecies);
-                        childGenotype.Species = newSpecies;
-                    }
                     BirthEventInfo e = new BirthEventInfo(parentPosition, tick, parentEntity.Id, babyEntity.Id, childGenotype);
                     BirthEvent?.Invoke(e);
                 }

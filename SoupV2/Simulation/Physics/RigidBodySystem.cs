@@ -9,7 +9,7 @@ namespace SoupV2.Simulation.Physics
 {
     public class RigidBodySystem : EntitySystem
     {
-        public RigidBodySystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(RigidBodyComponent), typeof(VelocityComponent), typeof(CircleColliderComponent)))
+        public RigidBodySystem(EntityManager pool) : base(pool, (e) => e.HasComponents(typeof(RigidBodyComponent), typeof(VelocityComponent), typeof(CircleColliderComponent)))
         {
 
         }

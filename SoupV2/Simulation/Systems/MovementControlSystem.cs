@@ -10,7 +10,7 @@ namespace SoupV2.Simulation.Systems
 {
     public class MovementControlSystem : EntitySystem 
     {
-        public MovementControlSystem(EntityPool pool) : base(pool, (e) => e.HasComponents(typeof(MovementControlComponent), typeof(RigidBodyComponent)))
+        public MovementControlSystem(EntityManager pool) : base(pool, (e) => e.HasComponents(typeof(MovementControlComponent), typeof(RigidBodyComponent)))
         {
 
         }

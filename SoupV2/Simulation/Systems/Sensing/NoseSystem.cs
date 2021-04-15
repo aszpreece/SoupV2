@@ -15,7 +15,7 @@ namespace SoupV2.Simulation.Systems
     public class NoseSystem : EntitySystem
     {
         private AdjacencyGrid _grid;
-        public NoseSystem(EntityPool pool, AdjacencyGrid grid) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(NoseComponent)))
+        public NoseSystem(EntityManager pool, AdjacencyGrid grid) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(NoseComponent)))
         {
             _grid = grid;
         }

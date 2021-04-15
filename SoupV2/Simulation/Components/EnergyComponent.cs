@@ -1,4 +1,6 @@
 ﻿using EntityComponentSystem;
+using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +10,16 @@ namespace SoupV2.Simulation.Components
     public class EnergyComponent : AbstractComponent 
     {
         private float _energy;
+
+        /// <summary>
+        /// Determines whether or not this component will drop food upon death.
+        /// </summary>
+        public bool DropAsFoodOnDeath { get; set; } = true;
+
+        /// <summary>
+        /// The definition of the food to drop upon death.
+        /// </summary>
+        public string DropAsFoodEntityDefinition { get; set; } = "DefaultFood";
         public float Energy { get => _energy;
             set
             {
@@ -59,6 +71,28 @@ namespace SoupV2.Simulation.Components
         public bool CanAfford(float amount)
         {
             return Energy >= amount;
+        }
+
+        /// <summary>
+        /// Handles the death of an entity that has energy
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <param name="pool"></param>
+        public void HandleDeath(EnergyManager energyManager, EntityManager entityManager, JsonSerializerSettings jsonSettings, Vector2 position)
+        {
+            // If the component is set to drop as food on death drop a food
+            if (DropAsFoodOnDeath)
+            {
+                var food = entityManager.AddEntityFromDefinition(DropAsFoodEntityDefinition, jsonSettings);
+                // There is a small chance the dropped food component does not have an energy component. If not return the energy to the manager after all
+                if (food.HasComponent<EnergyComponent>())
+                {
+                    food.GetComponent<EnergyComponent>().Energy = Energy;
+                    food.GetComponent<TransformComponent>().LocalPosition = position;
+                    return;
+                }
+            }
+            energyManager.DepositEnergy(Energy);
         }
 
     }

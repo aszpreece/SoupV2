@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using SoupV2.EntityComponentSystem;
 using SoupV2.Simulation.Components;
 using SoupV2.util;
@@ -9,39 +10,40 @@ using System.Text;
 
 namespace SoupV2.Simulation.EntityDefinitions
 {
-    public static class Nose
+    public static class Eye
     {
 
-        public static EntityDefinition GetNose(Color color, float angle = 0, float distFromParent = 8)
+        public static Entity GetEye(Color color, float angle = 0, float fov=60, float distFromParent = 8)
         {
             float radius = 5f;
 
-            var noseEntity = new Entity("nose");
+            var eyeEntity = new Entity("eye");
 
             var pos = distFromParent * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 
-            var transform = new TransformComponent(noseEntity)
+            var transform = new TransformComponent(eyeEntity)
             {
                 LocalPosition = pos,
                 LocalRotation = new Rotation(angle),
-                LocalDepth = 0.095f,
+                LocalDepth = 0.1f,
                 Scale = new Vector2(1, 1)
             };
 
-            var graphics = new GraphicsComponent(noseEntity)
+            var graphics = new GraphicsComponent(eyeEntity)
             {
-                Texture = TextureAtlas.Nose,
+                TexturePath = TextureAtlas.EyePath,
                 Dimensions = new Point((int)(radius * 2), (int)(radius * 2)),
                 Color = color
             };
 
-            var noseComp = new NoseComponent(noseEntity)
+            var eyeComp = new EyeComponent(eyeEntity)
             {
-                NoseRange = 30,
+                EyeRange = 50,
+                Fov = MathHelper.ToRadians(fov),
             };
-            noseEntity.AddComponents(transform, graphics, noseComp);
+            eyeEntity.AddComponents(transform, graphics, eyeComp);
 
-            return noseEntity.ToDefinition();
+            return eyeEntity;
 
         }
     }

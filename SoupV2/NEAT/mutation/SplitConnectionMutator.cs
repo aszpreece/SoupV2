@@ -23,7 +23,7 @@ namespace SoupV2.NEAT.mutation
         /// </summary>
         /// <param name="genotype">The genotype to mutate.</param>
         /// <param name="random">Instance of random to use.</param>
-        public override void Mutate(NeatGenotype genotype, Random random, InnovationIdManager innovationIdManager)
+        public override void Mutate(NeatBrainGenotype genotype, Random random, InnovationIdManager innovationIdManager)
         {
             // Decide on the connection to split
 

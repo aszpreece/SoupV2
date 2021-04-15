@@ -8,7 +8,7 @@ namespace SoupV2.Simulation.Events
 {
     public class DeathEventInfo : AbstractEventInfo
     {
-        public DeathEventInfo(Vector2 location, uint tick, int deadEntityId, AbstractDeathCause cause): base(tick, location)
+        public DeathEventInfo(Vector2 location, float timestamp, int deadEntityId, AbstractDeathCause cause): base(timestamp, location)
         {
             DeadEntity = deadEntityId;
             Cause = cause;
