@@ -47,7 +47,7 @@ namespace SoupV2.Simulation.Systems.WorldLogic
             // Initialize the hash sets
             foreach (CritterTypeSetting critterTypeSetting in _critterTypes)
             {
-                Compatible.Add(critterTypeSetting.DefinitionId, (critterTypeSetting, new HashSet<Entity>()));
+                Compatible.Add(critterTypeSetting.TypeTag, (critterTypeSetting, new HashSet<Entity>()));
             }
         }
 
@@ -78,6 +78,14 @@ namespace SoupV2.Simulation.Systems.WorldLogic
         {
             foreach (var (critterTypeSetting, populationSet) in Compatible.Values)
             {
+                // Only spawn if tick is between time settings
+                if (!(critterTypeSetting.SpawnFromTick < tick * gameSpeed 
+                    && tick * gameSpeed < critterTypeSetting.SpawnUntilTick))
+                {
+                    continue;
+                }
+
+
                 // Only spawn a new critter if the population has dipped too low.
                 if (populationSet.Count >= critterTypeSetting.MinimumCount)
                 {
@@ -106,7 +114,7 @@ namespace SoupV2.Simulation.Systems.WorldLogic
                             continue;
                         }
 
-                        Entity critter = _pool.AddEntityFromDefinition(critterTypeSetting.DefinitionId, _simulation.JsonSettings);
+                        Entity critter = _pool.AddEntityFromDefinition(critterTypeSetting.DefinitionId, _simulation.JsonSettings, critterTypeSetting.TypeTag);
                         
                         if (critter.HasComponent<EnergyComponent>())
                         {

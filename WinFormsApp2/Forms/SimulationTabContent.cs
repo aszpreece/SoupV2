@@ -23,7 +23,7 @@ namespace SoupForm.Forms
         public int MaxEventsInLog = 50;
 
 
-        private Thread? _statLoggingThread;
+        private Thread _statLoggingThread;
         public SimulationTabContent(Stream statsOut, string entityDefinitionPath, SimulationSettings settings)
         {
             InitializeComponent();
@@ -37,7 +37,12 @@ namespace SoupForm.Forms
                 newSim.WeaponSystem.OnAttack += gatherer.HandleInfo;
                 newSim.ReproductionSystem.BirthEvent += gatherer.HandleInfo;
                 newSim.HealthDeathSystem.OnDeath += gatherer.HandleInfo;
+                newSim.OldAgeDeathSystem.OnDeath += gatherer.HandleInfo;
                 newSim.EnergyDeathSystem.OnDeath += gatherer.HandleInfo;
+
+                newSim.CritterPositionReporter.OnReport += gatherer.HandleInfo;
+                newSim.FoodPositionReporter.OnReport += gatherer.HandleInfo;
+                newSim.VisibleColourInfoReporter.OnReport += gatherer.HandleInfo;
 
                 // Set a stats logger to run until closed.
                 FileStatLogger logger = new FileStatLogger(gatherer, statsOut);
@@ -50,8 +55,14 @@ namespace SoupForm.Forms
             newSim.ReproductionSystem.BirthEvent += postSimulationEvent;
             newSim.HealthDeathSystem.OnDeath += postSimulationEvent;
             newSim.EnergyDeathSystem.OnDeath += postSimulationEvent;
+            newSim.OldAgeDeathSystem.OnDeath += postSimulationEvent;
 
             soupGraphicsControl.CurrentSimulation = newSim;
+            soupGraphicsControl.GraphicsInitialized += () =>
+            {
+                soupGraphicsControl.CurrentSimulation.InitGraphics(soupGraphicsControl.GraphicsDevice, soupGraphicsControl.Editor.Content);
+                soupGraphicsControl.CurrentSimulation.SetUp();
+            };
             eventView.View = View.Details;
             eventView.GridLines = true;
             
@@ -151,6 +162,11 @@ namespace SoupForm.Forms
             var eventItem = (EventListViewItem) eventView.SelectedItems[0];
             var eventInfo = eventItem.EventTag;
             soupGraphicsControl.Editor.Cam.Position = eventInfo.Location;
+        }
+
+        private void soupGraphicsControl_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

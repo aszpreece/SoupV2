@@ -34,7 +34,7 @@ namespace SoupV2.Simulation.Systems
                 var health = entity.GetComponent<HealthComponent>();
 
                 // If heath is below 0 then kill it
-                if (health.Health <= 0)
+                if (health.Health <= 0 || health.Suicude > 0)
                 {
                     toDestroy.Add(entity);
                     // Check if we would be killing an entity with energy
@@ -43,7 +43,7 @@ namespace SoupV2.Simulation.Systems
                         deadEnergy.HandleDeath(_energyManager, Pool, _simulation.JsonSettings, entity.GetComponent<TransformComponent>().WorldPosition);
                     }
                     var loc = entity.GetComponent<TransformComponent>().WorldPosition;
-                    OnDeath?.Invoke(new DeathEventInfo(loc, tick * gameSpeed, entity.Id, new HealthDeathCause()));
+                    OnDeath?.Invoke(new DeathEventInfo(loc, tick * gameSpeed, entity.Id, entity.Tag, new HealthDeathCause()));
                 }
             }
             foreach(var e in toDestroy)

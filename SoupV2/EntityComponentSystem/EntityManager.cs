@@ -114,10 +114,10 @@ namespace EntityComponentSystem
         /// <param name="definition"></param>
         /// <param name="id"></param>
         /// <param name="parent"></param>
-        internal Entity AddEntityFromDefinition(string definitionId, JsonSerializerSettings settings, Entity parent=null)
+        public Entity AddEntityFromDefinition(string definitionId, JsonSerializerSettings settings, string tag, Entity parent=null)
         { 
             var entity = Entity.FromDefinition(_entityDefinitionDatabase.GetEntityDefinition(definitionId), settings);
-            entity.Tag = definitionId;
+            entity.Tag = tag;
 
             AddDeserializedEntity(entity, parent);
 
@@ -181,6 +181,11 @@ namespace EntityComponentSystem
         /// <param Id="entity"></param>
         public void DestroyEntity(Entity entity)
         {
+            if (entity.Parent != null)
+            {
+                entity.Parent.Children.Remove(entity.Tag);
+            }
+
             if (!entity.IsNotCached())
                 return;
 

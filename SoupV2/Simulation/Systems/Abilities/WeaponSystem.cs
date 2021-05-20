@@ -26,7 +26,7 @@ namespace SoupV2.Simulation.Systems.Abilities
         public event AttackEvent OnAttack;
 
         public WeaponSystem(EntityManager pool, List<Collision> collisionList, EnergyManager energyManager) 
-            : base(pool, (e) => e.HasComponent<WeaponComponent>() && e.RootEntity.HasComponent<EnergyComponent>())
+            : base(pool, (e) => e.HasComponent<WeaponComponent>())
         {
             _collisions = collisionList;
             _energyManager = energyManager;
@@ -42,6 +42,8 @@ namespace SoupV2.Simulation.Systems.Abilities
                 var entity = Compatible[i];
                 var weapon = entity.GetComponent<WeaponComponent>();
 
+                // reset hit marker
+                weapon.Hit = 0.0f;
                 //Reduce cooldown timers if necessary
                 if (weapon.CooldownLeftSeconds > 0)
                 {
@@ -69,18 +71,21 @@ namespace SoupV2.Simulation.Systems.Abilities
                 // Only attack if activation is over threshold and the cooldowns have expired.
                 if (weapon.Activation > weapon.ActivateThreshold && weapon.CooldownLeftSeconds <= 0 && weapon.AttackTimeLeft <= 0)
                 {
-                   
-                    var energy = entity.RootEntity.GetComponent<EnergyComponent>();
-
-                    // check if we have the energy
-                    if (!energy.CanAfford(weapon.AttackCost))
+                    if (entity.RootEntity.HasComponent<EnergyComponent>())
                     {
-                        continue;
+                        var energy = entity.RootEntity.GetComponent<EnergyComponent>();
+                        // check if we have the energy
+                        if (!energy.CanAfford(weapon.AttackCost))
+                        {
+                            continue;
+                        }
+
+                        // charge the entity energy for the attack
+                        float charged = energy.ChargeEnergy(weapon.AttackCost);
+                        _energyManager.DepositEnergy(charged);
                     }
 
-                    // charge the entity energy for the attack
-                    float charged = energy.ChargeEnergy(weapon.AttackCost);
-                    _energyManager.DepositEnergy(charged);
+
 
                     weapon.Active = 1.0f;
 
@@ -107,6 +112,11 @@ namespace SoupV2.Simulation.Systems.Abilities
                     weapon = c.E1;
                 }
 
+                // Check not attached to same entity
+                if (health.RootEntity == weapon.RootEntity)
+                {
+                    continue;
+                }
                 
 
                 var weaponComp = weapon.GetComponent<WeaponComponent>();
@@ -123,7 +133,17 @@ namespace SoupV2.Simulation.Systems.Abilities
                 var trans = weapon.GetComponent<TransformComponent>();
 
                 healthComp.Health -= damage;
-                OnAttack?.Invoke(new AttackEventInfo(trans.WorldPosition, tick, weapon.Id, health.Id, damage));
+                weaponComp.Hit = 1.0f;
+
+                if (weaponComp.SiphonEnergy && health.HasComponent<EnergyComponent>() && weapon.RootEntity.HasComponent<EnergyComponent>())
+                {
+                    var attackerEnergy = weapon.RootEntity.GetComponent<EnergyComponent>();
+                    var victimEnergy = health.GetComponent<EnergyComponent>();
+                    float taken = victimEnergy.ChargeEnergy(weaponComp.SiphonAmount);
+                    attackerEnergy.DepositEnergy(taken);
+                }
+
+                OnAttack?.Invoke(new AttackEventInfo(trans.WorldPosition, tick * gameSpeed, weapon.Id, weapon.Tag, health.Id, health.Tag, damage));
             }
         }
 

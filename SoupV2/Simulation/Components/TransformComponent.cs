@@ -19,7 +19,7 @@ namespace SoupV2.Simulation.Components
 
         private Vector2 _localPosition;
 
-
+        [TypeConverter(typeof(Vector2Converter))]
         public Vector2 LocalPosition { get
             {
                 return _localPosition;
@@ -31,12 +31,13 @@ namespace SoupV2.Simulation.Components
             }
         }
 
-
         [JsonIgnore]
         [Browsable(false)]
         public Vector2 WorldPosition { get; internal set; }= new Vector2(0, 0);
 
         private Rotation _localRotation;
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public Rotation LocalRotation
         {
             get

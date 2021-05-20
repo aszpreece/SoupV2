@@ -29,7 +29,10 @@ namespace SoupV2.Simulation.Systems
                 var nose = Compatible[i].GetComponent<NoseComponent>();
                 var nearby = _grid.GetNearbyEntities(transform.WorldPosition, nose.NoseRange, (e) => e.HasComponent<EdibleComponent>());
 
-                nose.Activation = 0;
+                nose.CosActivation = 0;
+                nose.SinActivation = 0;
+
+                float closestFound = nose.NoseRangeSquared + 1;
 
                 foreach (var (distSqr, entity) in nearby)
                 {
@@ -37,6 +40,20 @@ namespace SoupV2.Simulation.Systems
                     {
                         continue;
                     }
+
+                    // if the closest only setting is on, only report smell of closest food.
+                    if (nose.ClosestOnly)
+                    {
+                        if (distSqr > closestFound)
+                        {
+                            continue;
+                        }
+                        closestFound = distSqr;
+                        // reset the other activations
+                        nose.CosActivation = 0;
+                        nose.SinActivation = 0;
+                    }
+
 
                     // Inverse square law
                     // Activation is inverseley proportional to the square of the distance of the object from the eye
@@ -55,20 +72,32 @@ namespace SoupV2.Simulation.Systems
                     // If the angle difference is small then the Cosine of teh angle will be large.
                     // This means the scent will be stronger when looking at the edible.
                     var distMult = (nose.NoseRangeSquared / distSqr);
-                    nose.Activation += (float)(Math.Cos(diffAngle) * distMult);
+
+                    if (!nose.ConsiderRange)
+                    {
+                        distMult = 1;
+                    }
+
+                    nose.CosActivation += (float)(Math.Cos(diffAngle) * distMult);
+                    nose.SinActivation += (float)(Math.Sin(diffAngle) * distMult);
+
 #if DEBUG
                     // Debug.WriteLine($"Activated");
 #endif
                 }
-                nose.Activation = (float)ActivationFunctions.Softsign(nose.Activation);
 
+                if (nose.ConsiderRange)
+                {
+                    nose.CosActivation = (float)ActivationFunctions.Softsign(nose.CosActivation);
+                    nose.SinActivation = (float)ActivationFunctions.Softsign(nose.SinActivation);
+                }
 
                 if (Compatible[i].TryGetComponent<GraphicsComponent>(out GraphicsComponent graphics))
                 {
                     var newCol = new Color(
-                        (float)Math.Max(nose.Activation, 0.3),
-                        (float)Math.Max(nose.Activation, 0.3),
-                        (float)Math.Max(nose.Activation, 0.3));
+                        (float)Math.Max(nose.CosActivation, 0.3),
+                        (float)Math.Max(nose.CosActivation, 0.3),
+                        (float)Math.Max(nose.CosActivation, 0.3));
 
                     graphics.Color = Color.Lerp(graphics.Color, newCol, 0.1f);
                 }

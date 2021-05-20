@@ -10,10 +10,9 @@ namespace SoupV2.NEAT.mutation
         private Dictionary<int, (int, int, int)> SplitSignatures = new Dictionary<int, (int, int, int)>();
 
 
-        public SplitConnectionMutator()
-        {
-            
-        }
+
+
+        public ActivationFunctionType[] ActivationFunctions { get; set; } = new ActivationFunctionType[] { ActivationFunctionType.SIGMOID };
 
         /// <summary>
         /// Given a genotype, split a random connection and add an intermediate node.
@@ -67,7 +66,7 @@ namespace SoupV2.NEAT.mutation
 
 
             // Create a new node with the innovation number
-            genotype.NodeGenes.Add(new NodeGene(nodeInnovId, NodeType.HIDDEN,  "sigmoid"));
+            genotype.NodeGenes.Add(new NodeGene(nodeInnovId, NodeType.HIDDEN, ActivationFunctionType.SIGMOID));
 
             // New connection from old source to new node with weight of 1.0 to reduce impact
             genotype.ConnectionGenes.Add(new ConnectionGene(fromInnovId, originalConnection.Source, nodeInnovId, 1.0f));

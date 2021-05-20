@@ -7,10 +7,10 @@ using System.Text;
 
 namespace SoupV2.Simulation
 {
-    public static class TextureAtlas
+    public class TextureAtlas
     {
 
-        private static Dictionary<string, Texture2D> _atlas = new Dictionary<string, Texture2D>();
+        private Dictionary<string, Texture2D> _atlas = new Dictionary<string, Texture2D>();
 
         /// <summary>
         /// Given a path of an image, load a texture and cache it.
@@ -18,7 +18,7 @@ namespace SoupV2.Simulation
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static Texture2D GetTexture(string path, GraphicsDevice graphicsDevice)
+        public Texture2D GetTexture(string path, GraphicsDevice graphicsDevice)
         {
             if (_atlas.ContainsKey(path))
             {
@@ -33,15 +33,22 @@ namespace SoupV2.Simulation
 
         }
 
-        public static Texture2D Circle { get; set; }
-        public static Texture2D Eye { get; set; }
-        public static Texture2D Mouth { get; internal set; }
-        public static Texture2D Soup { get; internal set; }
-        public static Texture2D Nose { get; internal set; }
-        public static Texture2D BoxingGloveRetracted { get; internal set; }
-        public static Texture2D BoxingGloveExtended { get; internal set; }
-        public static SpriteFont Font { get; internal set; }
-        public static SpriteEffect OutlineEffect { get; set; }
+        public bool HasTexture(string path)
+        {
+            return _atlas.ContainsKey(path);
+        }
+
+        public Texture2D Circle { get; set; }
+        public Texture2D Eye { get; set; }
+        public Texture2D Mouth { get; internal set; }
+        public Texture2D Soup { get; internal set; }
+        public Texture2D Nose { get; internal set; }
+        public Texture2D BoxingGloveRetracted { get; internal set; }
+        public Texture2D BoxingGloveExtended { get; internal set; }
+        public Texture2D Missing { get; internal set; }
+
+        public SpriteFont Font { get; internal set; }
+        public SpriteEffect OutlineEffect { get; set; }
 
 
         public static readonly string CirclePath  = "circle";
@@ -51,29 +58,32 @@ namespace SoupV2.Simulation
         public static readonly string NosePath = "SoupNose";
         public static readonly string BoxingGloveRetractedPath = "BoxingGloveRetracted";
         public static readonly string BoxingGloveExtendedPath = "BoxingGloveExtended";
+        public static readonly string MissingPath = "Missing";
+
 
         /// <summary>
         /// Load built in sprites
         /// </summary>
         /// <param name="content"></param>
-        public static void Load(ContentManager content)
-        {
-            TextureAtlas.Font = content.Load<SpriteFont>("bin/DesktopGL/Energy");
-            TextureAtlas.Circle = content.Load<Texture2D>("bin/DesktopGL/circle");
-            TextureAtlas.Eye = content.Load<Texture2D>("bin/DesktopGL/eye");
-            TextureAtlas.Mouth = content.Load<Texture2D>("bin/DesktopGL/mouth");
-            TextureAtlas.Soup = content.Load<Texture2D>("bin/DesktopGL/soup");
-            TextureAtlas.Nose = content.Load<Texture2D>("bin/DesktopGL/SoupNose");
-            TextureAtlas.BoxingGloveExtended = content.Load<Texture2D>("bin/DesktopGL/BoxingGloveExtended");
-            TextureAtlas.BoxingGloveRetracted = content.Load<Texture2D>("bin/DesktopGL/BoxingGloveRetracted");
-            _atlas.Add(CirclePath, TextureAtlas.Circle);
-            _atlas.Add(EyePath, TextureAtlas.Eye);
-            _atlas.Add(MouthPath, TextureAtlas.Mouth);
-            _atlas.Add(SoupPath, TextureAtlas.Soup);
-            _atlas.Add(NosePath, TextureAtlas.Nose);
-            _atlas.Add(BoxingGloveExtendedPath, TextureAtlas.BoxingGloveExtended);
-            _atlas.Add(BoxingGloveRetractedPath, TextureAtlas.BoxingGloveRetracted);
-
+        public TextureAtlas(ContentManager content)
+        {    
+            Font = content.Load<SpriteFont>("bin/DesktopGL/Energy");
+            Circle = content.Load<Texture2D>("bin/DesktopGL/circle");
+            Eye = content.Load<Texture2D>("bin/DesktopGL/eye");
+            Mouth = content.Load<Texture2D>("bin/DesktopGL/mouth");
+            Soup = content.Load<Texture2D>("bin/DesktopGL/soup");
+            Nose = content.Load<Texture2D>("bin/DesktopGL/SoupNose");
+            BoxingGloveExtended = content.Load<Texture2D>("bin/DesktopGL/BoxingGloveExtended");
+            BoxingGloveRetracted = content.Load<Texture2D>("bin/DesktopGL/BoxingGloveRetracted");
+            Missing = content.Load<Texture2D>("bin/DesktopGL/Missing");
+            _atlas.Add(CirclePath, Circle);
+            _atlas.Add(EyePath, Eye);
+            _atlas.Add(MouthPath, Mouth);
+            _atlas.Add(SoupPath, Soup);
+            _atlas.Add(NosePath, Nose);
+            _atlas.Add(BoxingGloveExtendedPath, BoxingGloveExtended);
+            _atlas.Add(BoxingGloveRetractedPath, BoxingGloveRetracted);
+            _atlas.Add(MissingPath, Missing);
         }
 
     }

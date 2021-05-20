@@ -48,6 +48,7 @@ namespace EntityComponentSystem
         [JsonIgnore]
         [Browsable(false)]
         public int Id { get; set; }
+
         public string Tag { get; set; }
 
         /// <summary>
@@ -69,7 +70,7 @@ namespace EntityComponentSystem
         //public List<AbstractComponent> Components { get; set; } = new List<AbstractComponent>();
         [Browsable(false)]
 
-        public Dictionary<int, AbstractComponent> Components { get; set; } = new Dictionary<int, AbstractComponent>();
+        public Dictionary<string, AbstractComponent> Components { get; set; } = new Dictionary<string, AbstractComponent>();
 
         /// <summary>
         /// The map of this entity's children indexed by entity tag.
@@ -170,7 +171,7 @@ namespace EntityComponentSystem
             if (HasComponent(component.GetType()))
                 throw new ComponentAlreadyExistsException(this);
 
-            Components.Add(component.GetHashCode(), component);
+            Components.Add(component.GetType().Name, component);
             ComponentAdded?.Invoke(this, component);
 
             if (!(OwnerPool is null))
@@ -197,7 +198,7 @@ namespace EntityComponentSystem
 
             AbstractComponent componentToRemove = GetComponent<T>();
 
-            Components.Remove(componentToRemove.GetHashCode());
+            Components.Remove(componentToRemove.GetType().Name);
             ComponentRemoved?.Invoke(this, componentToRemove);
             OwnerPool.ComponentRemoved(this);
         }
@@ -219,7 +220,7 @@ namespace EntityComponentSystem
 
             AbstractComponent componentToRemove = GetComponent(componentType);
 
-            Components.Remove(componentToRemove.GetHashCode());
+            Components.Remove(componentToRemove.GetType().Name);
             ComponentRemoved?.Invoke(this, componentToRemove);
             OwnerPool.ComponentRemoved(this);
         }
@@ -238,7 +239,7 @@ namespace EntityComponentSystem
                 throw new EntityCachedException(this.Id, $"Tried accessing {typeof(T).Name}");
 
 
-            if (!Components.TryGetValue(typeof(T).GetHashCode(), out AbstractComponent match))
+            if (!Components.TryGetValue(typeof(T).Name, out AbstractComponent match))
             {
                 throw new ComponentNotFoundException(this, typeof(T));
             }
@@ -257,7 +258,7 @@ namespace EntityComponentSystem
             if (IsCached())
                 throw new EntityCachedException(this.Id, $"Tried accessing {typeof(T).Name}");
 
-            if (Components.TryGetValue(typeof(T).GetHashCode(), out AbstractComponent match))
+            if (Components.TryGetValue(typeof(T).Name, out AbstractComponent match))
             {
                 component = (T)match;
                 return true;
@@ -286,7 +287,7 @@ namespace EntityComponentSystem
             if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
-            Components.TryGetValue(componentType.GetHashCode(), out AbstractComponent match);
+            Components.TryGetValue(componentType.Name, out AbstractComponent match);
 
             if (match != null)
             {
@@ -324,7 +325,7 @@ namespace EntityComponentSystem
                 throw new ComponentNotFoundException(this, component.GetType());
 
             destination.AddComponent(component);
-            Components.Remove(component.GetHashCode());
+            Components.Remove(component.GetType().Name);
         }
 
         /// <summary>
@@ -339,7 +340,7 @@ namespace EntityComponentSystem
             if (IsCached())
                 return false;
 
-            return Components.ContainsKey(typeof(TComponent).GetHashCode());
+            return Components.ContainsKey(typeof(TComponent).Name);
         }
 
         /// <summary>
@@ -357,7 +358,7 @@ namespace EntityComponentSystem
             if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not AbstractComponent children..");
 
-            return Components.ContainsKey(componentType.GetHashCode());
+            return Components.ContainsKey(componentType.Name);
         }
 
         /// <summary>
@@ -524,8 +525,8 @@ namespace EntityComponentSystem
 
         public EntityDefinition ToDefinition()
         {
-            // Don't need graphics device to convert TO json so pass in null
-            string output = JsonConvert.SerializeObject(this, SerializerSettings.GetDefaultSettings(null));
+            // Don't need graphics device or content to convert TO json so pass in null
+            string output = JsonConvert.SerializeObject(this, SerializerSettings.GetDefaultSettings(null, null));
             return new EntityDefinition(output);
         }
 
@@ -533,5 +534,7 @@ namespace EntityComponentSystem
         {
             return Id.GetHashCode();
         }
+
+        public bool IsRoot { get => Parent is null; }
     }
 }

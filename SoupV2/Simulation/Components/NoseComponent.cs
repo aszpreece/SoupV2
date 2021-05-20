@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Newtonsoft.Json;
+using SoupV2.Simulation.Brain;
 using System.ComponentModel;
 
 namespace SoupV2.Simulation.Components
@@ -14,7 +15,18 @@ namespace SoupV2.Simulation.Components
 
         [JsonIgnore]
         [Browsable(false)]
-        public float Activation { get; set; }
+        [Input]
+        public float CosActivation { get; set; }
+
+        [JsonIgnore]
+        [Browsable(false)]
+        [Input]
+        public float SinActivation { get; set; }
+
+        /// <summary>
+        /// If true only the closest food will be taken into account.
+        /// </summary>
+        public bool ClosestOnly { get; set; } = false;
 
         /// <summary>
         /// Range of the eye in world units
@@ -37,5 +49,12 @@ namespace SoupV2.Simulation.Components
 
         public float NoseRangeSquared { get => _noseRangeSquared; }
 
+
+        /// <summary>
+        /// Determines whether distance is taken into account for activation of nose
+        /// </summary>
+        /// 
+        [Description("If true, will not multiply returned results dist the inverse of the distance squared")]
+        public bool ConsiderRange { get;  set; } = false;
     }
 }

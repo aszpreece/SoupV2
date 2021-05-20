@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using System.ComponentModel;
 using SoupV2.Simulation.Brain;
 using SoupV2.NEAT;
+using SoupV2.Simulation.Settings;
+using SoupV2.Simulation.Brain.BrainTypes;
 
 namespace SoupV2.Simulation.Components
 {
@@ -67,8 +69,7 @@ namespace SoupV2.Simulation.Components
             _brain = genotype.GetBrain();
         }
 
-        static Random rand = new Random();
-        static readonly Func<AbstractComponent, float> randomGetter = (_) => (float)rand.NextDouble() - 0.5f;
+        static readonly Func<AbstractComponent, float> randomGetter = (_) => (float)(StaticRandom.NextDouble() - 0.5);
         static readonly Func<AbstractComponent, float> biasGetter = (_) => 1;
 
 
@@ -76,16 +77,16 @@ namespace SoupV2.Simulation.Components
         /// Compiles brain inputs/outputs to a map of functions and their component objects that they act upon.
         /// Must be called before brain can function.
         /// </summary>
-        public void SetUpLinks(Type brainType)
+        public void SetUpLinks(BrainType? brainType, SimulationSettings settings)
         {
 
             // Brains that have been created without an explicit genotype will need to have one created.
             if (BrainGenotype is null)
             {
                 // create a genotype of the parameterized type
-                BrainGenotype = (AbstractBrainGenotype)Activator.CreateInstance(brainType);
+                BrainGenotype = (AbstractBrainGenotype)Activator.CreateInstance(BrainTypes.BrainTypeMap[brainType.Value]);
                 // Create a default brain and set the phenotype etc.
-                BrainGenotype.CreateBrain(this);
+                BrainGenotype.CreateBrain(this, settings.MutationConfig);
                 var phenotype = BrainGenotype.GetBrain();
                 SetGenotype(BrainGenotype);
             }

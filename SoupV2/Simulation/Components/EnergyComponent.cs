@@ -83,7 +83,7 @@ namespace SoupV2.Simulation.Components
             // If the component is set to drop as food on death drop a food
             if (DropAsFoodOnDeath)
             {
-                var food = entityManager.AddEntityFromDefinition(DropAsFoodEntityDefinition, jsonSettings);
+                var food = entityManager.AddEntityFromDefinition(DropAsFoodEntityDefinition, jsonSettings, DropAsFoodEntityDefinition);
                 // There is a small chance the dropped food component does not have an energy component. If not return the energy to the manager after all
                 if (food.HasComponent<EnergyComponent>())
                 {

@@ -22,11 +22,13 @@
     <None Remove="Content\bin\DesktopGL\Energy.xnb" />
     <None Remove="Content\bin\DesktopGL\eye.xnb" />
     <None Remove="Content\bin\DesktopGL\Logo_Shadow_256.xnb" />
+    <None Remove="Content\bin\DesktopGL\Missing.xnb" />
     <None Remove="Content\bin\DesktopGL\mouth.xnb" />
     <None Remove="Content\bin\DesktopGL\pirateship.xnb" />
     <None Remove="Content\bin\DesktopGL\Selected.xnb" />
     <None Remove="Content\bin\DesktopGL\soup.xnb" />
     <None Remove="Content\bin\DesktopGL\SoupNose.xnb" />
+    <None Remove="Content\Missing.png" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
@@ -52,6 +54,9 @@
     <Content Include="Content\bin\DesktopGL\Logo_Shadow_256.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\bin\DesktopGL\Missing.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bin\DesktopGL\mouth.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -65,6 +70,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\bin\DesktopGL\SoupNose.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Missing.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

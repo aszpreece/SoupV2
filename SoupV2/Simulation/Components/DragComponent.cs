@@ -1,6 +1,7 @@
 ﻿using EntityComponentSystem;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace SoupV2.Simulation.Components
@@ -11,7 +12,11 @@ namespace SoupV2.Simulation.Components
         {
 
         }
+
+        [Description("The drag for the movement")]
         public float MovementDragCoefficient { get; set; } = 1.0f;
+
+        [Description("The drag for the rotation")]
         public float RotationDragCoefficient { get; set; } = 1.0f;
 
     }

@@ -19,7 +19,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var eyeEntity = new Entity("eye");
 
-            var pos = distFromParent * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+            var pos = distFromParent * new Vector2(1, 0);
 
             var transform = new TransformComponent(eyeEntity)
             {
@@ -38,7 +38,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var eyeComp = new EyeComponent(eyeEntity)
             {
-                EyeRange = 50,
+                EyeRange = 150,
                 Fov = MathHelper.ToRadians(fov),
             };
             eyeEntity.AddComponents(transform, graphics, eyeComp);

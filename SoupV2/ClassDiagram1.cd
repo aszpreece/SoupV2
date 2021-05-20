@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="EntityComponentSystem.EntityManager" Collapsed="true">
+    <Position X="7" Y="3.75" Width="1.5" />
+    <NestedTypes>
+      <Delegate Name="EntityComponentSystem.EntityManager.EntityChanged" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>EntityComponentSystem\EntityManager.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="EntityComponentSystem.EntityManager.EntityRelationshipChanged" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>EntityComponentSystem\EntityManager.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AACWCAKAIAAAAFAAIAIBAAgBACBAAQEAUAEAAYQAEAA=</HashCode>
+      <FileName>EntityComponentSystem\EntityManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EntityComponentSystem.Entity" Collapsed="true">
+    <Position X="4.25" Y="3.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Events" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="EntityComponentSystem.Entity.EntityComponentChanged" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>EntityComponentSystem\Entity.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="EntityComponentSystem.Entity.EntityRelationshipChanged" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>EntityComponentSystem\Entity.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <AssociationLine Name="Children" Type="EntityComponentSystem.Entity">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.046" Y="0.289" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Parent" Type="EntityComponentSystem.Entity">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.006" Y="0.32" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAGCAEIEAApFIAAsABkRABSAAAAAIQEQSAAJGwAEAA=</HashCode>
+      <FileName>EntityComponentSystem\Entity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Parent" />
+      <Property Name="OwnerPool" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Children" />
+      <Property Name="Components" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="EntityComponentSystem.AbstractComponent" Collapsed="true">
+    <Position X="1.25" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAIBAAAAAAAAAAAA=</HashCode>
+      <FileName>EntityComponentSystem\AbstractComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

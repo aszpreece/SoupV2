@@ -120,7 +120,7 @@ namespace SoupV2.NEAT
         /**
          * Add a named node to this genotype.
          */
-        public void AddNamedNode(string name, NodeType nodeType, string activationFuncName )
+        public void AddNamedNode(string name, NodeType nodeType, ActivationFunctionType activationFuncName )
         {
             if (NodeNameMap.ContainsKey(name))
             {
@@ -197,15 +197,19 @@ namespace SoupV2.NEAT
             return new NeatBrainGenotype(this);
         }
 
-        public override void CreateBrain(BrainComponent brainComp)
+        public override void CreateBrain(BrainComponent brainComp, IMutatorConfig config)
         {
+            var neatConfig = (NeatMutationConfig)config;
+
+            // Add nodes for inputs and outputs
             foreach ((string namedInput, string _) in brainComp.InputMap)
             {
-                this.AddNamedNode(namedInput, NodeType.INPUT, "softsign");
+                // Note activation function on input nodes is not used.
+                this.AddNamedNode(namedInput, NodeType.INPUT, ActivationFunctionType.SOFTSIGN);
             }
             foreach ((string namedOutput, string _) in brainComp.OutputMap)
             {
-                this.AddNamedNode(namedOutput, NodeType.OUTPUT, "softsign");
+                this.AddNamedNode(namedOutput, NodeType.OUTPUT, (ActivationFunctionType)neatConfig.OutputActivationFunction);
             }
 
             // Increase connection innovation id as we loop

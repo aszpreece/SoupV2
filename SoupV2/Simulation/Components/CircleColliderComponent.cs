@@ -16,6 +16,8 @@ namespace SoupV2.Simulation.Components
         public TransformComponent Transform { get; set; }
 
         private float _radius = 1.0f;
+
+        [Description("The radius of the circle hitbox.")]
         public float Radius {
             get => _radius;
             set

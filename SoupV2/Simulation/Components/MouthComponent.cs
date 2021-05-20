@@ -1,4 +1,5 @@
 ﻿using EntityComponentSystem;
+using SoupV2.Simulation.Brain;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,7 @@ namespace SoupV2.Simulation.Components
         }
 
         [Browsable(false)]
+        [Input]
         public float Eating { get; set; } = 0.0f;
         public MouthComponent(Entity owner) : base(owner)
         {

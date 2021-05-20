@@ -10,9 +10,11 @@ using System.Linq;
 public class Texture2DConverter : JsonConverter
 {
     private GraphicsDevice _graphicsDevice;
-    public Texture2DConverter(GraphicsDevice graphicsDevice)
+    private TextureAtlas _textureAtlas;
+    public Texture2DConverter(GraphicsDevice graphicsDevice, TextureAtlas textureAtlas)
     {
         _graphicsDevice = graphicsDevice;
+        _textureAtlas = textureAtlas;
     }
 
     public override bool CanConvert(Type objectType)
@@ -26,7 +28,7 @@ public class Texture2DConverter : JsonConverter
         var properties = jsonObject.Properties().ToList();
         var path = (string)properties[0].Value;
 
-        return TextureAtlas.GetTexture(path, _graphicsDevice);
+        return _textureAtlas.GetTexture(path, _graphicsDevice);
     }
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

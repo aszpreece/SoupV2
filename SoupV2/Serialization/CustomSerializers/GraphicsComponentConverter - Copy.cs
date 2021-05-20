@@ -12,9 +12,11 @@ using System.Linq;
 public class GraphicsComponentConverter : JsonConverter<GraphicsComponent>
 {
     private GraphicsDevice _graphicsDevice;
-    public GraphicsComponentConverter(GraphicsDevice graphicsDevice)
+    private TextureAtlas _textureAtlas;
+    public GraphicsComponentConverter(GraphicsDevice graphicsDevice, TextureAtlas textureAtlas)
     {
         _graphicsDevice = graphicsDevice;
+        _textureAtlas = textureAtlas;
     }
 
 
@@ -23,7 +25,7 @@ public class GraphicsComponentConverter : JsonConverter<GraphicsComponent>
         JObject jsonObject = JObject.Load(reader);
 
         string texturePath = jsonObject["TexturePath"].ToObject<string>();
-        var texture = TextureAtlas.GetTexture(texturePath, _graphicsDevice);
+        var texture = _textureAtlas.GetTexture(texturePath, _graphicsDevice);
 
         //Entity owner = jsonObject["Owner"].ToObject<Entity>();
         GraphicsComponent graphicsComponent = new GraphicsComponent(null)

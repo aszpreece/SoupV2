@@ -11,19 +11,19 @@ namespace SoupV2.NEAT.Genes
         {
             this.NodeType = other.NodeType;
             this.InnovationId = other.InnovationId;
-            this.ActivationFuncName = other.ActivationFuncName;
+            this.ActivationFunc = other.ActivationFunc;
 
         }
-        public NodeGene(int innovationId, NodeType nodeType, string activationFuncName)
+        public NodeGene(int innovationId, NodeType nodeType, ActivationFunctionType activationFuncName)
         {
             this.NodeType = nodeType;
             this.InnovationId = innovationId;
-            this.ActivationFuncName = activationFuncName;
+            this.ActivationFunc = activationFuncName;
         }
 
         public NodeType NodeType { get; set; }
         public int InnovationId { get; set; }
-        public string ActivationFuncName { get; set; }
+        public ActivationFunctionType ActivationFunc { get; set; }
 
         public object Clone()
         {

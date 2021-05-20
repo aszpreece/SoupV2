@@ -15,6 +15,9 @@ namespace SoupForm.Controls
         /// </summary>
         public Simulation CurrentSimulation { get; set; }
 
+        public delegate void GraphicsInitializedEvent();
+        public event GraphicsInitializedEvent GraphicsInitialized;
+
         protected override void Initialize()
         {
             // Stop visual studio crashing.
@@ -22,12 +25,13 @@ namespace SoupForm.Controls
                 return;
 
             base.Initialize();
-            TextureAtlas.Load(Editor.Content);
+
             SpriteBatchExtension.InitSpriteBatchExtension(Editor.graphics);
             Editor.BackgroundColor = new Color(20, 19, 40);
             Editor.Cam.Zoom = 0.1f;
-            CurrentSimulation.SetUp(this.GraphicsDevice);
+            GraphicsInitialized?.Invoke();
         }
+
 
         protected override void Update(GameTime gameTime)
         {
@@ -37,7 +41,7 @@ namespace SoupForm.Controls
 
             base.Update(gameTime);
             // TODO change to be based on ticks.
-            CurrentSimulation.Update(gameTime);
+            CurrentSimulation?.Update(gameTime);
         }
 
         protected override void Draw()
@@ -51,7 +55,7 @@ namespace SoupForm.Controls
             Editor.ShowCamPosition = true;
 
 
-            CurrentSimulation.Draw(Editor.spriteBatch, Editor.Cam.GetTransformation());
+            CurrentSimulation?.Draw(Editor.spriteBatch, Editor.Cam.GetTransformation());
 
             Editor.DrawDisplay();
         }

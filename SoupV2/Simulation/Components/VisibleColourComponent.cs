@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
+using SoupV2.Simulation.Brain;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace SoupV2.Simulation.Components
     {
 
         [Browsable(false)]
-        public Color Colour { get => new Color(R, G, B); }
+        public Color Colour { get => new Color(RealR, RealG, RealB); }
         // Controls the colour filter of the entity
 
         private float _r = 0, _g= 0, _b = 0;
@@ -45,30 +46,35 @@ namespace SoupV2.Simulation.Components
             }
         }
 
+        [Input]
         public float RealR { 
-            get => _r; 
+            get => (_r + 1) /2; 
             set { 
                 if (value >= 0 && value <= 1)
                 {
-                    _r = value; 
+                    _r = (value * 2) - 1;
                 }
             } 
         }
+
+        [Input]
         public float RealG { 
-            get => _g; 
+            get => (_g + 1) /2; 
             set {
                 if (value >= 0 && value <= 1)
                 {
-                    _g = value;
+                    _g = (value * 2) - 1;
                 }
             } 
         }
+
+        [Input]
         public float RealB { 
-            get => _b; 
+            get => (_b + 1) /2; 
             set {
                 if (value >= 0 && value <= 1)
                 {
-                    _b = value;
+                    _b = (value * 2) - 1;
                 }
             } 
         }

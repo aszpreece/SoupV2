@@ -37,7 +37,7 @@ namespace SoupV2.Simulation.EntityDefinitions
 
             var noseComp = new NoseComponent(noseEntity)
             {
-                NoseRange = 30,
+                NoseRange = 50,
             };
             noseEntity.AddComponents(transform, graphics, noseComp);
 

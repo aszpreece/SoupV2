@@ -70,9 +70,9 @@ namespace SoupV2.Simulation.Systems
                     _energyManager.DepositEnergy(wasted);
 
                     // Some set up for the new child, setting positions/giving energy.
-                    var babyEntity = Pool.AddEntityFromDefinition(reproduction.ChildDefinitionId, _simulation.JsonSettings);
+                    var babyEntity = Pool.AddEntityFromDefinition(reproduction.ChildDefinitionId, _simulation.JsonSettings, parentEntity.Tag);
 
-                    babyEntity.GetComponent<EnergyComponent>().Energy = charged;
+                    babyEntity.GetComponent<EnergyComponent>().Energy = toChild;
                     var parentPosition = parentEntity.GetComponent<TransformComponent>().LocalPosition;
                     babyEntity.GetComponent<TransformComponent>().LocalPosition = parentPosition;
 
@@ -85,15 +85,15 @@ namespace SoupV2.Simulation.Systems
                     NeatBrainGenotype childGenotype = (NeatBrainGenotype)parentGenotype.Clone();
                    
                     
-                    _muationManager.Mutate((NeatBrainGenotype)childGenotype, _innovationIdManager);
+                    _muationManager.Mutate(childGenotype, _innovationIdManager);
                     var newBrain = babyEntity.GetComponent<BrainComponent>();
                     newBrain.SetGenotype(childGenotype);
 
                     // Do not need to pass it type as we have already set the brain, therefore it does not need initializing.
-                    newBrain.SetUpLinks(null);
+                    newBrain.SetUpLinks(null, _simulation.Settings);
                     newBrain.ParentSpecies = originalBrainComponent.Species;
 
-                    BirthEventInfo e = new BirthEventInfo(parentPosition, tick, parentEntity.Id, babyEntity.Id, childGenotype);
+                    BirthEventInfo e = new BirthEventInfo(parentPosition, tick * _gameSpeed, parentEntity.Id, parentEntity.Tag, babyEntity.Id, babyEntity.Tag, childGenotype, originalBrainComponent.Species.Id);
                     BirthEvent?.Invoke(e);
                 }
             }

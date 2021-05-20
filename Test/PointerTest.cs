@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using EntityComponentSystem;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SoupV2.Simulation.Brain;
 using SoupV2.Simulation.Components;
 using SoupV2.util;
 

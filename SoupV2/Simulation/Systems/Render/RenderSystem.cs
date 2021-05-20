@@ -1,21 +1,22 @@
 ﻿using EntityComponentSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SoupV2.Simulation;
 using SoupV2.Simulation.Components;
-using SoupV2.util;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
-namespace SoupV2.Systems
+namespace SoupV2.Simulation.Systems
 {
     public class RenderSystem : EntitySystem
     {
-        public RenderSystem(EntityManager pool) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(GraphicsComponent)))
+        Simulation _simulation;
+
+        /// <summary>
+        /// Editor mode constantly refreshes textures
+        /// </summary>
+        public bool EditorMode { get; set; } = false;
+        public RenderSystem(EntityManager pool, Simulation simulation) : base(pool, (e) => e.HasComponents(typeof(TransformComponent), typeof(GraphicsComponent)))
         {
-            
+            _simulation = simulation;
         }
 
         public void Draw(SpriteBatch spriteBatch, Matrix camera)
@@ -42,9 +43,20 @@ namespace SoupV2.Systems
                     // hacky way to load textures....
                     // tried to do it in json convertor, but it wouldn't work for some reason (the custom reader would not trigger)
                     // should be past because only done once and null checks are fast.
-                    if (graphics.Texture is null)
+                    if (graphics.Texture is null || EditorMode)
                     {
-                        graphics.Texture = TextureAtlas.GetTexture(graphics.TexturePath, spriteBatch.GraphicsDevice);
+
+                        try
+                        {
+                            // may fail due to io
+                            graphics.Texture = _simulation.TextureAtlas.GetTexture(graphics.TexturePath, spriteBatch.GraphicsDevice);
+                        }
+                        catch (Exception)
+                        {
+                            // set missing texture
+                            graphics.Texture = _simulation.TextureAtlas.Missing;
+                        }
+                        
                     }
                     if (!(graphics.Dimensions is null)) {
                         var dest = new Rectangle((int)transform.WorldPosition.X, (int)transform.WorldPosition.Y, (int)(transform.Scale.X * graphics.Dimensions.Value.X), (int)(transform.Scale.Y * graphics.Dimensions.Value.Y));

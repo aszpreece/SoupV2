@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SoupV2.EntityComponentSystem;
 using SoupV2.NEAT.Genes;
+using SoupV2.Simulation.Brain;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;

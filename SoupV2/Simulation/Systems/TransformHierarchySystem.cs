@@ -41,10 +41,21 @@ namespace SoupV2.Simulation.Systems
         /// <param name="parentWorldRot"></param>
         public void EntityTreeRecalculateTransform(Entity entity, Vector2 parentWorldPos, float parentWorldRot, float parentDepth, bool foundDirty)
         {
+            if (!entity.IsActive())
+            {
+                return;
+            }
             var transform = entity.GetComponent<TransformComponent>();
             if (foundDirty || transform.Dirty)
             {
-                var rot = Matrix.CreateRotationZ(parentWorldRot);
+                Matrix rot;
+                if (!entity.IsRoot)
+                {
+                    rot = Matrix.CreateRotationZ(parentWorldRot + transform.LocalRotation.Theta);
+                } else
+                {
+                    rot = Matrix.CreateRotationZ(parentWorldRot);
+                }
 
                 transform.WorldPosition = Vector2.Transform(transform.LocalPosition, rot) + parentWorldPos;
                 transform.WorldRotation = transform.LocalRotation + parentWorldRot;

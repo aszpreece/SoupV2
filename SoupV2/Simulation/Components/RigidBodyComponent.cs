@@ -12,12 +12,10 @@ namespace SoupV2.Simulation.Components
         private float _inv_mass = 1f;
         private float _mass = 1f;
 
-
         public RigidBodyComponent(Entity owner) : base(owner)
         {
 
         }
-
 
         public float Mass
         {
@@ -49,8 +47,6 @@ namespace SoupV2.Simulation.Components
         }
 
         public float Restitution { get; set; } = 0.9f;
-
-
 
         public void Reset()
         {

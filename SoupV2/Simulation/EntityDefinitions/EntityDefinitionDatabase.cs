@@ -7,6 +7,17 @@ namespace SoupV2.Simulation
 {
     public class EntityDefinitionDatabase
     {
+
+        public static List<string> DefaultEntities = new List<string>
+        {
+            "DefaultEye", 
+            "DefaultFood",
+            "DefaultMouth",
+            "DefaultNose",
+            "DefaultWeapon",
+            "Soupling",
+        };
+
         private Dictionary<string, EntityDefinition> _definitionDict = new Dictionary<string, EntityDefinition>();
 
         /// <summary>

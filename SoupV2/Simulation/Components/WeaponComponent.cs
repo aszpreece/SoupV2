@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Newtonsoft.Json;
+using SoupV2.Simulation.Brain;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace SoupV2.Simulation.Components
     {
 
         /// <summary>
-        /// The health damage this wepaon does on contact per second
+        /// The health damage this weapon does on contact per second
         /// </summary>
         public float Damage { get; set; }
 
@@ -63,6 +64,24 @@ namespace SoupV2.Simulation.Components
         /// The cost in energy of performing this attack.
         /// </summary>
         public float AttackCost { get; set; }
+
+
+        /// <summary>
+        /// Indicates whether an attack hit or not.
+        /// </summary>
+        [Input]
+        public float Hit { get; set; } = 0.0f;
+
+        /// <summary>
+        /// Controls if the weapon should siphon energy from the victim
+        /// </summary>
+        public bool SiphonEnergy { get; set; } = false;
+
+        /// <summary>
+        /// If siphon enabled, the amount of energy to take
+        /// </summary>
+        public float SiphonAmount { get; set; } = 0.0f;
+
         public WeaponComponent(Entity owner) : base(owner)
         {
 

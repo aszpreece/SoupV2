@@ -9,27 +9,30 @@ using System.Threading.Tasks;
 
 namespace SoupV2.Simulation.Systems
 {
-    public class BrainSystem : EntitySystem
-    {
-        public BrainSystem(EntityManager pool) : base(pool, (e) => e.HasComponents(typeof(BrainComponent)))
+    public class BrainSystem : EntitySystem 
+    { 
+
+        private SimulationSettings _settings;
+        public BrainSystem(EntityManager pool, SimulationSettings settings) : base(pool, (e) => e.HasComponents(typeof(BrainComponent)))
         {
+            _settings = settings;
         }
 
         public void Update(List<CritterTypeSetting> critterTypes)
         {
-            Parallel.For(0, Compatible.Count, (i) => {
+            for(int i = 0; i < Compatible.Count; i++) {
                 
                 var entity = Compatible[i];
                 var brain = entity.GetComponent<BrainComponent>();
                 // If this brain is not set up, find out what type it should be.
                 if (!brain.SetUp)
                 {
-                    var critterType = critterTypes.Find((critterType) => critterType.DefinitionId == entity.Tag);
-                    brain.SetUpLinks(critterType.BrainType);
+                    var critterType = critterTypes.Find((critterType) => critterType.TypeTag == entity.Tag);
+                    brain.SetUpLinks(critterType.BrainType, _settings);
                 }
                 brain.Calculate();
 
-            });
+            }
         }
 
         /// <summary>
@@ -41,12 +44,12 @@ namespace SoupV2.Simulation.Systems
             Parallel.For(0, Compatible.Count, (i) => {
 
                 var entity = Compatible[i];
-                var critterType = critterTypes.Find((critterType) => critterType.DefinitionId == entity.Tag);
+                var critterType = critterTypes.Find((critterType) => critterType.TypeTag == entity.Tag);
 
                 var brain = entity.GetComponent<BrainComponent>();
                 if (!brain.SetUp)
                 {
-                    brain.SetUpLinks(critterType.BrainType);
+                    brain.SetUpLinks(critterType.BrainType, _settings);
                 }
             });
         }

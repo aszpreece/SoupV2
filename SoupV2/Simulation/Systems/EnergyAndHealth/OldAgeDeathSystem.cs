@@ -52,10 +52,8 @@ namespace SoupV2.Simulation.Systems
                     }
                     var transform = entity.GetComponent<TransformComponent>();
 
-                    OnDeath?.Invoke(new DeathEventInfo(transform.WorldPosition, tick, entity.Id, new OldAgeDeathCause())
-                    {
-                        Location = entity.GetComponent<TransformComponent>().WorldPosition
-                    });
+                    OnDeath?.Invoke(new DeathEventInfo(transform.WorldPosition, tick * _gameSpeed, entity.Id, entity.Tag, new OldAgeDeathCause()));
+
                 }
             }
             foreach (var e in toDestroy)

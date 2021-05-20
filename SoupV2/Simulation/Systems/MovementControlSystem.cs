@@ -24,8 +24,22 @@ namespace SoupV2.Simulation.Systems
                 var rigidBody = entity.GetComponent<RigidBodyComponent>();
                 var transform = entity.GetComponent<TransformComponent>();
 
-                rigidBody.ApplyForce(transform.WorldForward * movement.ForwardForce);
-                rigidBody.ApplyTorque(movement.RotationForce * 10);
+                // Two different movement modes. Imagine one as a tank with two treads that can be controlled independantly.
+                // The other is like a car, with forward and backwards motion and a steering wheel.
+                if (movement.MovementMode == MovementMode.MoveAndSteer)
+                {
+                    rigidBody.ApplyForce(transform.WorldForward * movement.ForwardForce);
+                    rigidBody.ApplyTorque(movement.RotationForce * 2);
+                } else if(movement.MovementMode == MovementMode.TwoWheels)
+                {
+                    // Apply forces for the two wheels.
+                    // right wheel causes negative rotation
+                    rigidBody.ApplyForce(transform.WorldForward * movement.LeftWheelForce);
+                    rigidBody.ApplyTorque(-movement.LeftWheelForce * 2);
+
+                    rigidBody.ApplyForce(transform.WorldForward * movement.RightWheelForce);
+                    rigidBody.ApplyTorque(movement.RightWheelForce * 2);
+                }
             }
         }
     }

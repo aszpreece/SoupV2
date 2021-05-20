@@ -12,7 +12,7 @@ using System.Text;
 
 namespace SoupV2.Simulation.EntityDefinitions
 {
-    class Soupling
+    public class Soupling
     {
         public static Entity GetCritter(Color color)
         {
@@ -59,14 +59,15 @@ namespace SoupV2.Simulation.EntityDefinitions
             var drag = new DragComponent(critter)
             {
                 MovementDragCoefficient = 0.1f,
-                RotationDragCoefficient = 16f
+                RotationDragCoefficient = 10f
 
             };
 
             var movementControl = new MovementControlComponent(critter)
             {
                 MaxMovementForceNewtons = 10.0f,
-                MaxRotationForceNewtons = 3.0f,
+                MaxRotationForceNewtons = 10.0f,
+                MovementMode = MovementMode.TwoWheels,
             };
 
             var colour = new VisibleColourComponent(critter)
@@ -122,18 +123,29 @@ namespace SoupV2.Simulation.EntityDefinitions
                         {"eye4B", "eye4.EyeComponent.ActivationB" },
 
                         {"mouth", "mouth.MouthComponent.Eating" },
-                        {"nose", "nose.NoseComponent.Activation" },
+                        {"nosecos", "nose.NoseComponent.CosActivation" },
+                        {"nosesin", "nose.NoseComponent.SinActivation" },
                         {"health", "HealthComponent.HealthPercent" },
                         {"myRed", "VisibleColourComponent.RealR" },
                         {"myGreen", "VisibleColourComponent.RealG" },
                         {"myBlue", "VisibleColourComponent.RealB" },
                         {"Random", "Random" },
-
+                        {"Bias", "Bias" },
                     },
+                //OutputMap = new Dictionary<string, string>
+                //    {
+                //        {"forwardback", "MovementControlComponent.WishForceForward" },
+                //        {"rotation", "MovementControlComponent.WishRotForce" },
+                //        {"reproduce", "ReproductionComponent.Reproduce" },
+                //        {"red", "VisibleColourComponent.R" },
+                //        {"green", "VisibleColourComponent.G" },
+                //        {"blue", "VisibleColourComponent.B" },
+                //        {"attack", "weapon.WeaponComponent.Activation" }
+                //    }
                 OutputMap = new Dictionary<string, string>
                     {
-                        {"forwardback", "MovementControlComponent.WishForceForward" },
-                        {"rotation", "MovementControlComponent.WishRotForce" },
+                        {"wheelLeft", "MovementControlComponent.WishWheelLeftForce" },
+                        {"wheelRight", "MovementControlComponent.WishWheelRightForce" },
                         {"reproduce", "ReproductionComponent.Reproduce" },
                         {"red", "VisibleColourComponent.R" },
                         {"green", "VisibleColourComponent.G" },

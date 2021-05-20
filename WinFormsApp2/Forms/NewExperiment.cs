@@ -13,7 +13,7 @@ namespace SoupForm.Forms
         /// <summary>
         /// The created settings objects
         /// </summary>
-        public SimulationSettings NewSimulationSettings { get; set; } = new SimulationSettings();
+        public SimulationSettings NewSimulationSettings { get; set; } = DefaultSimulationSettings.GetSettings();
         /// <summary>
         /// The name of the new simulation (For the tab name)
         /// </summary>
@@ -67,6 +67,7 @@ namespace SoupForm.Forms
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.TypeNameHandling = TypeNameHandling.All;
                     NewSimulationSettings = (SimulationSettings)serializer.Deserialize(sr, typeof(SimulationSettings));
+                    settingPropertyGrid.SelectedObject = null;
                     settingPropertyGrid.SelectedObject = NewSimulationSettings;
                 }
             }

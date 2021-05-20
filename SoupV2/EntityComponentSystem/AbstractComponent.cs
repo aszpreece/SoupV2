@@ -14,7 +14,7 @@ namespace EntityComponentSystem
         public AbstractComponent(Entity owner)
         {
             Owner = owner;
-            _hash = this.GetType().GetHashCode();
+            _hash = this.GetType().FullName.GetHashCode();
         }
 
 

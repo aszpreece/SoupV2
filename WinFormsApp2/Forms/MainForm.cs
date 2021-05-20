@@ -17,6 +17,10 @@ namespace SoupForm.Forms
             InitializeComponent();
             newSimulationButton.Click += NewSimulationButton_Click;
             endSimulationButton.Click += EndSimulationButton_Click;
+            openEditorMenuItem.Click += (s, a) =>
+            {
+                new EditorForm().Show();
+            };
         }
 
         private void EndSimulationButton_Click(object sender, EventArgs e)
@@ -37,8 +41,8 @@ namespace SoupForm.Forms
             if (newExperimentForm.DialogResult == DialogResult.OK)
             {
 
-                //try
-                //{
+                try
+                {
                     var newSimTab = new TabPage(newExperimentForm.SimulationName);
                     tabControl1.TabPages.Add(newSimTab);
                     var simTab = new SimulationTabContent(
@@ -49,11 +53,11 @@ namespace SoupForm.Forms
                     simTab.Dock = DockStyle.Fill;
                     newSimTab.Controls.Add(simTab);
 
-                //} catch (Exception exception)
-                //{
-                //    MessageBox.Show($"Something went wrong initializing the new simulation: {exception.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } catch (Exception exception)
+                {
+                    MessageBox.Show($"Something went wrong initializing the new simulation: {exception.ToString()}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                //}
+                }
 
             }
         }

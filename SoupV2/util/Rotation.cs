@@ -1,22 +1,32 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace SoupV2.util
 {
-    public struct Rotation
+    public class Rotation
     {
         public static readonly float FullRot = (float)(2.0 * Math.PI);
 
         private float _theta;
 
+        [Browsable(false)]
         public float Theta
         {
             get => _theta %= FullRot;
             set
             {
                 _theta = value;
+            }
+        }
+
+        public float Degrees { 
+            get => MathHelper.ToDegrees(_theta);
+            set
+            {
+                _theta = MathHelper.ToRadians(value);
             }
         }
 

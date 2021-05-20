@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using SoupV2.Simulation.Brain;
+using SoupV2.Simulation.Brain.BrainTypes;
 using SoupV2.Simulation.Components;
 using SoupV2.Simulation.Settings;
 using SoupV2.util;
@@ -74,7 +75,7 @@ namespace SoupV2.Simulation.Systems.WorldLogic
                         {
                             Id = newId,
                             Representative = rep,
-                            TimeCreated = _simulation.Tick * _simulation.GameSpeed,
+                            TimeCreated = _simulation.Tick * _simulation.SimDeltaTime,
                         };
                         // Create new species.
                         Species[entity.Tag].Add(newSpecies);
@@ -89,7 +90,7 @@ namespace SoupV2.Simulation.Systems.WorldLogic
             // Initialize origin species with a random genotype
             foreach (CritterTypeSetting critterTypeSetting in critterTypes)
             {
-                var originGenotype = (AbstractBrainGenotype)Activator.CreateInstance(critterTypeSetting.BrainType);
+                var originGenotype = (AbstractBrainGenotype)Activator.CreateInstance(BrainTypes.BrainTypeMap[critterTypeSetting.BrainType]);
                 Species originSpecies = new Species()
                 {
                     Id = NextSpeciesId,
@@ -97,7 +98,7 @@ namespace SoupV2.Simulation.Systems.WorldLogic
                     TimeCreated = 0,
                 };
                 NextSpeciesId++;
-                Species.Add(critterTypeSetting.DefinitionId, new List<Species>() { originSpecies });
+                Species.Add(critterTypeSetting.TypeTag, new List<Species>() { originSpecies });
             }
         }
     }

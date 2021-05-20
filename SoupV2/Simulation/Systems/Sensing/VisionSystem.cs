@@ -72,21 +72,32 @@ namespace SoupV2.Simulation.Systems
                     var targetColour = entity.GetComponent<VisibleColourComponent>();
 
                     var distMult = (eye.EyeRangeSquared / distSqr);
-                    eye.ActivationR += distMult * targetColour.R;
-                    eye.ActivationG += distMult * targetColour.G;
-                    eye.ActivationB += distMult * targetColour.B;
+                    eye.ActivationR += distMult * targetColour.RealR;
+                    eye.ActivationG += distMult * targetColour.RealG;
+                    eye.ActivationB += distMult * targetColour.RealB;
 
+                    if (eye.BinaryMode && eye.ActivationR > 0 && eye.ActivationG > 0 && eye.ActivationB > 0)
+                    {
+                        break;
+                    }
 #if DEBUG
                     // Debug.WriteLine($"Activated");
 #endif
 
 
                 }
-                eye.ActivationR = (float)ActivationFunctions.Softsign(eye.ActivationR);
-                eye.ActivationG = (float)ActivationFunctions.Softsign(eye.ActivationG);
-                eye.ActivationB = (float)ActivationFunctions.Softsign(eye.ActivationB);
 
-
+                if (eye.BinaryMode)
+                {
+                    eye.ActivationR = eye.ActivationR > 0 ? 1 : 0;
+                    eye.ActivationG = eye.ActivationG > 0 ? 1 : 0;
+                    eye.ActivationB = eye.ActivationB > 0 ? 1 : 0;
+                } else
+                {
+                    eye.ActivationR = (float)ActivationFunctions.Softsign(eye.ActivationR);
+                    eye.ActivationG = (float)ActivationFunctions.Softsign(eye.ActivationG);
+                    eye.ActivationB = (float)ActivationFunctions.Softsign(eye.ActivationB);
+                }
                 if (Compatible[i].TryGetComponent<GraphicsComponent>(out GraphicsComponent graphics))
                 {
                     var newCol = new Color(

@@ -270,9 +270,9 @@ namespace SoupV2.Simulation.Grid
             return (float)(1.0 / (1.0 + Math.Pow(Math.E, -value)));
         }
 
-        public void DrawGrid(SpriteBatch spriteBatch, Camera camera)
+        public void DrawGrid(SpriteBatch spriteBatch, Matrix camera)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, camera.GetViewTransformationMatrix());
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, camera);
             Color[] colours = { Color.Gray, Color.DarkSlateGray };
             for (int x = 0; x < _gridWidth; x++)
             {

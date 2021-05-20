@@ -31,7 +31,7 @@ namespace SoupV2.Simulation.Systems
                 {
                     toDestroy.Add(entity);
                     var transform = entity.GetComponent<TransformComponent>();
-                    OnDeath?.Invoke(new DeathEventInfo(transform.WorldPosition, tick * gameSpeed, entity.Id, new EnergyDeathCause()) {
+                    OnDeath?.Invoke(new DeathEventInfo(transform.WorldPosition, tick * gameSpeed, entity.Id, entity.Tag, new EnergyDeathCause()) {
                         Location = entity.GetComponent<TransformComponent>().WorldPosition
                     });
                 }

@@ -1,4 +1,5 @@
 ﻿using EntityComponentSystem;
+using SoupV2.Simulation.Brain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,7 @@ namespace SoupV2.Simulation.Components
         public float MaxAge { get; set; } = 30f * 400f;
         public float CurrentAge { get; set; } = 0;
 
+        [Input]
+        public float AgePercent { get => CurrentAge / MaxAge; }
     }
 }

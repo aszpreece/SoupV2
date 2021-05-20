@@ -1,4 +1,6 @@
-﻿using SoupV2.Simulation;
+﻿using Newtonsoft.Json;
+using SoupV2.Simulation;
+using SoupV2.Simulation.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,6 +40,26 @@ namespace SoupForm
             }
 
             return database;
+        }
+
+        /// <summary>
+        /// Loads the settings file.
+        /// </summary>
+        /// <returns></returns>
+        public static SimulationSettings LoadSettingsFile(string path)
+        {
+            SimulationSettings settings;
+
+            using (StreamReader reader = new(path))
+            {
+                string json = reader.ReadToEnd();
+
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.TypeNameHandling = TypeNameHandling.All;
+                settings = (SimulationSettings)serializer.Deserialize(reader, typeof(SimulationSettings));                
+            }
+            
+            return settings;
         }
 
         /// <summary>

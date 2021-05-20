@@ -1,5 +1,6 @@
 ﻿using EntityComponentSystem;
 using Newtonsoft.Json;
+using SoupV2.Simulation.Brain;
 using SoupV2.util;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,13 @@ using System.Text;
 
 namespace SoupV2.Simulation.Components
 {
+
+    public enum MovementMode
+    {
+        MoveAndSteer,
+        TwoWheels
+    }
+
     public class MovementControlComponent : AbstractComponent
     {
 
@@ -15,6 +23,8 @@ namespace SoupV2.Simulation.Components
         {
 
         }
+
+        public MovementMode MovementMode { get; set; } = MovementMode.MoveAndSteer;
 
         private float _maxMovementForceNewtons = 1.0f;
         /// <summary>
@@ -37,12 +47,12 @@ namespace SoupV2.Simulation.Components
         /// The maximum amount of rotational force that can be exterted.
         /// </summary>
         public float MaxRotationForceNewtons {
-            get => _maxMovementForceNewtons;
+            get => _maxRotationForceNewtons;
             set
             {
                 if (value >= 0)
                 {
-                    _maxMovementForceNewtons = value;
+                    _maxRotationForceNewtons = value;
                 }
             }
         }
@@ -95,5 +105,54 @@ namespace SoupV2.Simulation.Components
                 return MaxRotationForceNewtons * WishRotForce;
             }
         }
+
+
+
+        /// <summary>
+        /// The percentage (represented as a number between -1 and 1) of the maximum movement force that is wished to be exterted by the left wheel.
+        /// </summary>
+        [Browsable(false)]
+        [Control]
+        public float WishWheelLeftForce
+        {
+            get;
+            set;
+        } = 0.0f;
+
+
+        /// <summary>
+        /// The percentage (represented as a number between -1 and 1) of the maximum movement force that is wished to be exterted by the right wheel.
+        /// </summary>
+        [Browsable(false)]
+        [Control]
+        public float WishWheelRightForce
+        {
+            get;
+            set;
+        } = 0.0f;
+
+
+
+        /// <summary>
+        /// The same as MaxMovementForceNewtons / 2 * WishWheelLeftForce
+        /// </summary>
+        [Browsable(false)]
+        [Control]
+        public float LeftWheelForce
+        {
+            get => WishWheelLeftForce * MaxMovementForceNewtons * 0.5f;
+        }
+
+
+        /// <summary>
+        /// The same as MaxMovementForceNewtons / 2 * WishWheelRightForce
+        /// </summary>
+        [Browsable(false)]
+        [Control]
+        public float RightWheelForce
+        {
+            get => WishWheelRightForce * MaxMovementForceNewtons * 0.5f;
+        }
+
     }
 }

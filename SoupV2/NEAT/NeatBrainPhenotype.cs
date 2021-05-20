@@ -38,7 +38,7 @@ namespace SoupV2.NEAT
             // List of non input/bias nodes
             NonInputNodes = genotype.NodeGenes
                 .Where(gene => gene.NodeType != NodeType.INPUT && gene.NodeType != NodeType.BIAS)
-                .Select(gene => (gene.InnovationId, ActivationFunctions.Functions[gene.ActivationFuncName]))
+                .Select(gene => (gene.InnovationId, ActivationFunctions.Functions[gene.ActivationFunc]))
                 .ToArray();
 
 

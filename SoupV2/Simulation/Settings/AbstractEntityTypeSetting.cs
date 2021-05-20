@@ -9,6 +9,7 @@ namespace SoupV2.Simulation.Settings
 {
     public abstract class AbstractEntityTypeSetting
     {
+        public string TypeTag { get; set; } = "New";
         public string DefinitionId { get; set; }
         public uint InitialCount { get; set; }
         public uint MinimumCount { get; set; }
@@ -39,5 +40,10 @@ namespace SoupV2.Simulation.Settings
         {
             return DefinitionId;
         }
+
+        public float SpawnFromTick { get; set; } = 0;
+        public float SpawnUntilTick { get; set; } = float.PositiveInfinity;
+
+
     }
 }

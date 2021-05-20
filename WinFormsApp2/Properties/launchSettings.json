@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "SoupForm": {
+      "commandName": "Project"
+    },
+    "SoupFormCMD": {
+      "commandName": "Project",
+      "commandLineArgs": "headless=true"
+    }
+  }
+}

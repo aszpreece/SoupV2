@@ -1,4 +1,5 @@
 ﻿using EntityComponentSystem;
+using SoupV2.Simulation.Brain;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,17 +15,21 @@ namespace SoupV2.Simulation.Components
             get => _health;
             set
             {
-                if (value >= 0)
-                {
-                    _health = value;
-                }
+                _health = value;
             }
         }
 
         public float MaxHealth { get; set; }
 
         [Browsable(false)]
+        [Input]
         public float HealthPercent { get => Health / MaxHealth; }
+
+        /// <summary>
+        /// cause critter to die
+        /// </summary>
+        [Control]
+        public float Suicude { get; set; } = 0.0f;
 
         public HealthComponent(Entity owner) : base(owner)
         {
