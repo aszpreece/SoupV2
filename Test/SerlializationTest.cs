@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using SoupV2;
+using SoupV2.NEAT;
 using SoupV2.NEAT.mutation;
 using System;
 using System.Collections.Generic;
@@ -31,15 +32,15 @@ namespace Test
                 }
             };
 
-            MutationConfig config = new MutationConfig() { NeatMutators = mutators };
+            NeatMutationConfig config = new NeatMutationConfig();
             
             JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
             var json = JsonConvert.SerializeObject(config, settings);
 
-            MutationConfig deserializedConfig = JsonConvert.DeserializeObject<MutationConfig>(json, settings);
+            NeatMutationConfig deserializedConfig = JsonConvert.DeserializeObject<NeatMutationConfig>(json, settings);
 
-            Assert.IsTrue(deserializedConfig.NeatMutators[0] is ConnectionWeightMutator);
-            Assert.IsTrue(deserializedConfig.NeatMutators[1] is SplitConnectionMutator);
+            Assert.IsTrue(deserializedConfig.ConnectionWeightMutator is ConnectionWeightMutator);
+            Assert.IsTrue(deserializedConfig.SplitConnectionMutator is SplitConnectionMutator);
 
         }
     }

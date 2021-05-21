@@ -14,9 +14,9 @@ namespace Test
         public void TestNamedNodes()
         {
             NeatBrainGenotype test = new NeatBrainGenotype();
-            test.AddNamedNode("bias", NodeType.BIAS, "relu");
-            test.AddNamedNode("input1", NodeType.INPUT, "relu");
-            test.AddNamedNode("input2", NodeType.INPUT, "relu");
+            test.AddNamedNode("bias", NodeType.BIAS, ActivationFunctionType.RELU);
+            test.AddNamedNode("input1", NodeType.INPUT, ActivationFunctionType.RELU);
+            test.AddNamedNode("input2", NodeType.INPUT, ActivationFunctionType.RELU);
 
             Assert.IsTrue(test.NodeGenes.Count == 3);
 
@@ -31,9 +31,9 @@ namespace Test
         {
             NeatBrainGenotype test = new NeatBrainGenotype();
 
-            test.AddNamedNode("input1", NodeType.INPUT, "relu");
-            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
-            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+            test.AddNamedNode("input1", NodeType.INPUT, ActivationFunctionType.RELU);
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, ActivationFunctionType.RELU);
+            test.AddNamedNode("output1", NodeType.OUTPUT, ActivationFunctionType.RELU);
 
             test.ConnectionGenes.Add(new ConnectionGene(1, 0, 1, 1));  // Input to hidden
             test.ConnectionGenes.Add(new ConnectionGene(2, 1, 1, 1, true, true)); // Hidden to hidden (recurrent)
@@ -62,18 +62,18 @@ namespace Test
         {
             NeatBrainGenotype test = new NeatBrainGenotype();
 
-            test.AddNamedNode("input1", NodeType.INPUT, "sigmoid");
-            test.AddNamedNode("input2", NodeType.INPUT, "sigmoid");
-            test.AddNamedNode("input3", NodeType.INPUT, "sigmoid");
+            test.AddNamedNode("input1", NodeType.INPUT, ActivationFunctionType.RELU);
+            test.AddNamedNode("input2", NodeType.INPUT, ActivationFunctionType.RELU);
+            test.AddNamedNode("input3", NodeType.INPUT, ActivationFunctionType.RELU);
 
             // Hidden genes
-            test.NodeGenes.Add(new NodeGene(3, NodeType.HIDDEN, "relu"));
-            test.NodeGenes.Add(new NodeGene(4, NodeType.HIDDEN, "relu"));
+            test.NodeGenes.Add(new NodeGene(3, NodeType.HIDDEN, ActivationFunctionType.RELU));
+            test.NodeGenes.Add(new NodeGene(4, NodeType.HIDDEN, ActivationFunctionType.RELU));
 
             // Output genes
-            test.AddNamedNode("output", NodeType.OUTPUT, "relu");
+            test.AddNamedNode("output", NodeType.OUTPUT, ActivationFunctionType.RELU);
 
-            test.NodeGenes.Add(new NodeGene(5, NodeType.OUTPUT, "relu"));
+            test.NodeGenes.Add(new NodeGene(5, NodeType.OUTPUT, ActivationFunctionType.RELU));
 
 
             // Input connections
@@ -117,13 +117,13 @@ namespace Test
             // Test that a gene already in the genome can be tested fro recurrence
             NeatBrainGenotype test = new NeatBrainGenotype();
 
-            test.AddNamedNode("input1", NodeType.INPUT, "relu");
-            test.AddNamedNode("input2", NodeType.INPUT, "relu");
+            test.AddNamedNode("input1", NodeType.INPUT, ActivationFunctionType.RELU);
+            test.AddNamedNode("input2", NodeType.INPUT, ActivationFunctionType.RELU);
 
-            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
-            test.AddNamedNode("hidden2", NodeType.HIDDEN, "relu");
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, ActivationFunctionType.RELU);
+            test.AddNamedNode("hidden2", NodeType.HIDDEN, ActivationFunctionType.RELU);
 
-            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+            test.AddNamedNode("output1", NodeType.OUTPUT, ActivationFunctionType.RELU);
 
             test.ConnectionGenes.Add(new ConnectionGene(1, 0, 2, 1));
             test.ConnectionGenes.Add(new ConnectionGene(3, 1, 3, 1));
@@ -144,9 +144,9 @@ namespace Test
             // Test that a gene already in the genome can be tested fro recurrence
             NeatBrainGenotype test = new NeatBrainGenotype();
 
-            test.AddNamedNode("input1", NodeType.INPUT, "relu");
-            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
-            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+            test.AddNamedNode("input1", NodeType.INPUT, ActivationFunctionType.RELU);
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, ActivationFunctionType.RELU);
+            test.AddNamedNode("output1", NodeType.OUTPUT, ActivationFunctionType.RELU);
 
             test.ConnectionGenes.Add(new ConnectionGene(1, 0, 1, 1)); 
             var recurrentGene = new ConnectionGene(2, 1, 1, 1, false, true);
@@ -163,13 +163,13 @@ namespace Test
             // Test that a gene already in the genome can be tested fro recurrence
             NeatBrainGenotype test = new NeatBrainGenotype();
 
-            test.AddNamedNode("input1", NodeType.INPUT, "relu");
-            test.AddNamedNode("input2", NodeType.INPUT, "relu");
+            test.AddNamedNode("input1", NodeType.INPUT, ActivationFunctionType.RELU);
+            test.AddNamedNode("input2", NodeType.INPUT, ActivationFunctionType.RELU);
 
-            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
-            test.AddNamedNode("hidden2", NodeType.HIDDEN, "relu");
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, ActivationFunctionType.RELU);
+            test.AddNamedNode("hidden2", NodeType.HIDDEN, ActivationFunctionType.RELU);
 
-            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+            test.AddNamedNode("output1", NodeType.OUTPUT, ActivationFunctionType.RELU);
 
             test.ConnectionGenes.Add(new ConnectionGene(1, 0, 2, 1));
             test.ConnectionGenes.Add(new ConnectionGene(3, 1, 3, 1));
@@ -191,13 +191,13 @@ namespace Test
             // Test that a gene already in the genome can be tested fro recurrence
             NeatBrainGenotype test = new NeatBrainGenotype();
 
-            test.AddNamedNode("input1", NodeType.INPUT, "relu");
-            test.AddNamedNode("input2", NodeType.INPUT, "relu");
+            test.AddNamedNode("input1", NodeType.INPUT, ActivationFunctionType.RELU);
+            test.AddNamedNode("input2", NodeType.INPUT, ActivationFunctionType.RELU);
 
-            test.AddNamedNode("hidden1", NodeType.HIDDEN, "relu");
-            test.AddNamedNode("hidden2", NodeType.HIDDEN, "relu");
+            test.AddNamedNode("hidden1", NodeType.HIDDEN, ActivationFunctionType.RELU);
+            test.AddNamedNode("hidden2", NodeType.HIDDEN, ActivationFunctionType.RELU);
 
-            test.AddNamedNode("output1", NodeType.OUTPUT, "relu");
+            test.AddNamedNode("output1", NodeType.OUTPUT, ActivationFunctionType.RELU);
 
             test.ConnectionGenes.Add(new ConnectionGene(1, 0, 2, 1));
             test.ConnectionGenes.Add(new ConnectionGene(3, 1, 3, 1));

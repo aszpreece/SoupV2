@@ -17,25 +17,25 @@ namespace Test
         delegate float GetInput();
         delegate void SetInput(float value);
 
-        [TestMethod]
-        public void TestSetter()
-        {
-            string foobar = typeof(MovementControlComponent).Name;
-            AbstractComponent comp = new MovementControlComponent(new Entity());
+        //[TestMethod]
+        //public void TestSetter()
+        //{
+        //    string foobar = typeof(MovementControlComponent).Name;
+        //    AbstractComponent comp = new MovementControlComponent(new Entity());
 
-            var setter = GetterSetterPointers.GetPropSetter<AbstractComponent, float>("WishForceForward", comp.GetType());
-            var foo = comp.GetType().GetProperty("WishForceForward").GetSetMethod().GetCustomAttributes(typeof(ControlAttribute));
+        //    var setter = GetterSetterPointers.GetPropSetter<AbstractComponent, float>("WishForceForward", comp.GetType());
+        //    var foo = comp.GetType().GetProperty("WishForceForward").GetSetMethod().GetCustomAttributes(typeof(ControlAttribute));
             
-            if (foo.Count() <= 0)
-            {
-                Assert.Fail("Does not have control attribute");
-            }
+        //    if (foo.Count() <= 0)
+        //    {
+        //        Assert.Fail("Does not have control attribute");
+        //    }
             
 
-            setter(comp, 10);
+        //    setter(comp, 10);
 
-            Assert.AreEqual(10, ((MovementControlComponent)comp).WishForceForward);
-        }
+        //    Assert.AreEqual(10, ((MovementControlComponent)comp).WishForceForward);
+        //}
 
         //[TestMethod]
         //public void TestGetter()
