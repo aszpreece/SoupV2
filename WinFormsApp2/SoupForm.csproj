@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MonoGame.Forms\MonoGame.Forms.DX\MonoGame.Forms.DX.csproj" />
     <ProjectReference Include="..\SoupV2\SoupV2.csproj" />
   </ItemGroup>
 
